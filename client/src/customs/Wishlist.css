@@ -1,0 +1,11 @@
+@media (min-width: 440px) and (max-width: 638px) {
+  .prod-height {
+    height: 550px;
+  }
+}
+
+@media (min-width: 639px) {
+  .prod-height {
+    height: 300px;
+  }
+}

@@ -1,0 +1,41 @@
+@font-face {
+    font-family: "cinzel";
+    src: url("../fonts/cinzel.otf") format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  .cinzel {
+    font-family: "cinzel", sans-serif;
+  }
+
+
+
+  /*  dream font*/
+
+  @font-face {
+    font-family: "dream";
+    src: url("../fonts/dream.ttf") format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  .dream {
+    font-family: "dream", sans-serif;
+  }
+
+
+  /* queen */
+
+  @font-face {
+    font-family: "queen";
+    src: url("../fonts/queen.otf") format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  .queen {
+    font-family: "queen", sans-serif;
+  }
+
+

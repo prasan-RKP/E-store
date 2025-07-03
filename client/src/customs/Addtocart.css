@@ -1,0 +1,29 @@
+@media (min-height: 470px) and (max-height: 625px) {
+  .responsive-height {
+    height: 18rem; /* Tailwind's h-72 = 18rem */
+  }
+  .size-color {
+    color: black;
+  }
+  .buy-btn {
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+  }
+}
+
+@media (min-height: 626px) {
+  .responsive-height {
+    height: 730px;
+  }
+  .buy-btn {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+}
+
+/* Force all text inside the size dropdown to be black */
+.size-dropdown-container * {
+  color: black !important;
+}

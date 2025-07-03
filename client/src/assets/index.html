@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      // Q.1) reverse a string solved ✅
+      //   let str = "capable";
+
+      //   function reverse(str) {
+      //     return str.split('').reverse().join('');
+
+      //   }
+      //   console.log(reverse(str));
+
+      // Q.2) console the longest word in the sentence ✅
+
+      //   let sentence = "i usually like chant radha naam";
+
+      //    function findBigSentence(sentence) {
+
+      //     let sentenceArr = sentence.split(" ");
+      //     let bigWord = sentenceArr[0];
+
+      //     for(let i=0; i<sentenceArr.length; i++) {
+      //            if(bigWord.length < sentenceArr[i].length){ //i < we
+      //                 bigWord = sentenceArr[i]
+      //            }
+      //     }
+
+      //     return bigWord;
+      //    }
+      //   console.log(findBigSentence(sentence));
+
+      // Q.3) Check a string is palindrom or not "madam"
+
+      //  const str = 'madam';
+      //  function palindrome(str){
+      //     const reverseStr = str.split('').reverse();
+      //     const normal= str.split('');
+
+      //     for(let i=0; i<str.length; i++) {
+      //         if(reverseStr[i] === normal[i]) return "It is a palindrom No"
+      //         else return "it is not a plaindrome no"
+      //     }
+      //  }
+
+      //  console.log(palindrome(str));
+
+      // Q.4) Remove duplicate from array
+
+      //let arr = ['h', 'e', 'l', 'l', 'o'];
+
+      // let newArr = [... new Set(arr)];
+
+      // console.log(newArr)
+
+      // function removeDup(arr) {
+
+      //     let newArr = [];
+
+      //     for(let i=0; i<arr.length; i++) {
+      //         if(!newArr.includes(arr[i])){
+      //             newArr.push(arr[i])
+      //         }
+      //     }
+
+      //     return newArr;
+      // }
+      // console.log(removeDup(arr));
+
+      // Q.5) check two Strinfs are anagrams or not  use .sort() afetr that they will adjust according
+
+      // let str1 = "listen";
+      // let str2 = "silent";
+
+      // function checkAnagram(str1, str2) {
+
+      //     let char1 = str1.toLowerCase().replace(/\s+/g, '');
+      //     let char2 = str2.toLowerCase().replace(/\+/g, '');
+
+      //     let store1 = char1.split('').sort().join("");
+      //     let store2 = char2.split('').sort().join("");
+
+      //     if(store1 === store2) { return "The Two Numbers are anagram"}
+      //     else{ return "The two Numbers are not anagram" }
+      // }
+
+      // console.log(checkAnagram(str1, str2));
+
+      // Q.6) returns vowels in a String Ex:- 'Suffocation'
+
+      // let str = 'suffocation';
+
+      // function foundVowel(str) {
+      //     let store = [];
+      //     let vowels = ['a', 'e', 'i', 'o', 'u'];
+      //     let strArr = str.split('');
+
+      //     for(let i=0; i<strArr.length; i++) {
+      //        if(vowels.includes(strArr[i])){
+      //         store.push(strArr[i]);
+      //        }
+      //     }
+
+      //     return store.join("");
+      // }
+
+      // console.log(foundVowel(str));
+
+      // Q.7) Longest number in an array
+
+      // let arr = [2, 3,4,1,2,9,7,3,7,9,8];
+
+      // function longestNum(arr) {
+
+      //   let bigNum = arr[0];
+
+      //   for(let i=0; i<arr.length; i++) {
+      //        if(arr[i] < arr[i+1]){ // 3 < 4
+      //          bigNum = arr[i+1]; // 3
+      //        }
+      //   }
+
+      //   return bigNum;
+      // }
+
+      // console.log(longestNum(arr));
+
+      // Q.8) check given number is prime number or not
+
+      // let num = 4;
+
+      // function checkPrime(num) {
+
+      //   let count = 0;
+
+      //   for(let i=1; i<=num; i++) {
+      //     if((num % i === 0)) {
+      //       count ++;
+      //     }
+      //   }
+
+      //   if(count === 2) {return 'The number is a Prime Number'}
+      //   else {return "The number is not a prime Number"}
+      // }
+
+      // console.log(checkPrime(num));
+
+      // Q.9) Factorial of a given Number
+
+      // let num = 5;
+
+      // function factorialNumber(num){
+      //   let fact = 1;
+
+      //   for(let i=1; i<=num; i++){
+      //     fact = fact * i;
+      //   }
+
+      //   return fact;
+      // }
+
+      // console.log(factorialNumber(num));
+
+      // Q.10) Remove all whiteSPaces from a String
+
+      // let str = "he_ll o";
+
+      // function removeSpace(str){
+
+      //   return str.toLowerCase().replace(" ", '').replace("_", "");
+      // }
+      // console.log(removeSpace(str));
+
+      // Q.11) optional chaining concept
+
+      // const student = {
+      //   name: 'john',
+      //   courses: {
+      //     math: {
+      //       grade: "A"
+      //     }
+      //   }
+      // }
+
+      // const historyGrade = student.courses.history.grade; // Cannot read properties of undefined (reading 'grade')
+      // console.log(historyGrade);
+
+      // 🔥 if we use this :- student.courses.history?.grade ->  "optional chaining" so it will give me the actual value which is "undefined"
+
+      // Q.12) find the second largest Number in the Array
+
+      // Approach 1
+      // let arr = [12, 13, 45, 21, 34, 40, 45, 20, 22];
+
+      // function findSecondLargest(arr) {
+      //   let firstBigNum = -Infinity; // Start with the smallest possible value
+      //   let secondBigNum = -Infinity;
+
+      //   for (let i = 0; i < arr.length; i++) {
+      //     if (arr[i] > firstBigNum) {
+      //       secondBigNum = firstBigNum; // Update second largest
+      //       firstBigNum = arr[i]; // Update largest
+      //     } else if (arr[i] > secondBigNum && arr[i] < firstBigNum) {
+      //       secondBigNum = arr[i]; // Update second largest
+      //     }
+      //   }
+
+      //   return secondBigNum;
+      // }
+
+      // console.log(findSecondLargest(arr));
+
+      // Approach 2
+      // let arr = [1, 32, 5, 6, 22, 32, 45, 65, 21, 12, 99];
+
+      // function secondVal(arr) {
+
+      //   let newArr = arr.sort();
+      //   console.log(newArr)
+
+      //    let bigNum = newArr[0];
+      //     let secondBigNum = '';
+
+      //     for(let i=0; i<arr.length; i++) {
+      //       if(bigNum < arr[i]) { // 32 < 45
+      //           secondBigNum = bigNum;
+      //           bigNum = arr[i];  //
+      //       }
+      //     }
+
+      //     return secondBigNum;
+      // }
+
+      // console.log(secondVal(arr));
+
+      // Q.13) Difference between 'filter' and 'find'
+
+      // Filter :- It will give the new Array with satisfied condition.
+      // Find:- It will the fisrt element of the array with satisfied condition.
+
+      // let arr1 = [21, 12, 32, 22, 14, 45, 33, 78];
+
+      // const filteredArr = arr1.filter((elem)=> elem % 2 === 0);
+      // const findArr = arr1.find(num=> num > 30);
+
+      // console.log(`Filtered value is ${filteredArr} & findArr value is ${findArr}`);
+
+      // Q.14) Merge two array and sort two array
+
+      //   let arr1 = [4, 2, 5, 7, 12, 24];
+      //   let arr2 = [3, 9, 7, 6,21, 17, 15];
+
+      //   let mergeArr = arr1.concat(arr2);
+
+      //  let ascendingArr = mergeArr.sort((a,b)=> a-b);
+      //   let descenArr = mergeArr.sort((a, b)=> b-a);
+
+      //   console.log(ascendingArr);
+      //   console.log(descenArr)
+
+      // Q.15) How to comapre the two array is equal or not
+
+      // let arr1 = [1,2,5,4];
+      // let arr2 = [4,3,2,1];
+
+      //  if(arr1.length === arr2.length) {
+
+      //    let strArr1 = arr1.sort((a, b)=> a-b);
+      //    let strArr2 = arr2.sort((a, b)=> a-b);
+
+      //    let isEqual = true;
+
+      //    for(let i=0; i<strArr1.length; i++){
+      //         if(strArr1[i] !== strArr2[i]){
+      //           isEqual = false;
+      //           break;
+      //         }
+      //    }
+
+      //    if(isEqual){  console.log("The two array is Equal")}
+      //    else {console.log("The two array are not is Equal")}
+      //  }
+
+      //  else{
+      //   console.log('The two arrays are unEqual')
+      //  }
+
+      //Q.16) find occurance of a character in a string // pending
+
+      let arr = [1, 2, 4, 2, 5, 6, 7, 8, 5];
+      let store = {};
+      let duplicate = null;
+
+      function duplicateOccur(arr) {
+        let temp
+        for (let i = 0; i < arr.length; i++) {
+           temp = arr[i];
+
+          store[temp] = (store[temp] || 0) + 1;
+
+          if(store[temp] > 1){
+            duplicate = temp;
+          }
+        }
+
+        return duplicate ? {duplicate: duplicate, occurance: store[duplicate]} : "No DUplicate Found"
+      }
+
+      console.log(duplicateOccur(arr));
+    </script>
+  </body>
+</html>
