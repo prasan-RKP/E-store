@@ -96,7 +96,7 @@ const HomePageShop = () => {
 
   // Categories data
   const categories = [
-    { name: "Women", navigate: "/women-clothes", image: "/heros/women1.jpg" },
+    { name: "Women", navigate: "/women-clothes", image: "/heros/women2.jpg" },
     { name: "Men", navigate: "/men-clothes", image: "/heros/men1.jpg" },
     {
       name: "Accessories",
