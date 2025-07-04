@@ -58,11 +58,12 @@ const AddToCart = () => {
     (total, item) => total + item?.product?.price * item?.quantity,
     0
   );
-  const shipping = subtotal > 100 ? 0 : 9.99;
+  const shipping = subtotal > 1000 ? 0 : 7.99;
   const tax = subtotal * 0.08;
   const total = subtotal + shipping + tax;
 
 
+  console.log("CartItems", verifiedUser);
   
 
   // Check if device is mobile (keeping this for general mobile-specific logic if needed elsewhere)
@@ -992,7 +993,7 @@ const AddToCart = () => {
                   <div className="mt-6 space-y-3 text-sm text-gray-500">
                     <div className="flex items-center">
                       <FaShippingFast className="h-5 w-5 mr-2 text-blue-500" />
-                      <span>Free shipping on orders over ₹100.00</span>
+                      <span>Free shipping on orders over ₹1000.00</span>
                     </div>
                     <div className="flex items-center">
                       <FaLock className="h-5 w-5 mr-2 text-green-500" />
