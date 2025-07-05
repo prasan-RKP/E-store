@@ -432,4 +432,23 @@ export const userAuthStore = create((set, get) => ({
       set({ isSavingShippingAddress2: false });
     }
   },
+
+  // feature - 2(#checkout) - Checkout process  
+
+  isCheckingOut: false,
+  checkout: async () => {
+    set({ isCheckingOut: true });
+    try {
+      const res = await axiosInstance.get("/checkout");
+      set({ verifiedUser: res.data });
+    } catch (error) {
+      if (error.response) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("Something went wrong in checkout");
+      }
+    } finally {
+      set({ isCheckingOut: false });
+    }
+  },
 }));

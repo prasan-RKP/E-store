@@ -9,9 +9,9 @@ import { useState, forwardRef, useImperativeHandle } from "react";
 import { userAuthStore } from "../../store/authStore.js";
 
 
-const PaymentForm = forwardRef(({ formData, setFormData, nextstep, isDark }, ref) => {
-  const [paymentMethod, setPaymentMethod] = useState("C.O.D");
-  const { saveShippingAddress2 } = userAuthStore();
+const PaymentForm = forwardRef(({ formData, setFormData, nextstep, isDark, payMode }, ref) => {
+  const [paymentMethod, setPaymentMethod] = useState(payMode || "C.O.D");
+  const { saveShippingAddress2, verifiedUser } = userAuthStore();
 
   const formOnChange = (e) => {
     const { value } = e.target;
@@ -21,7 +21,7 @@ const PaymentForm = forwardRef(({ formData, setFormData, nextstep, isDark }, ref
 
   const formOnSubmit = async (e) => {
     e.preventDefault();
-    const success = await saveShippingAddress2({ paymentMethod} );
+    const success = await saveShippingAddress2({ paymentMethod });
 
     if (success) {
       nextstep(); // ✅ only go to next step on success

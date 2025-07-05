@@ -24,6 +24,7 @@ import ShippingForm from "./segement/ShippingForm.jsx";
 import PaymentForm from "./segement/PaymentForm.jsx";
 import { userAuthStore } from "../store/authStore.js";
 import { TbLoader3 } from "react-icons/tb";
+import SuccessModal from "./segement/SuccessModal.jsx";
 
 const OrderSummary = ({
   subtotal,
@@ -39,8 +40,8 @@ const OrderSummary = ({
   <div className="sticky top-6">
     <div
       className={`rounded-2xl border backdrop-blur-sm transition-all duration-300 ${isDark
-          ? "border-gray-700/50 bg-gray-800/80 shadow-xl shadow-gray-900/20"
-          : "border-gray-200/50 bg-white/80 shadow-xl shadow-gray-100/20"
+        ? "border-gray-700/50 bg-gray-800/80 shadow-xl shadow-gray-900/20"
+        : "border-gray-200/50 bg-white/80 shadow-xl shadow-gray-100/20"
         }`}
     >
       {/* Header */}
@@ -108,8 +109,8 @@ const OrderSummary = ({
                 onChange={onPromoCodeChange}
                 placeholder="Enter promo code"
                 className={`w-full pl-10 pr-4 py-3 rounded-xl border transition-all duration-200 ${isDark
-                    ? "border-gray-600 bg-gray-700/50 text-white placeholder-gray-400 focus:border-blue-500 focus:bg-gray-700"
-                    : "border-gray-200 bg-gray-50 placeholder-gray-500 focus:border-blue-500 focus:bg-white"
+                  ? "border-gray-600 bg-gray-700/50 text-white placeholder-gray-400 focus:border-blue-500 focus:bg-gray-700"
+                  : "border-gray-200 bg-gray-50 placeholder-gray-500 focus:border-blue-500 focus:bg-white"
                   } focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
               />
             </div>
@@ -152,10 +153,10 @@ const ProgressBar = ({ currentStep, isDark }) => (
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: index * 0.1 }}
               className={`w-14 h-14 rounded-full flex items-center justify-center font-bold text-lg transition-all duration-300 ${currentStep >= step
-                  ? "bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/30"
-                  : isDark
-                    ? "bg-gray-700 text-gray-400 border-2 border-gray-600"
-                    : "bg-gray-100 text-gray-400 border-2 border-gray-200"
+                ? "bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/30"
+                : isDark
+                  ? "bg-gray-700 text-gray-400 border-2 border-gray-600"
+                  : "bg-gray-100 text-gray-400 border-2 border-gray-200"
                 }`}
             >
               {currentStep > step ? (
@@ -165,8 +166,8 @@ const ProgressBar = ({ currentStep, isDark }) => (
               )}
             </motion.div>
             <span className={`mt-2 text-sm font-medium ${currentStep >= step
-                ? "text-blue-600 dark:text-blue-400"
-                : "text-gray-500 dark:text-gray-400"
+              ? "text-blue-600 dark:text-blue-400"
+              : "text-gray-500 dark:text-gray-400"
               }`}>
               {label}
             </span>
@@ -174,10 +175,10 @@ const ProgressBar = ({ currentStep, isDark }) => (
           {step < 3 && (
             <div
               className={`w-20 h-1 mx-6 rounded-full transition-all duration-500 ${currentStep > step
-                  ? "bg-gradient-to-r from-blue-500 to-purple-600"
-                  : isDark
-                    ? "bg-gray-700"
-                    : "bg-gray-200"
+                ? "bg-gradient-to-r from-blue-500 to-purple-600"
+                : isDark
+                  ? "bg-gray-700"
+                  : "bg-gray-200"
                 }`}
             />
           )}
@@ -195,21 +196,31 @@ const SimplifiedCheckout = () => {
   const [isShippingValid, setIsShippingValid] = useState(false);
   const [cartItems, setCartItems] = useState([]);
 
-  const { isSavingShippingAddress2, checkAuthVerify, verifiedUser } = userAuthStore();
+  // to open/clsoe the orderSuccess modal
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  const { isSavingShippingAddress2, verifiedUser, isCheckingOut, checkout } = userAuthStore();
 
   useEffect(() => {
     if (currentStep === 3) {
-      checkAuthVerify();
+      //checkAuthVerify();
+      // checkout();
     }
   }, [currentStep]);
 
+  useEffect(() => {
+    checkout();
+  }, [checkout])
+
   //setting cartItems
-  useEffect(()=> {
-    setCartItems(verifiedUser?.cart);
-  }, [])
+  useEffect(() => {
+  if (verifiedUser?.cart && Array.isArray(verifiedUser.cart)) {
+    setCartItems(verifiedUser.cart);
+  }
+}, [verifiedUser]);
 
 
-  console.log("CartItems", verifiedUser);
+  console.log("CartItems from parent", verifiedUser);
 
   //console.log("Verified User from Parent:", verifiedUser);
 
@@ -244,12 +255,14 @@ const SimplifiedCheckout = () => {
   const [promoCode, setPromoCode] = useState("");
 
   // Pricing
-  const subtotal = 865.78;
+  const subtotal = cartItems.reduce((total, item) => total + item?.product?.price * item?.quantity, 0) || 0;
+  
   const shippingCosts = { standard: 7.99, express: 15.99, overnight: 29.99 };
   const shipping = shippingCosts[shippingMethod];
   const tax = 69.26;
   const discount = promoCode === "SAVE10" ? subtotal * 0.1 : 0;
-  const total = subtotal + shipping + tax - discount;
+  const total = Number(subtotal + shipping + tax - discount);
+  
 
   // Handlers
   const handleInputChange = (e) => {
@@ -281,19 +294,19 @@ const SimplifiedCheckout = () => {
   };
 
   const handleSubmit = async () => {
-    const orderData = {
-      ...formData,
-      shippingMethod,
-      paymentMethod,
-      promoCode,
-      total,
-    };
+    // const orderData = {
+    //   ...formData,
+    //   shippingMethod,
+    //   paymentMethod,
+    //   promoCode,
+    //   total,
+    // };
 
-    console.log("Order data:", orderData);
+    //console.log("Order data:", orderData);
 
     try {
       setOrderPlaced(true);
-      alert("Order placed successfully!");
+      setShowSuccessModal(true); // ✅ Show the SuccessModal
     } catch (error) {
       console.error("Order submission failed:", error);
     }
@@ -306,15 +319,15 @@ const SimplifiedCheckout = () => {
   return (
     <div
       className={`min-h-screen transition-all duration-500 ${isDark
-          ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white"
-          : "bg-gradient-to-br from-gray-50 via-white to-gray-50 text-gray-900"
+        ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white"
+        : "bg-gradient-to-br from-gray-50 via-white to-gray-50 text-gray-900"
         }`}
     >
       {/* Header */}
       <header
         className={`border-b backdrop-blur-sm transition-all duration-300 ${isDark
-            ? "border-gray-700/50 bg-gray-900/80"
-            : "border-gray-200/50 bg-white/80"
+          ? "border-gray-700/50 bg-gray-900/80"
+          : "border-gray-200/50 bg-white/80"
           }`}
       >
         <div className="container mx-auto px-6 py-6">
@@ -343,8 +356,8 @@ const SimplifiedCheckout = () => {
               <button
                 onClick={toggleTheme}
                 className={`p-3 rounded-xl transition-all duration-200 ${isDark
-                    ? "bg-gray-800 hover:bg-gray-700 text-yellow-400"
-                    : "bg-gray-100 hover:bg-gray-200 text-gray-600"
+                  ? "bg-gray-800 hover:bg-gray-700 text-yellow-400"
+                  : "bg-gray-100 hover:bg-gray-200 text-gray-600"
                   } transform hover:scale-105 active:scale-95`}
               >
                 {isDark ? <FiSun className="text-lg" /> : <FiMoon className="text-lg" />}
@@ -370,8 +383,8 @@ const SimplifiedCheckout = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className={`rounded-2xl border backdrop-blur-sm transition-all duration-300 ${isDark
-                  ? "border-gray-700/50 bg-gray-800/80 shadow-xl shadow-gray-900/20"
-                  : "border-gray-200/50 bg-white/80 shadow-xl shadow-gray-100/20"
+                ? "border-gray-700/50 bg-gray-800/80 shadow-xl shadow-gray-900/20"
+                : "border-gray-200/50 bg-white/80 shadow-xl shadow-gray-100/20"
                 }`}
             >
               <AnimatePresence mode="wait">
@@ -426,6 +439,7 @@ const SimplifiedCheckout = () => {
 
                     <PaymentForm
                       ref={paymentFormRef}
+                      payMode={verifiedUser?.paymentMethod}
                       formData={formData}
                       setFormData={setFormData}
                       onShippingValid={() => setIsShippingValid(true)}
@@ -463,8 +477,8 @@ const SimplifiedCheckout = () => {
                         </h3>
                         <div
                           className={`p-6 rounded-xl border transition-all duration-200 ${isDark
-                              ? "bg-gray-700/50 border-gray-600"
-                              : "bg-gray-50 border-gray-200"
+                            ? "bg-gray-700/50 border-gray-600"
+                            : "bg-gray-50 border-gray-200"
                             }`}
                         >
                           <div className="space-y-2">
@@ -494,8 +508,8 @@ const SimplifiedCheckout = () => {
                         </h3>
                         <div
                           className={`p-6 rounded-xl border transition-all duration-200 ${isDark
-                              ? "bg-gray-700/50 border-gray-600"
-                              : "bg-gray-50 border-gray-200"
+                            ? "bg-gray-700/50 border-gray-600"
+                            : "bg-gray-50 border-gray-200"
                             }`}
                         >
                           <p className="capitalize font-medium">{verifiedUser?.paymentMethod}</p>
@@ -509,8 +523,8 @@ const SimplifiedCheckout = () => {
                       onClick={handleSubmit}
                       disabled={orderPlaced}
                       className={`w-full py-4 hover:cursor-pointer rounded-xl font-bold text-lg transition-all duration-200 mt-8 ${orderPlaced
-                          ? "bg-gray-400 cursor-not-allowed"
-                          : "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg shadow-blue-500/30"
+                        ? "bg-gray-400 cursor-not-allowed"
+                        : "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg shadow-blue-500/30"
                         }`}
                     >
                       {orderPlaced ? (
@@ -534,8 +548,8 @@ const SimplifiedCheckout = () => {
                     whileTap={{ scale: 0.98 }}
                     onClick={prevStep}
                     className={`flex items-center gap-2 px-6 py-3 rounded-xl border font-medium transition-all duration-200 ${isDark
-                        ? "border-gray-600 hover:bg-gray-700 text-gray-300"
-                        : "border-gray-300 hover:bg-gray-50 text-gray-600"
+                      ? "border-gray-600 hover:bg-gray-700 text-gray-300"
+                      : "border-gray-300 hover:bg-gray-50 text-gray-600"
                       }`}
                   >
                     <FiArrowLeft />
@@ -550,8 +564,8 @@ const SimplifiedCheckout = () => {
                     onClick={handleContinue}
                     disabled={currentStep !== 2 ? !isShippingValid : false}
                     className={`ml-auto flex items-center gap-2 px-8 py-3 rounded-xl font-medium transition-all duration-200 ${currentStep !== 2 && !isShippingValid
-                        ? "opacity-50 cursor-not-allowed bg-gray-300 text-gray-500"
-                        : "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg shadow-blue-500/30"
+                      ? "opacity-50 cursor-not-allowed bg-gray-300 text-gray-500"
+                      : "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg shadow-blue-500/30"
                       }`}
                   >
                     {isSavingShippingAddress2 ? (
@@ -590,6 +604,14 @@ const SimplifiedCheckout = () => {
           </div>
         </div>
       </div>
+
+      {/* SuccessModal will show here */}
+      <SuccessModal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        orderData={{total, verifiedUser }}
+        isDark={isDark}
+      />
     </div>
   );
 };

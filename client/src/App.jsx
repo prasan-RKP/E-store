@@ -47,6 +47,7 @@ import AboutPage from "./pages/AboutPage";
 import NewCheckOut from "./pages/NewCheckout";
 import SimplifiedCheckout from "./landing/SimplifiedCheckout";
 import OrderPlace from "./landing/segement/OrderPlace";
+import SuccessModal from "./landing/segement/SuccessModal";
 //import CheckoutWizard from "./pages/checkout/CheckoutWizard";
 
 const App = () => {
@@ -75,6 +76,21 @@ const App = () => {
         <Route path="/land" element={<ModernEcommerceLanding />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/place" element={<OrderPlace/>} />
+        <Route
+  path="/succ"
+  element={
+    <SuccessModal
+      isOpen={true}
+      onClose={() => {}}
+      orderData={{ total: 1000, paymentMethod: "card" }}
+      cartItems={[
+        { id: 1, quantity: 1, product: { name: "Product A", price: 500 } },
+        { id: 2, quantity: 2, product: { name: "Product B", price: 250 } }
+      ]}
+      isDark={false}
+    />
+  }
+/>
 
         <Route path="/addToWishlist" element={<AddToWishList />} />
 

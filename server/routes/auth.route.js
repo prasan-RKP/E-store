@@ -1076,7 +1076,6 @@ router.put("/saveShippingAddress-one", protectedRoute, async (req, res) => {
   }
 });
 
-
 router.put("/saveShippingAddress-two", protectedRoute, async (req, res) => {
   const userId = req.user?.id;
   const { paymentMethod } = req.body;
@@ -1088,9 +1087,17 @@ router.put("/saveShippingAddress-two", protectedRoute, async (req, res) => {
     }
 
     // Validate payment method
-    const validMethods = ["C.O.D", "googlePay", "PhonePe", "Paytm", "AmazonPay"];
+    const validMethods = [
+      "C.O.D",
+      "googlePay",
+      "PhonePe",
+      "Paytm",
+      "AmazonPay",
+    ];
     if (!paymentMethod || !validMethods.includes(paymentMethod)) {
-      return res.status(400).json({ message: "Invalid or missing payment method!" });
+      return res
+        .status(400)
+        .json({ message: "Invalid or missing payment method!" });
     }
 
     // Update payment method
@@ -1182,32 +1189,53 @@ router.put("/saveShippingAddress-two", protectedRoute, async (req, res) => {
   }
 });
 
-/*
-const [formData, setFormData] = useState({
-    email: "",
-    phone: "",
-    fullName: "",
-    address: "",
-    city: "",
-    state: "",
-    zipCode: "",
-    paymentMethod: "",
-  });
-*/
+//Checkout route
 
-router.get("/call", (req, res) => {
-  res.send("Succesfully checked");
+router.get("/checkout", protectedRoute, async (req, res) => {
+  const userId = req.user?.id;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) return res.status(400).json({ message: "User not Registered" });
+
+    // Create a new Array to hold populated Cart Items
+
+    const populatedCart = await Promise.all(
+      user.cart.map(async (item) => {
+        let product = null;
+
+        if (item.itemModel === "Women") {
+          product = await Women.findById(item.productId);
+        } else if (item.itemModel === "Men") {
+          product = await Men.findById(item.productId);
+        } else if (item.itemModel === "Accessory") {
+          product = await Accessory.findById(item.productId);
+        } else if (item.itemModel === "Footwear") {
+          product = await Footwear.findById(item.productId);
+        }
+
+        return {
+          ...item.toObject(),
+          product,
+        };
+      })
+    );
+
+    //console.log("Showing all addTOCart value", user);
+    //console.log("Fetching the bacjend showAddToCart");
+    res.status(200).json({ ...user.toObject(), cart: populatedCart });
+  } catch (error) {
+    console.log("Error in ShowAddToCart", error);
+    return res.status(404).json({ message: "Internal Server Error" });
+  }
 });
 
-/*
-if(cartItem.quantity > 1) {
-      cartItem.quantity -= 1;
-    }
 
-    else if(cartItem.quantity <= 0) {
-      return res.status(400).json({ message: "Product quantity cannot be less than 1" });
-    }
+// show addToCartItems
 
 
-*/
+router.get("/call", (req, res) => {
+  res.send("Succesfully checked, testing route !");
+});
+
 export default router;
