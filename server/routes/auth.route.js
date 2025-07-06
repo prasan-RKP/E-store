@@ -8,6 +8,7 @@ import Men from "../src/model/manModel.js";
 import Accessory from "../src/model/accessoryModel.js";
 import Footwear from "../src/model/FootwearModel.js";
 import Review from "../src/model/review.js";
+import Order from "../src/model/OrderPlace.js";
 
 const router = express.Router();
 
@@ -40,7 +41,7 @@ router.post("/signup", async (req, res) => {
 
     const user = await User.findOne({ email });
     if (user)
-      return res.status(409).json({ message: "User already registered" });
+      return res.status(400).json({ message: "User already registered" });
 
     const hashPassword = await bcryptjs.hash(password, 10);
     //console.log("Password hashed");
@@ -1230,8 +1231,78 @@ router.get("/checkout", protectedRoute, async (req, res) => {
   }
 });
 
+// palce order
+router.post("/placeOrder", protectedRoute, async (req, res) => {
+  const userId = req.user?.id;
 
-// show addToCartItems
+  const {
+    shippingAddress,
+    customerName,
+    customerEmail,
+    customerPhoneNo,
+    orderNumber,
+    totalAmount,
+    paymentMethod,
+    deliveryTime,
+  } = req.body;
+
+  try {
+    // Check if user exists
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(400).json({ message: "User not registered" });
+    }
+
+    // Basic validation
+    if (
+      !shippingAddress ||
+      !customerName ||
+      !customerEmail ||
+      !customerPhoneNo ||
+      !orderNumber ||
+      !totalAmount ||
+      !paymentMethod ||
+      !deliveryTime
+    ) {
+      return res.status(400).json({ message: "Some credentials are missing" });
+    }
+
+    // Create a new order
+    const newOrder = new Order({
+      shippingAddress,
+      customerName,
+      customerEmail,
+      customerPhoneNo,
+      orderNumber,
+      totalAmount: Number(totalAmount),
+      paymentMethod,
+      deliveryTime,
+    });
+
+    // Save the order
+    const savedOrder = await newOrder.save();
+
+    // Link this order to user
+    user.orderPlaced.push(savedOrder._id);
+    await user.save();
+
+    // Return minimal & clean response
+    return res.status(201).json({
+     _id: savedOrder._id,
+      shippingAddress: savedOrder.shippingAddress,
+      customerName: savedOrder.customerName,
+      customerEmail: savedOrder.customerEmail,
+      customerPhoneNo: savedOrder.customerPhoneNo,
+      orderNumber: savedOrder.orderNumber,
+      totalAmount: savedOrder.totalAmount,
+      paymentMethod: savedOrder.paymentMethod,
+      deliveryTime: savedOrder.deliveryTime
+    });
+  } catch (error) {
+    console.error("/placeOrder Error:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
 
 
 router.get("/call", (req, res) => {
@@ -1239,3 +1310,16 @@ router.get("/call", (req, res) => {
 });
 
 export default router;
+
+/*
+_id: newOrder._id,
+      shippingAddress: shippingAddress,
+      customerName: customerName,
+      customerEmail: customerEmail,
+      customerPhoneNo: customerPhoneNo,
+      orderNumber: orderNumber,
+      totalAmount: Number(totalAmount),
+      paymentMethod: paymentMethod,
+      deliveryTime: deliveryTime
+
+*/

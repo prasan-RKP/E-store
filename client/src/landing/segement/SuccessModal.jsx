@@ -3,9 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { FiCheck, FiX, FiPackage, FiMapPin, FiMail, FiPhone, FiCopy, FiDownload, FiEye, FiShare2, FiMessageCircle, FiZap, FiShoppingCart, FiClock, FiTruck } from 'react-icons/fi';
 
-const SuccessModal = ({ isOpen, onClose, orderData, isDark }) => {
+const SuccessModal = ({ isOpen, onClose, orderData, isDark, orderNumber, totalAmount }) => {
     const [showConfetti, setShowConfetti] = useState(false);
-    const [orderNumber] = useState(() => Math.random().toString(36).substr(2, 9).toUpperCase());
     const [estimatedDelivery] = useState(() => {
         const date = new Date();
         date.setDate(date.getDate() + 3);
@@ -17,15 +16,7 @@ const SuccessModal = ({ isOpen, onClose, orderData, isDark }) => {
         });
     });
 
-    const mockUser = {
-  username: "John Doe",
-  address: "123 Main Street",
-  city: "Mumbai",
-  state: "MH",
-  zipCode: "400001",
-  email: "johndoe@example.com",
-  contact: "+91 9876543210"
-};
+    console.log("oder no", orderNumber);
 
     useEffect(() => {
         if (isOpen) {
@@ -108,16 +99,16 @@ const SuccessModal = ({ isOpen, onClose, orderData, isDark }) => {
                     exit={{ opacity: 0, scale: 0.8, y: 20 }}
                     transition={{ type: "spring", damping: 20, stiffness: 300 }}
                     className={`relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl border shadow-2xl ${isDark
-                            ? "bg-gray-800/95 border-gray-700/50 backdrop-blur-xl"
-                            : "bg-white/95 border-gray-200/50 backdrop-blur-xl"
+                        ? "bg-gray-800/95 border-gray-700/50 backdrop-blur-xl"
+                        : "bg-white/95 border-gray-200/50 backdrop-blur-xl"
                         }`}
                 >
                     {/* Close Button */}
                     <button
                         onClick={onClose}
                         className={`hover:bg-red-500 bg-gray-300  absolute top-6 right-6 z-10 p-2 rounded-full transition-all duration-200 ${isDark
-                                ? "bg-gray-700 hover:bg-gray-600 text-gray-300"
-                                : "bg-gray-100 hover:bg-gray-200 text-gray-600"
+                            ? "bg-gray-700 hover:bg-gray-600 text-gray-300"
+                            : "bg-gray-100 hover:bg-gray-200 text-gray-600"
                             }`}
                     >
                         <FiX className="text-xl" />
@@ -164,8 +155,8 @@ const SuccessModal = ({ isOpen, onClose, orderData, isDark }) => {
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: 0.5 }}
                                 className={`p-6 rounded-2xl border ${isDark
-                                        ? "bg-gray-700/50 border-gray-600"
-                                        : "bg-gray-50/80 border-gray-200"
+                                    ? "bg-gray-700/50 border-gray-600"
+                                    : "bg-gray-50/80 border-gray-200"
                                     }`}
                             >
                                 <div className="flex items-center gap-3 mb-4">
@@ -189,13 +180,13 @@ const SuccessModal = ({ isOpen, onClose, orderData, isDark }) => {
 
                                     <div className="flex justify-between">
                                         <span className="text-gray-600 dark:text-gray-400">Total Amount</span>
-                                        <span className="font-semibold text-lg text-green-600">₹{orderData.total.toFixed(2)}</span>
+                                        <span className="font-semibold text-lg text-green-600">₹{totalAmount.toFixed(2)}</span>
                                     </div>
 
                                     <div className="flex justify-between">
                                         <span className="text-gray-600 dark:text-gray-400">Payment Method</span>
                                         <span className="font-semibold capitalize">{orderData?.verifiedUser?.paymentMethod
-}</span>
+                                        }</span>
                                     </div>
 
                                     <div className="flex justify-between">
@@ -211,8 +202,8 @@ const SuccessModal = ({ isOpen, onClose, orderData, isDark }) => {
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: 0.6 }}
                                 className={`p-6 rounded-2xl border ${isDark
-                                        ? "bg-gray-700/50 border-gray-600"
-                                        : "bg-gray-50/80 border-gray-200"
+                                    ? "bg-gray-700/50 border-gray-600"
+                                    : "bg-gray-50/80 border-gray-200"
                                     }`}
                             >
                                 <div className="flex items-center gap-3 mb-4">
@@ -224,7 +215,7 @@ const SuccessModal = ({ isOpen, onClose, orderData, isDark }) => {
                                     <p className="font-semibold text-blue-400">{orderData?.verifiedUser?.username}</p>
                                     <p className="text-gray-600 dark:text-gray-400">{orderData?.verifiedUser?.address}</p>
                                     <p className="text-gray-600 dark:text-gray-400">
-                                        {orderData?.verifiedUser?.city}, {orderData?.verifiedUser?.state} {orderData?.verifiedUser?.zipCode}
+                                        {orderData?.verifiedUser?.city}, {orderData?.verifiedUser?.state}, {orderData?.verifiedUser?.zipCode}
                                     </p>
                                     <div className="pt-2 border-t border-gray-200 dark:border-gray-600">
                                         <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-1">
@@ -241,7 +232,7 @@ const SuccessModal = ({ isOpen, onClose, orderData, isDark }) => {
                         </div>
                     </div>
 
-                    
+
 
                     {/* Quick Actions */}
                     <div className="px-8 pb-6">
@@ -291,8 +282,8 @@ const SuccessModal = ({ isOpen, onClose, orderData, isDark }) => {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 1 }}
                             className={`p-6 rounded-2xl border ${isDark
-                                    ? "bg-gradient-to-r from-blue-500/10 to-purple-500/10 border-blue-500/20"
-                                    : "bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200/50"
+                                ? "bg-gradient-to-r from-blue-500/10 to-purple-500/10 border-blue-500/20"
+                                : "bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200/50"
                                 }`}
                         >
                             <div className="flex items-center gap-3 mb-4">
@@ -348,8 +339,8 @@ const SuccessModal = ({ isOpen, onClose, orderData, isDark }) => {
                                 whileTap={{ scale: 0.98 }}
                                 onClick={onClose}
                                 className={`px-8 py-4 rounded-xl font-semibold transition-all duration-200 ${isDark
-                                        ? "bg-gray-700 hover:bg-gray-600 text-gray-300"
-                                        : "bg-gray-300 hover:bg-gray-200 text-gray-600"
+                                    ? "bg-gray-700 hover:bg-gray-600 text-gray-300"
+                                    : "bg-gray-300 hover:bg-gray-200 text-gray-600"
                                     }`}
                             >
                                 Continue Shopping

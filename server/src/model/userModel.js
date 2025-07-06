@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { mongo } from "mongoose";
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -38,30 +38,30 @@ const userSchema = new mongoose.Schema({
     type: String,
   },
 
-  // Shipping address details added from here 
+  // Shipping address details added from here
   city: {
     type: String,
     maxlength: 50,
-    default: "Not specified"
+    default: "Not specified",
   },
 
   country: {
     type: String,
     required: true,
-    default: 'India'
+    default: "India",
   },
 
   state: {
     type: String,
     maxlength: 50,
-    default: "Not specified"
+    default: "Not specified",
   },
 
   zipCode: {
-  type: String,
-  minlength: 5,
-  maxlength: 6,
-  default: "000000"
+    type: String,
+    minlength: 5,
+    maxlength: 6,
+    default: "000000",
   },
 
   // Shipping adress deteils Ends from here
@@ -162,6 +162,14 @@ const userSchema = new mongoose.Schema({
     type: Date,
   },
 
+  // ordersSchema reference model added here
+
+  orderPlaced: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Order",
+    },
+  ],
 
   createdAt: {
     type: Date,

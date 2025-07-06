@@ -198,8 +198,9 @@ const SimplifiedCheckout = () => {
 
   // to open/clsoe the orderSuccess modal
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [orderDetailsForModal, setOrderDetailsForModal] = useState(null);
 
-  const { isSavingShippingAddress2, verifiedUser, isCheckingOut, checkout } = userAuthStore();
+  const { isSavingShippingAddress2, verifiedUser, isCheckingOut, checkout, placeOrder, isPlacingOrder, removeAllCartItems } = userAuthStore();
 
   useEffect(() => {
     if (currentStep === 3) {
@@ -208,21 +209,27 @@ const SimplifiedCheckout = () => {
     }
   }, [currentStep]);
 
-  useEffect(() => {
-    checkout();
+  useEffect(async () => {
+    await checkout();
   }, [checkout])
 
   //setting cartItems
   useEffect(() => {
-  if (verifiedUser?.cart && Array.isArray(verifiedUser.cart)) {
-    setCartItems(verifiedUser.cart);
-  }
-}, [verifiedUser]);
+    if (verifiedUser?.cart && Array.isArray(verifiedUser.cart)) {
+      setCartItems(verifiedUser.cart);
+    }
+  }, [verifiedUser]);
+
+
 
 
   console.log("CartItems from parent", verifiedUser);
 
   //console.log("Verified User from Parent:", verifiedUser);
+
+  // SuccessModel Close Fucntion is here
+
+
 
   // new functionality start here 
   const paymentFormRef = useRef();
@@ -256,13 +263,15 @@ const SimplifiedCheckout = () => {
 
   // Pricing
   const subtotal = cartItems.reduce((total, item) => total + item?.product?.price * item?.quantity, 0) || 0;
-  
+
   const shippingCosts = { standard: 7.99, express: 15.99, overnight: 29.99 };
   const shipping = shippingCosts[shippingMethod];
-  const tax = 69.26;
+  const tax = subtotal * 0.08;
   const discount = promoCode === "SAVE10" ? subtotal * 0.1 : 0;
   const total = Number(subtotal + shipping + tax - discount);
-  
+
+  const orderNumber = `${Date.now().toString().slice(-5)}${verifiedUser?._id.toString().slice(-3)}`;
+
 
   // Handlers
   const handleInputChange = (e) => {
@@ -293,24 +302,63 @@ const SimplifiedCheckout = () => {
     if (currentStep > 1) setCurrentStep(currentStep - 1);
   };
 
+
+  // Success Modal Close Handler
+  const successModalCloseHandler = async () => {
+    setShowSuccessModal(false);
+    await removeAllCartItems(); // Call the backend/store
+
+    setCartItems([]); // ✅ Immediately clear local cart state
+    setOrderPlaced(false); // Reset UI state
+
+    // Now use local cartItems which is up-to-date
+    if (cartItems.length === 0) {
+      window.location.href = "/"; // ✅ Proper redirect now
+    } else {
+      setCurrentStep(1);
+    }
+  };
+
+
   const handleSubmit = async () => {
-    // const orderData = {
-    //   ...formData,
-    //   shippingMethod,
-    //   paymentMethod,
-    //   promoCode,
-    //   total,
-    // };
+    // STEP 1️⃣: Prepare data for BACKEND API
+    const backendOrderData = {
+      shippingAddress: verifiedUser?.address,
+      customerName: verifiedUser?.username,
+      customerEmail: verifiedUser?.email,
+      customerPhoneNo: verifiedUser?.contact,
+      orderNumber,
+      totalAmount: total,
+      paymentMethod: verifiedUser?.paymentMethod,
+      deliveryTime: "3-4 days",
+    };
 
-    //console.log("Order data:", orderData);
+    // STEP 2️⃣: Prepare data for SuccessModal (Frontend only)
+    const frontendOrderData = {
+      verifiedUser: {
+        username: verifiedUser?.username,
+        email: verifiedUser?.email,
+        contact: verifiedUser?.contact,
+        address: verifiedUser?.address,
+        city: verifiedUser?.city,
+        state: verifiedUser?.state,
+        zipCode: verifiedUser?.zipCode,
+        paymentMethod: verifiedUser?.paymentMethod,
 
+      },
+    };
+
+    // STEP 3️⃣: Place Order & show SuccessModal
     try {
+      await placeOrder(backendOrderData); // 🔄 Backend API call
       setOrderPlaced(true);
-      setShowSuccessModal(true); // ✅ Show the SuccessModal
+      setOrderDetailsForModal(frontendOrderData); // 🎉 For SuccessModal only
+      setShowSuccessModal(true); // ✅ Show modal
     } catch (error) {
       console.error("Order submission failed:", error);
     }
   };
+
 
   const toggleTheme = () => {
     setIsDark(!isDark);
@@ -521,13 +569,18 @@ const SimplifiedCheckout = () => {
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={handleSubmit}
-                      disabled={orderPlaced}
-                      className={`w-full py-4 hover:cursor-pointer rounded-xl font-bold text-lg transition-all duration-200 mt-8 ${orderPlaced
+                      disabled={orderPlaced || isPlacingOrder}
+                      className={`w-full py-4 hover:cursor-pointer rounded-xl font-bold text-lg transition-all duration-200 mt-8 ${orderPlaced || isPlacingOrder
                         ? "bg-gray-400 cursor-not-allowed"
                         : "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg shadow-blue-500/30"
                         }`}
                     >
-                      {orderPlaced ? (
+                      {isPlacingOrder ? (
+                        <span className="flex items-center justify-center gap-2">
+                          <span className="loader border-2 border-t-transparent border-white rounded-full w-5 h-5 animate-spin" />
+                          Placing Order...
+                        </span>
+                      ) : orderPlaced ? (
                         <span className="flex items-center justify-center gap-2">
                           <FiCheck />
                           Order Placed!
@@ -536,6 +589,7 @@ const SimplifiedCheckout = () => {
                         `Place Order - ₹${total.toFixed(2)}`
                       )}
                     </motion.button>
+
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -606,11 +660,21 @@ const SimplifiedCheckout = () => {
       </div>
 
       {/* SuccessModal will show here */}
+      {/* <SuccessModal
+        isOpen={showSuccessModal}
+        onClose={successModalCloseHandler}
+        orderData={{ total, verifiedUser }}
+        isDark={isDark}
+        orderNumber={orderNumber}
+      /> */}
+
       <SuccessModal
         isOpen={showSuccessModal}
-        onClose={() => setShowSuccessModal(false)}
-        orderData={{total, verifiedUser }}
+        onClose={successModalCloseHandler}
+        orderData={orderDetailsForModal} // ✅ this now has full UI info
         isDark={isDark}
+        orderNumber={orderNumber}
+        totalAmount={total}
       />
     </div>
   );

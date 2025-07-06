@@ -340,6 +340,7 @@ export const userAuthStore = create((set, get) => ({
 
   removeAllCartItems: async () => {
     // console.log("calling the remove All");
+    
     set({ isRemovingAllCartItem: true });
     try {
       const res = await axiosInstance.post("/removeAllCartItem");
@@ -449,6 +450,25 @@ export const userAuthStore = create((set, get) => ({
       }
     } finally {
       set({ isCheckingOut: false });
+    }
+  },
+
+  // feature - 3(#checkout) - Placing the order
+  isPlacingOrder: false,
+  placeOrder: async (data) => {
+    set({ isPlacingOrder: true });
+    try {
+      const res = await axiosInstance.post("/placeOrder", data);
+      set({ verifiedUser: res.data });
+      toast.success("Order placed successfully!");
+    } catch (error) {
+      if (error.response) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("Something went wrong in placing order");
+      }
+    } finally {
+      set({ isPlacingOrder: false });
     }
   },
 }));
