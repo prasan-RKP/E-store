@@ -25,6 +25,7 @@ import PaymentForm from "./segement/PaymentForm.jsx";
 import { userAuthStore } from "../store/authStore.js";
 import { TbLoader3 } from "react-icons/tb";
 import SuccessModal from "./segement/SuccessModal.jsx";
+import { useNavigate } from 'react-router-dom';
 
 const OrderSummary = ({
   subtotal,
@@ -195,12 +196,15 @@ const SimplifiedCheckout = () => {
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [isShippingValid, setIsShippingValid] = useState(false);
   const [cartItems, setCartItems] = useState([]);
+  const [subtotal, setSubTotal] = useState(0);
 
   // to open/clsoe the orderSuccess modal
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [orderDetailsForModal, setOrderDetailsForModal] = useState(null);
 
   const { isSavingShippingAddress2, verifiedUser, isCheckingOut, checkout, placeOrder, isPlacingOrder, removeAllCartItems } = userAuthStore();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (currentStep === 3) {
@@ -209,9 +213,12 @@ const SimplifiedCheckout = () => {
     }
   }, [currentStep]);
 
-  useEffect(async () => {
-    await checkout();
-  }, [checkout])
+  useEffect(() => {
+    const runCheckout = async () => {
+      await checkout();
+    };
+    runCheckout();
+  }, [checkout]);
 
   //setting cartItems
   useEffect(() => {
@@ -262,11 +269,11 @@ const SimplifiedCheckout = () => {
   const [promoCode, setPromoCode] = useState("");
 
   // Pricing
-  const subtotal = cartItems.reduce((total, item) => total + item?.product?.price * item?.quantity, 0) || 0;
-
+  //const subtotal = cartItems.reduce((total, item) => total + item?.product?.price * item?.quantity, 0) || 0;
+ 
   const shippingCosts = { standard: 7.99, express: 15.99, overnight: 29.99 };
   const shipping = shippingCosts[shippingMethod];
-  const tax = subtotal * 0.08;
+  const tax = subtotal * 0.015;
   const discount = promoCode === "SAVE10" ? subtotal * 0.1 : 0;
   const total = Number(subtotal + shipping + tax - discount);
 
@@ -302,20 +309,58 @@ const SimplifiedCheckout = () => {
     if (currentStep > 1) setCurrentStep(currentStep - 1);
   };
 
+  // if someone having no cart item then he/she should navigate to homePage
+
+  // useEffect(() => {
+  //   if (subtotal === 0 || cartItems.length === 0) {
+  //     navigate("/", { replace: true });
+  //   }
+
+  //   else{
+  //   navigate("/checkout")
+  //   }
+  // }, [subtotal, cartItems])
+
+  useEffect(() => {
+  // Don't run until verifiedUser is available and has a cart
+  if (!verifiedUser || !Array.isArray(verifiedUser.cart)) return;
+
+  const freshSubTotal = verifiedUser?.cart?.reduce(
+    (total, item) => total + item?.product?.price * item?.quantity,
+    0
+  );
+
+  setSubTotal(freshSubTotal);
+
+  if (verifiedUser.cart.length === 0 || subtotal === 0) {
+    navigate("/", { replace: true });
+  }
+}, [verifiedUser]);
+
+
+
+ 
+
 
   // Success Modal Close Handler
   const successModalCloseHandler = async () => {
-    setShowSuccessModal(false);
-    await removeAllCartItems(); // Call the backend/store
+    try {
+      // 1️⃣ Close the modal UI
+      setShowSuccessModal(false);
+      setOrderPlaced(false);
 
-    setCartItems([]); // ✅ Immediately clear local cart state
-    setOrderPlaced(false); // Reset UI state
+      // 2️⃣ Clear the cart in the backend / global store
+      await removeAllCartItems();        // waits for server → store to settle
 
-    // Now use local cartItems which is up-to-date
-    if (cartItems.length === 0) {
-      window.location.href = "/"; // ✅ Proper redirect now
-    } else {
-      setCurrentStep(1);
+      // 3️⃣ Clear local UI copy (not strictly required, but keeps things tidy)
+      setCartItems([]);
+
+      // 4️⃣ Soft‑navigate to the homepage (SPA‑style, no full reload)
+      navigate("/", { replace: true });
+    } catch (err) {
+      console.error("Failed to clear cart or navigate:", err);
+      // Even if something goes wrong, fall back to a hard redirect
+      window.location.href = "/";
     }
   };
 

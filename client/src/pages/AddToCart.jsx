@@ -59,7 +59,7 @@ const AddToCart = () => {
     0
   );
   const shipping = subtotal > 1000 ? 0 : 7.99;
-  const tax = subtotal * 0.08;
+  const tax = subtotal * 0.015;
   const total = subtotal + shipping + tax;
 
 
@@ -967,7 +967,7 @@ const AddToCart = () => {
                       </span>
                     </div>
                     <div className="flex justify-between text-gray-700 text-sm sm:text-base">
-                      <span>Estimated Tax (8%):</span>
+                      <span>Estimated Tax (1.5%):</span>
                       <span>₹{tax.toFixed(2)}</span>
                     </div>
                   </div>
