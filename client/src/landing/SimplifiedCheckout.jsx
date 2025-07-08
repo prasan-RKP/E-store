@@ -25,7 +25,8 @@ import PaymentForm from "./segement/PaymentForm.jsx";
 import { userAuthStore } from "../store/authStore.js";
 import { TbLoader3 } from "react-icons/tb";
 import SuccessModal from "./segement/SuccessModal.jsx";
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { toast } from "sonner";
 
 const OrderSummary = ({
   subtotal,
@@ -196,7 +197,7 @@ const SimplifiedCheckout = () => {
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [isShippingValid, setIsShippingValid] = useState(false);
   const [cartItems, setCartItems] = useState([]);
-  const [subtotal, setSubTotal] = useState(0);
+  //const [subtotal, setSubTotal] = useState(0);
 
   // to open/clsoe the orderSuccess modal
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -205,6 +206,7 @@ const SimplifiedCheckout = () => {
   const { isSavingShippingAddress2, verifiedUser, isCheckingOut, checkout, placeOrder, isPlacingOrder, removeAllCartItems } = userAuthStore();
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     if (currentStep === 3) {
@@ -269,8 +271,8 @@ const SimplifiedCheckout = () => {
   const [promoCode, setPromoCode] = useState("");
 
   // Pricing
-  //const subtotal = cartItems.reduce((total, item) => total + item?.product?.price * item?.quantity, 0) || 0;
- 
+  const subtotal = cartItems.reduce((total, item) => total + item?.product?.price * item?.quantity, 0) || 0;
+
   const shippingCosts = { standard: 7.99, express: 15.99, overnight: 29.99 };
   const shipping = shippingCosts[shippingMethod];
   const tax = subtotal * 0.015;
@@ -309,37 +311,59 @@ const SimplifiedCheckout = () => {
     if (currentStep > 1) setCurrentStep(currentStep - 1);
   };
 
-  // if someone having no cart item then he/she should navigate to homePage
+  //if someone having no cart item then he/she should navigate to homePage
+  // conditional rendering test - 1
 
   // useEffect(() => {
   //   if (subtotal === 0 || cartItems.length === 0) {
   //     navigate("/", { replace: true });
   //   }
 
-  //   else{
-  //   navigate("/checkout")
+  //   else {
+  //     navigate("/checkout")
   //   }
   // }, [subtotal, cartItems])
 
+  // conditional rendering test - 2
+
+  // Trying concept for conditional rendering
+  // useEffect(() => {
+  //   const timeout = setTimeout(() => {
+  //     if (Array.isArray(cartItems)) {
+  //       if (cartItems.length === 0 || subtotal === 0) {
+  //         navigate("/", { replace: true });
+  //       } else {
+  //         navigate("/checkout", { replace: true });
+  //       }
+  //     }
+  //   }, 1000); // small delay to ensure cart is set
+
+  //   return () => clearTimeout(timeout);
+  // }, [cartItems, subtotal]);
+
+
+
+  // conditional rendering test - 3
   useEffect(() => {
-  // Don't run until verifiedUser is available and has a cart
-  if (!verifiedUser || !Array.isArray(verifiedUser.cart)) return;
+    const timeout = setTimeout(() => {
+      if (Array.isArray(cartItems)) {
+        if (cartItems.length === 0 || subtotal === 0) {
+          if (location.pathname !== "/") {
+            navigate("/", { replace: true });
+            toast.info("Your cart is empty ☹️");
+          }
+        } else {
+          if (location.pathname !== "/checkout") {
+            navigate("/checkout", { replace: true });
+          }
+        }
+      }
+    }, 1000);
 
-  const freshSubTotal = verifiedUser?.cart?.reduce(
-    (total, item) => total + item?.product?.price * item?.quantity,
-    0
-  );
-
-  setSubTotal(freshSubTotal);
-
-  if (verifiedUser.cart.length === 0 || subtotal === 0) {
-    navigate("/", { replace: true });
-  }
-}, [verifiedUser]);
+    return () => clearTimeout(timeout);
+  }, [cartItems, subtotal, navigate, location.pathname]);
 
 
-
- 
 
 
   // Success Modal Close Handler
@@ -376,6 +400,7 @@ const SimplifiedCheckout = () => {
       totalAmount: total,
       paymentMethod: verifiedUser?.paymentMethod,
       deliveryTime: "3-4 days",
+      zipCode: verifiedUser?.zipCode,
     };
 
     // STEP 2️⃣: Prepare data for SuccessModal (Frontend only)

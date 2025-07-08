@@ -1196,9 +1196,8 @@ router.get("/checkout", protectedRoute, async (req, res) => {
   const userId = req.user?.id;
 
   try {
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).populate("orderPlaced");
     if (!user) return res.status(400).json({ message: "User not Registered" });
-
     // Create a new Array to hold populated Cart Items
 
     const populatedCart = await Promise.all(
@@ -1244,6 +1243,7 @@ router.post("/placeOrder", protectedRoute, async (req, res) => {
     totalAmount,
     paymentMethod,
     deliveryTime,
+    zipCode
   } = req.body;
 
   try {
@@ -1262,7 +1262,8 @@ router.post("/placeOrder", protectedRoute, async (req, res) => {
       !orderNumber ||
       !totalAmount ||
       !paymentMethod ||
-      !deliveryTime
+      !deliveryTime ||
+      !zipCode
     ) {
       return res.status(400).json({ message: "Some credentials are missing" });
     }
@@ -1277,6 +1278,7 @@ router.post("/placeOrder", protectedRoute, async (req, res) => {
       totalAmount: Number(totalAmount),
       paymentMethod,
       deliveryTime,
+      zipCode,
     });
 
     // Save the order
@@ -1296,7 +1298,8 @@ router.post("/placeOrder", protectedRoute, async (req, res) => {
       orderNumber: savedOrder.orderNumber,
       totalAmount: savedOrder.totalAmount,
       paymentMethod: savedOrder.paymentMethod,
-      deliveryTime: savedOrder.deliveryTime
+      deliveryTime: savedOrder.deliveryTime,
+      zipCode: savedOrder.zipCode,
     });
   } catch (error) {
     console.error("/placeOrder Error:", error);
