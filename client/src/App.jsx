@@ -75,22 +75,24 @@ const App = () => {
         <Route path="/fanta" element={<FantaCanShowcase />} />
         <Route path="/land" element={<ModernEcommerceLanding />} />
         <Route path="/about" element={<AboutPage />} />
-        <Route path="/place" element={<OrderPlace/>} />
+        <Route path="/place" element={<OrderPlace />} />
+        
+        // "/order-show" use it for show orders
         <Route
-  path="/succ"
-  element={
-    <SuccessModal
-      isOpen={true}
-      onClose={() => {}}
-      orderData={{ total: 1000, paymentMethod: "card" }}
-      cartItems={[
-        { id: 1, quantity: 1, product: { name: "Product A", price: 500 } },
-        { id: 2, quantity: 2, product: { name: "Product B", price: 250 } }
-      ]}
-      isDark={false}
-    />
-  }
-/>
+          path="/succ"
+          element={
+            <SuccessModal
+              isOpen={true}
+              onClose={() => { }}
+              orderData={{ total: 1000, paymentMethod: "card" }}
+              cartItems={[
+                { id: 1, quantity: 1, product: { name: "Product A", price: 500 } },
+                { id: 2, quantity: 2, product: { name: "Product B", price: 250 } }
+              ]}
+              isDark={false}
+            />
+          }
+        /> 
 
         <Route path="/addToWishlist" element={<AddToWishList />} />
 

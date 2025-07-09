@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { FiCheck, FiX, FiPackage, FiMapPin, FiMail, FiPhone, FiCopy, FiDownload, FiEye, FiShare2, FiMessageCircle, FiZap, FiShoppingCart, FiClock, FiTruck } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
 
 const SuccessModal = ({ isOpen, onClose, orderData, isDark, orderNumber, totalAmount }) => {
     const [showConfetti, setShowConfetti] = useState(false);
@@ -250,6 +251,7 @@ const SuccessModal = ({ isOpen, onClose, orderData, isDark, orderNumber, totalAm
                                 <span className="text-sm font-medium">Receipt</span>
                             </button>
 
+                          <Link to={"/order-show"}>
                             <button
                                 onClick={handleShowOrders}
                                 className="flex items-center gap-2 p-3 rounded-xl bg-purple-500/10 text-purple-600 hover:bg-purple-500/20 transition-colors"
@@ -257,6 +259,7 @@ const SuccessModal = ({ isOpen, onClose, orderData, isDark, orderNumber, totalAm
                                 <FiEye className="text-sm" />
                                 <span className="text-sm font-medium">My Orders</span>
                             </button>
+                            </Link>
 
                             <button
                                 onClick={handleShareOrder}
@@ -334,17 +337,19 @@ const SuccessModal = ({ isOpen, onClose, orderData, isDark, orderNumber, totalAm
                                 View My Orders
                             </motion.button>
 
-                            <motion.button
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                                onClick={onClose}
-                                className={`px-8 py-4 rounded-xl font-semibold transition-all duration-200 ${isDark
-                                    ? "bg-gray-700 hover:bg-gray-600 text-gray-300"
-                                    : "bg-gray-300 hover:bg-gray-200 text-gray-600"
-                                    }`}
-                            >
-                                Continue Shopping
-                            </motion.button>
+                            <Link to={"/"}>
+                                <motion.button
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    onClick={onClose}
+                                    className={`px-8 py-4 rounded-xl font-semibold transition-all duration-200 ${isDark
+                                        ? "bg-gray-700 hover:bg-gray-600 text-gray-300"
+                                        : "bg-gray-300 hover:bg-gray-200 text-gray-600"
+                                        }`}
+                                >
+                                    Continue Shopping
+                                </motion.button>
+                            </Link>
                         </div>
                     </div>
                 </motion.div>

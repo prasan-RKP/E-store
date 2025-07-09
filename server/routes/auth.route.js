@@ -1285,7 +1285,7 @@ router.post("/placeOrder", protectedRoute, async (req, res) => {
     const savedOrder = await newOrder.save();
 
     // Link this order to user
-    user.orderPlaced.push(savedOrder._id);
+    user.orderPlaced.push(savedOrder.toObject());
     await user.save();
 
     // Return minimal & clean response

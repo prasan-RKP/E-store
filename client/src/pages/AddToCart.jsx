@@ -626,7 +626,7 @@ const AddToCart = () => {
                                   {" "}
                                   {/* Removed ml-4 to allow flex-wrap to handle spacing */}
                                   <button
-                                    onClick={() => handleBuyNow(item)}
+                                    onClick={() => toast.info('Feature Coming Soon 🔜 ...')}
                                     className="px-3 py-1 buy-btn bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed "
                                     disabled={isChecking}
                                   >
@@ -799,7 +799,7 @@ const AddToCart = () => {
 
                                   {/* Buy Now Button */}
                                   <button
-                                    onClick={() => handleBuyNow(item)}
+                                    onClick={() => toast.info('Feature Coming Soon 🔜 ...')}
                                     className="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
                                     disabled={isChecking}
                                   >
