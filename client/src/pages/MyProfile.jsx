@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { User, ShoppingBag, Heart, Settings, LogOut, Bell, Edit, Camera, CreditCard, MapPin, Package, Clock, Home, ShoppingCart, Search, Instagram, Linkedin, Github, Twitter, Facebook } from 'lucide-react';
+import {toast} from 'sonner';
 
 const MyProfile = () => {
   const [activeTab, setActiveTab] = useState('profile');
@@ -415,7 +416,7 @@ const MyProfile = () => {
           </motion.div>
         ))}
         
-        <button className="btn btn-outline w-full mt-4">
+        <button onClick={()=>toast.info('feature in progress...') } className="btn btn-outline w-full mt-4">
           <CreditCard size={16} className="mr-2" /> Add New Payment Method
         </button>
       </motion.div>

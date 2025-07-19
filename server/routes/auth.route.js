@@ -694,7 +694,7 @@ router.get("/showWishlist", protectedRoute, async (req, res) => {
   // console.log("API called by profile")
   try {
     const user = await User.findById(userId);
-    if (!user) return res.status(400).json({ message: "User not Registered" });
+    if (!user) return res.status(500).json({ message: "User not Registered" });
 
     // Populate wishlist items
     const populatedCart = await Promise.all(

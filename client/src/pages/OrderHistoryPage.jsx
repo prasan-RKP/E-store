@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { 
-  Package, 
-  Calendar, 
-  CreditCard, 
-  Trash2, 
-  ShoppingCart, 
-  Star, 
-  Eye, 
+import {
+  Package,
+  Calendar,
+  CreditCard,
+  Trash2,
+  ShoppingCart,
+  Star,
+  Eye,
   Download,
   Filter,
   Search,
@@ -121,7 +121,7 @@ const OrderHistoryPage = () => {
 
   const filteredOrders = orders.filter(order => {
     const matchesSearch = order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         order.items.some(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()));
+      order.items.some(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -161,7 +161,7 @@ const OrderHistoryPage = () => {
               <input
                 type="text"
                 placeholder="Search orders or products..."
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black" 
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -169,7 +169,7 @@ const OrderHistoryPage = () => {
             <div className="relative">
               <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <select
-                className="pl-10 pr-8 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                className="pl-10 pr-8 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-800 focus:border-transparent bg-white text-blue-400"
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
               >
@@ -224,8 +224,14 @@ const OrderHistoryPage = () => {
                     {order.items.slice(0, 4).map((item) => (
                       <div key={item.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                         <div className="flex items-center space-x-3 flex-1">
-                          <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg flex items-center justify-center">
-                            <Package className="w-6 h-6 text-blue-600" />
+                          <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg flex items-center justify-center">
+                            {/* Product Imge here */}
+                            {/* <Package className="w-6 h-6 text-blue-600" /> */}
+                            <img
+                              src={"https://images.unsplash.com/photo-1577174881658-0f30ed549adc?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8aGVhZHBob25lc3xlbnwwfHwwfHx8MA%3D%3D"}
+                              alt={item.name}
+                              className="w-16 h-16 rounded-md object-cover"
+                            />
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-gray-900 truncate">{item.name}</p>
@@ -305,7 +311,7 @@ const OrderHistoryPage = () => {
                       <Eye className="w-4 h-4" />
                       <span>{expandedOrder === order.id ? 'Hide Details' : 'View Details'}</span>
                     </button>
-                    
+
                     <button
                       onClick={() => downloadInvoice(order.id)}
                       className="flex items-center space-x-2 px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg transition-colors"
@@ -313,7 +319,7 @@ const OrderHistoryPage = () => {
                       <Download className="w-4 h-4" />
                       <span>Download Invoice</span>
                     </button>
-                    
+
                     <button
                       onClick={() => shopAgain(order.items)}
                       className="flex items-center space-x-2 px-4 py-2 bg-green-50 hover:bg-green-100 text-green-700 rounded-lg transition-colors"
@@ -321,7 +327,7 @@ const OrderHistoryPage = () => {
                       <ShoppingCart className="w-4 h-4" />
                       <span>Shop Again</span>
                     </button>
-                    
+
                     <button
                       onClick={() => deleteOrder(order.id)}
                       className="flex items-center space-x-2 px-4 py-2 bg-red-50 hover:bg-red-100 text-red-700 rounded-lg transition-colors"
@@ -349,7 +355,7 @@ const OrderHistoryPage = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-xl shadow-sm p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -363,7 +369,7 @@ const OrderHistoryPage = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-xl shadow-sm p-6">
             <div className="flex items-center justify-between">
               <div>

@@ -461,6 +461,7 @@ export const userAuthStore = create((set, get) => ({
       const res = await axiosInstance.post("/placeOrder", data);
       set({ verifiedUser: res.data });
       toast.success("Order placed successfully!");
+    
     } catch (error) {
       if (error.response) {
         toast.error(error.response.data.message);

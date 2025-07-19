@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { TbLoader2 } from "react-icons/tb";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 import {
   User,
   ShoppingBag,
@@ -34,6 +34,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { userAuthStore } from "../store/authStore.js";
+//import {toast} from 'sonner';
 
 const ProfilePage = () => {
   // userAuthStore access here --->
@@ -657,7 +658,7 @@ const ProfilePage = () => {
           </motion.div>
         ))}
 
-        <button className="btn btn-outline w-full mt-4">
+        <button onClick={()=> toast.info("Feature in progress...")} className="btn btn-outline w-full mt-4">
           <CreditCard size={16} className="mr-2" /> Add New Payment Method
         </button>
       </motion.div>
