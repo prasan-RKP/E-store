@@ -185,9 +185,8 @@ const ProfilePage = () => {
         "Nov",
         "Dec",
       ];
-      return `${
-        months[date.getMonth()]
-      } ${date.getDate()}, ${date.getFullYear()}`;
+      return `${months[date.getMonth()]
+        } ${date.getDate()}, ${date.getFullYear()}`;
     }
 
     return date.toLocaleDateString();
@@ -658,7 +657,7 @@ const ProfilePage = () => {
           </motion.div>
         ))}
 
-        <button onClick={()=> toast.info("Feature in progress...")} className="btn btn-outline w-full mt-4">
+        <button onClick={() => toast.info("Feature in progress...")} className="btn btn-outline w-full mt-4">
           <CreditCard size={16} className="mr-2" /> Add New Payment Method
         </button>
       </motion.div>
@@ -780,6 +779,14 @@ const ProfilePage = () => {
               >
                 <Heart size={16} className="inline mr-2" /> wishList
               </Link>
+              {/* to="/#products" */}
+              <Link
+                to="/#products"
+                className="block py-2 px-4 text-gray-300 hover:bg-gray-700"
+              >
+                <Package size={16} className="inline mr-2" /> Products
+              </Link>
+
             </motion.div>
           )}
         </div>
@@ -827,11 +834,10 @@ const ProfilePage = () => {
                     key={tab.id}
                     whileTap={{ scale: 0.97 }}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center w-full p-3 rounded-lg transition-colors ${
-                      activeTab === tab.id
+                    className={`flex items-center w-full p-3 rounded-lg transition-colors ${activeTab === tab.id
                         ? "bg-indigo-900/40 text-indigo-400"
                         : "hover:bg-gray-800 text-gray-400"
-                    }`}
+                      }`}
                   >
                     <motion.span
                       variants={slideIn}
@@ -884,11 +890,10 @@ const ProfilePage = () => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`inline-flex items-center px-4 py-2 mr-2 rounded-lg ${
-                    activeTab === tab.id
+                  className={`inline-flex items-center px-4 py-2 mr-2 rounded-lg ${activeTab === tab.id
                       ? "bg-indigo-900/40 text-indigo-400"
                       : "text-gray-400"
-                  }`}
+                    }`}
                 >
                   <span className="mr-1">{tab.icon}</span>
                   <span className="font-medium">{tab.name}</span>
