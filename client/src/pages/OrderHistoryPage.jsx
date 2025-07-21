@@ -17,7 +17,8 @@ import {
   AlertCircle,
   Truck,
   ChevronRight,
-  ChevronDown
+  ChevronDown,
+  X
 } from 'lucide-react';
 
 const OrderHistoryPage = () => {
@@ -164,6 +165,68 @@ const OrderHistoryPage = () => {
 
   console.log("Filtered Orders:", filteredOrders);
 
+
+
+  // feature: remove the 'cancelOrder' from the 'processing & Shipping stage and store into the 'cancel' segment.
+  const handleCancelOrder = (orderId, itemId) => {
+
+    const updatedOrders = [...orders];
+    let cancelledItem = null;
+
+    // step: 1 -> remove the items from the orders and store the 'cancelledItem' item in a variable.
+    const modifiedOrders = updatedOrders.map((order) => {
+      if (order.id === orderId) {
+        const updatedItems = order.items.filter((item) => {
+          if (item.id === itemId) {
+            cancelledItem = { ...item };
+            return false;
+          }
+          return true;
+        });
+
+        return {
+          ...order,
+          items: updatedItems,
+          status: updatedItems.length === 0 ? 'cancelled' : order.status,
+          total: updatedItems.reduce((sum, i) => sum + i.price * i.quantity, 0),
+        }
+      }
+      return order;
+    });
+
+
+    // step:2 -> add the 'cancelledItem' into the 'cancelled Segment'
+    let foundCancelledItem = false;
+    const finalOrders = modifiedOrders.map((order) => {
+      if (order.status === 'cancelled') {
+        foundCancelledItem = true;
+        return {
+          ...order,
+          items: [...order.items, cancelledItem],
+          total: order.total + (cancelledItem.quantity * cancelledItem.price)
+        };
+      };
+
+      return order;
+    })
+
+    if (!foundCancelledItem) {
+      finalOrders.push({
+        id: `ORD-CANCELLED-${Date.now()}`,
+        date: new Date().toISOString().split('T')[0],
+        status: 'cancelled',
+        total,
+        items,
+        shippingAddress,
+        paymentMethod,
+        estimatedDelivery
+      })
+    }
+
+    setOrders(finalOrders);
+
+  };
+
   // Create consistent image mapping based on product names
   const getProductImage = (itemName, itemId) => {
     const imageMap = {
@@ -178,7 +241,7 @@ const OrderHistoryPage = () => {
       'Power Bank': "https://images.unsplash.com/photo-1609592806763-b7129dfb5bf1?w=600&auto=format&fit=crop&q=60",
       'Fitness Tracker': "https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=600&auto=format&fit=crop&q=60"
     };
-    
+
     // Return specific image for product name, or fallback based on ID
     return imageMap[itemName] || `https://images.unsplash.com/photo-${1500000000 + itemId}?w=600&auto=format&fit=crop&q=60`;
   };
@@ -191,10 +254,10 @@ const OrderHistoryPage = () => {
           <div className="py-6">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                   Order History
-                </h1>
-                <p className="text-gray-600 text-lg">Track and manage your orders</p>
+                </h2>
+                <p className="text-gray-600 sm:text-sm text-lg">Track and manage your orders</p>
               </div>
               <div className="flex items-center space-x-4">
                 <div className="bg-gradient-to-r from-blue-50 to-purple-50 px-6 py-3 rounded-xl border border-blue-100">
@@ -214,8 +277,8 @@ const OrderHistoryPage = () => {
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 group-hover:text-blue-500 transition-colors" />
               <input
                 type="text"
-                placeholder="Search orders or products..."
-                className="w-full pl-12 pr-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-800 bg-white/90 backdrop-blur-sm transition-all duration-300 hover:bg-white" 
+                placeholder="Search orders or products 🔍..."
+                className="w-full pl-6 pr-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-800 bg-white/90 backdrop-blur-sm transition-all duration-300 hover:bg-white"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -223,7 +286,7 @@ const OrderHistoryPage = () => {
             <div className="relative group">
               <Filter className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 group-hover:text-blue-500 transition-colors" />
               <select
-                className="pl-12 pr-8 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white/90 backdrop-blur-sm text-gray-700 transition-all duration-300 hover:bg-white"
+                className="pl-4 pr-6 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white/90 backdrop-blur-sm text-gray-700 transition-all duration-300 hover:bg-white"
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
               >
@@ -358,15 +421,26 @@ const OrderHistoryPage = () => {
                                 <span className="font-medium">Shop Again</span>
                               </button>
 
-                              <button
-                                onClick={() => deleteItem(order.id, item.id)}
-                                className="flex items-center space-x-2 px-4 py-3 bg-gradient-to-r from-red-50 to-red-100 hover:from-red-100 hover:to-red-200 text-red-700 rounded-xl transition-all duration-300 hover:shadow-md transform hover:scale-105 hover:cursor-pointer"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                                <span className="font-medium">Delete Item</span>
-                              </button>
-
                               {/* Conditional rendering for show ' cancel' button for 'shipping' item and 'processing' item */}
+                              {/* Todo: here we have to do, if someone Will hit the 'cancel order' button the item should displayed in cancel items  */}
+                              {order.status === 'shipped' || order.status === 'processing' ? <>
+                                <button
+                                  onClick={() => handleCancelOrder(order.id, item.id)}
+                                  className="flex items-center space-x-2 px-4 py-3 bg-gradient-to-r from-red-50 to-red-100 hover:from-red-100 hover:to-red-200 text-red-700 rounded-xl transition-all duration-300 hover:shadow-md transform hover:scale-105 hover:cursor-pointer"
+                                >
+                                  <X className="w-4 h-4" />
+                                  <span className="font-medium">Cancel Order</span>
+                                </button>
+                              </> : <>
+                                <button
+                                  onClick={() => deleteItem(order.id, item.id)}
+                                  className="flex items-center space-x-2 px-4 py-3 bg-gradient-to-r from-red-50 to-red-100 hover:from-red-100 hover:to-red-200 text-red-700 rounded-xl transition-all duration-300 hover:shadow-md transform hover:scale-105 hover:cursor-pointer"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                  <span className="font-medium">Delete Item</span>
+                                </button>
+                              </>}
+
                             </div>
                           </div>
                         )}
