@@ -47,6 +47,22 @@ const orderPlaceSchema = new mongoose.Schema({
     ref: "User",
   },
 
+  // Products details starts
+
+  items: [
+    {
+      uid: String,
+      prodName: String,
+      prodPrice: Number,
+      prodQuantity: Number,
+      prodImage: String,
+      prodSize: String,
+      prodStatus: String,
+    },
+  ],
+
+  // Products details Ends
+
   createdAt: {
     type: Date,
     default: Date.now,

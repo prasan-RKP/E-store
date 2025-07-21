@@ -331,7 +331,7 @@ const OrderHistoryPage = () => {
                     <div className="flex items-center space-x-6">
                       <div className="text-right">
                         <p className="text-sm text-gray-600 font-medium">Order #{order.id}</p>
-                        <p className="text-3xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">₹{order.total}</p>
+                        <p className="text-3xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">₹{(order.total).toFixed(2)}</p>
                       </div>
                     </div>
                   </div>
@@ -356,8 +356,8 @@ const OrderHistoryPage = () => {
                               </p>
                               <p className="text-sm text-gray-600">Quantity: <span className="font-medium">{item.quantity}</span></p>
                               <div className="flex items-center space-x-4 mt-2">
-                                <p className="text-lg font-bold text-gray-900">₹{item.price}</p>
-                                <p className="text-sm text-gray-600">
+                                <p className="text-sm font-bold text-gray-900">₹{item.price}</p>
+                                <p className="text-lg text-gray-600">
                                   Total: <span className="font-semibold text-green-600">₹{(item.price * item.quantity).toFixed(2)}</span>
                                 </p>
                               </div>

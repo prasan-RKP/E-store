@@ -279,7 +279,14 @@ const SimplifiedCheckout = () => {
   const discount = promoCode === "SAVE10" ? subtotal * 0.1 : 0;
   const total = Number(subtotal + shipping + tax - discount);
 
-  const orderNumber = `${Date.now().toString().slice(-5)}${verifiedUser?._id.toString().slice(-3)}`;
+  const now = new Date();
+  const year = now.getFullYear();                        // 2025
+  const month = String(now.getMonth() + 1).padStart(2, '0'); // 07
+  const date = String(now.getDate()).padStart(2, '0');       // 21
+  const weekdayNames = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+  const dayName = weekdayNames[now.getDay()];            // MON
+
+  const orderNumber = `ORD-${year}-${month}-${date}-${dayName}`;
 
 
   // Handlers
@@ -366,6 +373,7 @@ const SimplifiedCheckout = () => {
 
 
 
+
   // Success Modal Close Handler
   const successModalCloseHandler = async () => {
     try {
@@ -389,6 +397,8 @@ const SimplifiedCheckout = () => {
   };
 
 
+  console.log("Checking the verofiedUser whole data", verifiedUser?.cart);
+
   const handleSubmit = async () => {
     // STEP 1️⃣: Prepare data for BACKEND API
     const backendOrderData = {
@@ -396,11 +406,14 @@ const SimplifiedCheckout = () => {
       customerName: verifiedUser?.username,
       customerEmail: verifiedUser?.email,
       customerPhoneNo: verifiedUser?.contact,
-      orderNumber,
+      orderNumber: orderNumber,
       totalAmount: total,
       paymentMethod: verifiedUser?.paymentMethod,
       deliveryTime: "3-4 days",
       zipCode: verifiedUser?.zipCode,
+      //update made here
+      carts: verifiedUser?.cart
+
     };
 
     // STEP 2️⃣: Prepare data for SuccessModal (Frontend only)
@@ -414,7 +427,6 @@ const SimplifiedCheckout = () => {
         state: verifiedUser?.state,
         zipCode: verifiedUser?.zipCode,
         paymentMethod: verifiedUser?.paymentMethod,
-
       },
     };
 

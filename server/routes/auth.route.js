@@ -1243,8 +1243,10 @@ router.post("/placeOrder", protectedRoute, async (req, res) => {
     totalAmount,
     paymentMethod,
     deliveryTime,
-    zipCode
+    zipCode,
+    carts,
   } = req.body;
+
 
   try {
     // Check if user exists
@@ -1265,10 +1267,21 @@ router.post("/placeOrder", protectedRoute, async (req, res) => {
       !deliveryTime ||
       !zipCode
     ) {
-      return res.status(400).json({ message: "Some credentials are missing" });
+      return res.status(400).json({ message: "Credentials are missing" });
     }
 
-    // Create a new order
+    // Transform cart items to match your schema
+    const items = carts.map((cartItem) => ({
+      uid: cartItem.product?.uid || null,
+      prodName: cartItem.product?.name || "Unnamed Product",
+      prodPrice: cartItem.product?.price || 0,
+      prodQuantity: cartItem.quantity || 1,
+      prodImage: cartItem.product?.img || "",
+      prodSize: cartItem.size || "Regular",
+      prodStatus: "processing", // default status
+    }));
+
+    // Create a new order with items
     const newOrder = new Order({
       shippingAddress,
       customerName,
@@ -1279,27 +1292,23 @@ router.post("/placeOrder", protectedRoute, async (req, res) => {
       paymentMethod,
       deliveryTime,
       zipCode,
+      user: userId,
+      items, // Mapped cart items go here
     });
 
     // Save the order
     const savedOrder = await newOrder.save();
 
     // Link this order to user
-    user.orderPlaced.push(savedOrder.toObject());
+    user.orderPlaced.push(savedOrder._id); // or push the whole object if needed
     await user.save();
 
-    // Return minimal & clean response
+    // Return minimal response
     return res.status(201).json({
-     _id: savedOrder._id,
-      shippingAddress: savedOrder.shippingAddress,
+      message: "Order placed successfully",
+      orderId: savedOrder._id,
       customerName: savedOrder.customerName,
-      customerEmail: savedOrder.customerEmail,
-      customerPhoneNo: savedOrder.customerPhoneNo,
-      orderNumber: savedOrder.orderNumber,
       totalAmount: savedOrder.totalAmount,
-      paymentMethod: savedOrder.paymentMethod,
-      deliveryTime: savedOrder.deliveryTime,
-      zipCode: savedOrder.zipCode,
     });
   } catch (error) {
     console.error("/placeOrder Error:", error);
@@ -1307,8 +1316,7 @@ router.post("/placeOrder", protectedRoute, async (req, res) => {
   }
 });
 
-
-router.get("/call", (req, res) => {
+router.get("/call", (req, res)  => {
   res.send("Succesfully checked, testing route !");
 });
 
