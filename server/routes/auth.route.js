@@ -1315,7 +1315,6 @@ router.post("/placeOrder", protectedRoute, async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 });
-
 router.get("/call", (req, res)  => {
   res.send("Succesfully checked, testing route !");
 });

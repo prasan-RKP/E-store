@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import authRoute from '../server/routes/auth.route.js';
 import productRoute from '../server/routes/product.route.js';
+import orderRoute from "../server/routes/order.route.js";
 import mongoose from 'mongoose';
 
 dotenv.config();
@@ -42,3 +43,4 @@ mongoose.connect("mongodb://127.0.0.1:27017/EcomDB")
 // Routes
 app.use("/auth", authRoute);
 app.use("/prod",productRoute);
+app.use("/ord", orderRoute);

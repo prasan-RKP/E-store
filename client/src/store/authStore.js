@@ -340,7 +340,7 @@ export const userAuthStore = create((set, get) => ({
 
   removeAllCartItems: async () => {
     // console.log("calling the remove All");
-    
+
     set({ isRemovingAllCartItem: true });
     try {
       const res = await axiosInstance.post("/removeAllCartItem");
@@ -434,7 +434,7 @@ export const userAuthStore = create((set, get) => ({
     }
   },
 
-  // feature - 2(#checkout) - Checkout process  
+  // feature - 2(#checkout) - Checkout process
 
   isCheckingOut: false,
   checkout: async () => {
@@ -461,7 +461,6 @@ export const userAuthStore = create((set, get) => ({
       const res = await axiosInstance.post("/placeOrder", data);
       set({ verifiedUser: res.data });
       toast.success("Order placed successfully!");
-    
     } catch (error) {
       if (error.response) {
         toast.error(error.response.data.message);

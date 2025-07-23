@@ -21,8 +21,6 @@ import LuxeLoader from "./pages/LuxeLoader";
 import { userAuthStore } from "./store/authStore";
 import ProductDisplay from "./pages/ProductDisplay";
 import AlertWindow from "./pages/AlertWindow";
-import ThreeD from "./pages/CardComponent";
-import CardCompo from "./pages/CardComponent";
 import TypingAnimation from "./pages/TypingAnimation";
 import CardComponent from "./pages/CardComponent";
 import CardHoverEffects from "./pages/CardHoverEffects";
@@ -49,6 +47,7 @@ import SimplifiedCheckout from "./landing/SimplifiedCheckout";
 import OrderPlace from "./landing/segement/OrderPlace";
 import SuccessModal from "./landing/segement/SuccessModal";
 import OrderHistoryPage from "./pages/OrderHistoryPage";
+import OrderHistorySkeleton from "./skeletons/OrderHistorySkeleton";
 //import CheckoutWizard from "./pages/checkout/CheckoutWizard";
 
 const App = () => {
@@ -76,7 +75,7 @@ const App = () => {
         <Route path="/fanta" element={<FantaCanShowcase />} />
         <Route path="/land" element={<ModernEcommerceLanding />} />
         <Route path="/about" element={<AboutPage />} />
-        <Route path="/place" element={<OrderPlace />} />
+        <Route path="/ord" element={<OrderHistorySkeleton/>} />
         
         // "/order-show" use it for show orders
         <Route path="/showorder" element={<OrderHistoryPage />} />
