@@ -20,87 +20,72 @@ import {
   ChevronDown,
   X
 } from 'lucide-react';
-import { useOrderStore } from '../store/OrderStore.js';
-import OrderHistorySkeletonPage from '../skeletons/OrderHistorySkeleton';
-
+import { useOrderStore } from '../store/OrderStore';
 
 const OrderHistoryPage = () => {
-  const [orders, setOrders] = useState([]);
+  const [orders, setOrders] = useState([
+    /*
+    {
+      id: 'ORD-2024-001',
+      date: '2024-12-15',
+      status: 'delivered',
+      total: 299.99,
+      items: [
+        { id: 1, name: 'Wireless Headphones', price: 149.99, quantity: 1, image: '/api/placeholder/80/80' },
+        { id: 2, name: 'Phone Case', price: 29.99, quantity: 2, image: '/api/placeholder/80/80' },
+        { id: 3, name: 'Charging Cable', price: 19.99, quantity: 5, image: '/api/placeholder/80/80' }
+      ],
+      shippingAddress: '123 Main St, New York, NY 10001',
+      paymentMethod: 'Credit Card ending in 4242',
+      estimatedDelivery: '2024-12-18'
+    },
+    {
+      id: 'ORD-2024-002',
+      date: '2024-12-10',
+      status: 'shipped',
+      total: 599.99,
+      items: [
+        { id: 4, name: 'Laptop Stand', price: 79.99, quantity: 1, image: '/api/placeholder/80/80' },
+        { id: 5, name: 'Mechanical Keyboard', price: 159.99, quantity: 1, image: '/api/placeholder/80/80' },
+        { id: 6, name: 'Wireless Mouse', price: 89.99, quantity: 1, image: '/api/placeholder/80/80' },
+        { id: 7, name: 'Monitor Light', price: 49.99, quantity: 1, image: '/api/placeholder/80/80' }
+      ],
+      shippingAddress: '456 Oak Ave, Los Angeles, CA 90210',
+      paymentMethod: 'PayPal',
+      estimatedDelivery: '2024-12-20'
+    },
+    {
+      id: 'ORD-2024-003',
+      date: '2024-12-05',
+      status: 'processing',
+      total: 199.99,
+      items: [
+        { id: 8, name: 'Bluetooth Speaker', price: 99.99, quantity: 1, image: '/api/placeholder/80/80' },
+        { id: 9, name: 'Power Bank', price: 49.99, quantity: 2, image: '/api/placeholder/80/80' }
+      ],
+      shippingAddress: '789 Pine St, Chicago, IL 60601',
+      paymentMethod: 'Credit Card ending in 1234',
+      estimatedDelivery: '2024-12-25'
+    },
+    {
+      id: 'ORD-2024-004',
+      date: '2024-11-28',
+      status: 'cancelled',
+      total: 89.99,
+      items: [
+        { id: 10, name: 'Fitness Tracker', price: 89.99, quantity: 1, image: '/api/placeholder/80/80' }
+      ],
+      shippingAddress: '321 Elm St, Miami, FL 33101',
+      paymentMethod: 'Credit Card ending in 5678',
+      estimatedDelivery: 'N/A'
+    }
+      */
+  ]);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [expandedItems, setExpandedItems] = useState(new Set());
-  const [length, setLength] = useState(0);
 
-  // API call for fetching orders
-  const { fetchOrder, order, isFetchingOrder } = useOrderStore();
-
-  useEffect(() => {
-    const loadOrders = async () => {
-      await fetchOrder();
-    };
-    loadOrders();
-  }, [fetchOrder]);
-
-  useEffect(() => {
-    if (order && Array.isArray(order)) {
-      // Transform API data to match component structure
-      const transformedOrders = order.map(apiOrder => ({
-        id: apiOrder.orderNumber || apiOrder._id,
-        date: new Date(apiOrder.createdAt).toISOString().split('T')[0],
-        status: getOrderStatus(apiOrder.items),
-        total: apiOrder.totalAmount,
-        items: apiOrder.items.map(item => ({
-          id: item.uid,
-          name: item.prodName,
-          price: item.prodPrice,
-          quantity: item.prodQuantity,
-          image: item.prodImage,
-          size: item.prodSize,
-          status: item.prodStatus
-        })),
-        shippingAddress: apiOrder.shippingAddress,
-        paymentMethod: apiOrder.paymentMethod,
-        estimatedDelivery: apiOrder.deliveryTime,
-        customerName: apiOrder.customerName,
-        customerEmail: apiOrder.customerEmail,
-        customerPhoneNo: apiOrder.customerPhoneNo,
-        zipCode: apiOrder.zipCode
-      }));
-      setOrders(transformedOrders);
-    }
-  }, [order]);
-
-  // Helper function to determine order status based on items
-
-  //feature:-  It will count the totalOrders
-  useEffect(() => {
-    const myLength = orders.reduce((sum, ord) => sum + ord.items.length, 0);
-    setLength(myLength);
-  }, [orders]);
-
-  console.log("The order length", length);
-
-  // feature:1 -> getOrderStatus()
-  const getOrderStatus = (items) => {
-    if (!items || items.length === 0) return 'unknown';
-
-    const statuses = items.map(item => item.prodStatus);
-    const uniqueStatuses = [...new Set(statuses)];
-
-    if (uniqueStatuses.length === 1) {
-      return uniqueStatuses[0];
-    }
-
-    // If mixed statuses, prioritize based on business logic
-    if (statuses.includes('cancelled')) return 'cancelled';
-    if (statuses.includes('delivered')) return 'delivered';
-    if (statuses.includes('shipped')) return 'shipped';
-    if (statuses.includes('processing')) return 'processing';
-
-    return 'processing'; // default
-  };
-
-  // feature:2 -> getStatusIcon()
   const getStatusIcon = (status) => {
     switch (status) {
       case 'delivered':
@@ -116,7 +101,6 @@ const OrderHistoryPage = () => {
     }
   };
 
-  // feature:3 -> getStatusColor()
   const getStatusColor = (status) => {
     switch (status) {
       case 'delivered':
@@ -172,10 +156,85 @@ const OrderHistoryPage = () => {
   };
 
   const viewItemDetails = (item, order) => {
-    alert(`Viewing details for "${item.name}" from order ${order.id}\nPrice: ₹${item.price}\nQuantity: ${item.quantity}\nSize: ${item.size || 'N/A'}\nOrder Date: ${order.date}\nStatus: ${item.status}`);
+    alert(`Viewing details for "${item.name}" from order ${order.id}\nPrice: ₹${item.price}\nQuantity: ${item.quantity}\nOrder Date: ${order.date}\nStatus: ${order.status}`);
   };
 
-  // handleCancelOrder 
+  const filteredOrders = orders.filter(order => {
+    const matchesSearch = order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.items.some(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
+  console.log("Filtered Orders:", filteredOrders);
+
+  // feature: remove the 'cancelOrder' from the 'processing & Shipping stage and store into the 'cancel' segment.
+  // old code (The error was:- I checked your code and identified the cause of the duplicate "Cancelled" section issue:)
+  /*
+  const handleCancelOrder = (orderId, itemId) => {
+
+    const updatedOrders = [...orders];
+    let cancelledItem = null;
+
+    // step: 1 -> remove the items from the orders and store the 'cancelledItem' item in a variable.
+    const modifiedOrders = updatedOrders.map((order) => {
+      if (order.id === orderId) {
+        const updatedItems = order.items.filter((item) => {
+          if (item.id === itemId) {
+            cancelledItem = { ...item };
+            return false;
+          }
+          return true;
+        });
+
+        return {
+          ...order,
+          items: updatedItems,
+          status: updatedItems.length === 0 ? 'cancelled' : order.status,
+          total: updatedItems.reduce((sum, i) => sum + i.price * i.quantity, 0),
+        }
+      }
+      return order;
+    });
+
+
+    // step:2 -> add the 'cancelledItem' into the 'cancelled Segment'
+    let foundCancelledItem = false;
+    const finalOrders = modifiedOrders.map((order) => {
+      if (order.status === 'cancelled') {
+        foundCancelledItem = true;
+        return {
+          ...order,
+          items: [...order.items, cancelledItem],
+          total: order.total + (cancelledItem.quantity * cancelledItem.price)
+        };
+      };
+
+      return order;
+    })
+
+    if (!foundCancelledItem) {
+      finalOrders.push({
+        id: `ORD-CANCELLED-${Date.now()}`,
+        date: new Date().toISOString().split('T')[0],
+        status: 'cancelled',
+        total,
+        items,
+        shippingAddress,
+        paymentMethod,
+        estimatedDelivery
+      })
+    }
+
+    setOrders(finalOrders);
+
+  };
+
+  */
+
+  // New code: This function handles the cancellation of an order item and updates the orders state accordingly.
+  // TODO:- we have to understand it properly how the things is working ....
+
   const handleCancelOrder = (orderId, itemId) => {
     const updatedOrders = [...orders];
     let cancelledItem = null;
@@ -185,7 +244,7 @@ const OrderHistoryPage = () => {
       if (order.id === orderId) {
         const updatedItems = order.items.filter(item => {
           if (item.id === itemId) {
-            cancelledItem = { ...item, status: 'cancelled' };
+            cancelledItem = { ...item };
             return false;
           }
           return true;
@@ -223,19 +282,40 @@ const OrderHistoryPage = () => {
     setOrders(modifiedOrders);
   };
 
-  const filteredOrders = orders.filter(order => {
-    const matchesSearch = order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.items.some(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
+  //API call for show the orders 
 
-  console.log("my ordeers", orders);
+  const {fetchOrder, order, isFetchingOrder} = useOrderStore();
 
-  // Show loading skeleton while fetching
-  if (isFetchingOrder) {
-    return <OrderHistorySkeletonPage />;
-  }
+  useEffect(async()=> {
+    await fetchOrder();
+  }, [fetchOrder]);
+
+  useEffect(()=>{
+    setOrders(order);
+  })
+
+  console.log("The orders", orders);
+
+
+
+  // Create consistent image mapping based on product names
+  const getProductImage = (itemName, itemId) => {
+    const imageMap = {
+      'Wireless Headphones': "https://images.unsplash.com/photo-1577174881658-0f30ed549adc?w=600&auto=format&fit=crop&q=60",
+      'Phone Case': "https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=600&auto=format&fit=crop&q=60",
+      'Charging Cable': "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=600&auto=format&fit=crop&q=60",
+      'Laptop Stand': "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=600&auto=format&fit=crop&q=60",
+      'Mechanical Keyboard': "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=600&auto=format&fit=crop&q=60",
+      'Wireless Mouse': "https://images.unsplash.com/photo-1527814050087-3793815479db?w=600&auto=format&fit=crop&q=60",
+      'Monitor Light': "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&auto=format&fit=crop&q=60",
+      'Bluetooth Speaker': "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=600&auto=format&fit=crop&q=60",
+      'Power Bank': "https://images.unsplash.com/photo-1609592806763-b7129dfb5bf1?w=600&auto=format&fit=crop&q=60",
+      'Fitness Tracker': "https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=600&auto=format&fit=crop&q=60"
+    };
+
+    // Return specific image for product name, or fallback based on ID
+    return imageMap[itemName] || `https://images.unsplash.com/photo-${1500000000 + itemId}?w=600&auto=format&fit=crop&q=60`;
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
@@ -252,7 +332,7 @@ const OrderHistoryPage = () => {
               </div>
               <div className="flex items-center space-x-4">
                 <div className="bg-gradient-to-r from-blue-50 to-purple-50 px-6 py-3 rounded-xl border border-blue-100">
-                  <span className="text-blue-700 font-semibold text-lg">{length} Orders</span>
+                  <span className="text-blue-700 font-semibold text-lg">{filteredOrders.length} Orders</span>
                 </div>
               </div>
             </div>
@@ -269,7 +349,7 @@ const OrderHistoryPage = () => {
               <input
                 type="text"
                 placeholder="Search orders or products 🔍..."
-                className="w-full pl-12 pr-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-800 bg-white/90 backdrop-blur-sm transition-all duration-300 hover:bg-white"
+                className="w-full pl-6 pr-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-800 bg-white/90 backdrop-blur-sm transition-all duration-300 hover:bg-white"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -277,7 +357,7 @@ const OrderHistoryPage = () => {
             <div className="relative group">
               <Filter className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 group-hover:text-blue-500 transition-colors" />
               <select
-                className="pl-12 pr-6 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white/90 backdrop-blur-sm text-gray-700 transition-all duration-300 hover:bg-white"
+                className="pl-4 pr-6 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white/90 backdrop-blur-sm text-gray-700 transition-all duration-300 hover:bg-white"
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
               >
@@ -297,12 +377,7 @@ const OrderHistoryPage = () => {
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-12 text-center border border-white/50">
               <Package className="w-20 h-20 text-gray-300 mx-auto mb-6" />
               <h3 className="text-2xl font-semibold text-gray-900 mb-3">No orders found</h3>
-              <p className="text-gray-600 text-lg">
-                {orders.length === 0
-                  ? "You haven't placed any orders yet"
-                  : "Try adjusting your search or filters"
-                }
-              </p>
+              <p className="text-gray-600 text-lg">Try adjusting your search or filters</p>
             </div>
           ) : (
             filteredOrders.map((order) => (
@@ -340,12 +415,9 @@ const OrderHistoryPage = () => {
                           <div className="flex items-center space-x-4 flex-1">
                             <div className="relative overflow-hidden rounded-xl">
                               <img
-                                src={item.image || `https://images.unsplash.com/photo-${1500000000 + parseInt(item.id)}?w=600&auto=format&fit=crop&q=60`}
+                                src={getProductImage(item.name, item.id)}
                                 alt={item.name}
                                 className="w-20 h-20 rounded-xl object-cover transition-transform duration-300 group-hover:scale-110"
-                                onError={(e) => {
-                                  e.target.src = `https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600&auto=format&fit=crop&q=60`;
-                                }}
                               />
                               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                             </div>
@@ -353,12 +425,9 @@ const OrderHistoryPage = () => {
                               <p className="text-lg font-semibold text-gray-900 truncate group-hover:text-blue-600 transition-colors">
                                 {item.name}
                               </p>
-                              <div className="flex items-center space-x-4 text-sm text-gray-600 mt-1">
-                                <span>Qty: <span className="font-medium">{item.quantity}</span></span>
-                                {item.size && <span>Size: <span className="font-medium">{item.size}</span></span>}
-                              </div>
+                              <p className="text-sm text-gray-600">Quantity: <span className="font-medium">{item.quantity}</span></p>
                               <div className="flex items-center space-x-4 mt-2">
-                                <p className="text-sm font-bold text-gray-900">₹{item.price.toFixed(2)}</p>
+                                <p className="text-sm font-bold text-gray-900">₹{item.price}</p>
                                 <p className="text-lg text-gray-600">
                                   Total: <span className="font-semibold text-green-600">₹{(item.price * item.quantity).toFixed(2)}</span>
                                 </p>
@@ -387,9 +456,6 @@ const OrderHistoryPage = () => {
                                   Shipping Address
                                 </h5>
                                 <p className="text-gray-600 text-sm">{order.shippingAddress}</p>
-                                {order.zipCode && (
-                                  <p className="text-gray-500 text-sm mt-1">ZIP: {order.zipCode}</p>
-                                )}
                               </div>
                               <div>
                                 <h5 className="font-semibold text-gray-900 mb-2 flex items-center">
@@ -397,9 +463,6 @@ const OrderHistoryPage = () => {
                                   Payment Method
                                 </h5>
                                 <p className="text-gray-600 text-sm">{order.paymentMethod}</p>
-                                {order.estimatedDelivery && order.estimatedDelivery !== 'N/A' && (
-                                  <p className="text-gray-500 text-xs mt-1">Delivery: {order.estimatedDelivery}</p>
-                                )}
                               </div>
                             </div>
 
@@ -429,8 +492,9 @@ const OrderHistoryPage = () => {
                                 <span className="font-medium">Shop Again</span>
                               </button>
 
-                              {/* Conditional rendering for cancel/delete buttons */}
-                              {order.status === 'shipped' || order.status === 'processing' ? (
+                              {/* Conditional rendering for show ' cancel' button for 'shipping' item and 'processing' item */}
+                              {/* Todo: here we have to do, if someone Will hit the 'cancel order' button the item should displayed in cancel items  */}
+                              {order.status === 'shipped' || order.status === 'processing' ? <>
                                 <button
                                   onClick={() => handleCancelOrder(order.id, item.id)}
                                   className="flex items-center space-x-2 px-4 py-3 bg-gradient-to-r from-red-50 to-red-100 hover:from-red-100 hover:to-red-200 text-red-700 rounded-xl transition-all duration-300 hover:shadow-md transform hover:scale-105 hover:cursor-pointer"
@@ -438,7 +502,7 @@ const OrderHistoryPage = () => {
                                   <X className="w-4 h-4" />
                                   <span className="font-medium">Cancel Order</span>
                                 </button>
-                              ) : (
+                              </> : <>
                                 <button
                                   onClick={() => deleteItem(order.id, item.id)}
                                   className="flex items-center space-x-2 px-4 py-3 bg-gradient-to-r from-red-50 to-red-100 hover:from-red-100 hover:to-red-200 text-red-700 rounded-xl transition-all duration-300 hover:shadow-md transform hover:scale-105 hover:cursor-pointer"
@@ -446,7 +510,8 @@ const OrderHistoryPage = () => {
                                   <Trash2 className="w-4 h-4" />
                                   <span className="font-medium">Delete Item</span>
                                 </button>
-                              )}
+                              </>}
+
                             </div>
                           </div>
                         )}
@@ -466,7 +531,7 @@ const OrderHistoryPage = () => {
               <div>
                 <p className="text-sm text-gray-600 font-medium">Total Orders</p>
                 <p className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  {length}
+                  {orders.length}
                 </p>
               </div>
               <div className="p-4 bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl">
@@ -478,13 +543,13 @@ const OrderHistoryPage = () => {
           <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-white/50 hover:shadow-xl transition-all duration-300 transform hover:scale-105">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 font-medium">Delivered Orders</p>
+                <p className="text-sm text-gray-600 font-medium">Total Spent</p>
                 <p className="text-4xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-                  {orders.filter(order => order.status === 'delivered').length}
+                  ₹{orders.reduce((sum, order) => sum + order.total, 0).toFixed(2)}
                 </p>
               </div>
               <div className="p-4 bg-gradient-to-br from-green-100 to-blue-100 rounded-2xl">
-                <CheckCircle className="w-8 h-8 text-green-600" />
+                <CreditCard className="w-8 h-8 text-green-600" />
               </div>
             </div>
           </div>
@@ -492,13 +557,13 @@ const OrderHistoryPage = () => {
           <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-white/50 hover:shadow-xl transition-all duration-300 transform hover:scale-105">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 font-medium">Cancelled Orders</p>
-                <p className="text-4xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
-                  {orders.filter(order => order.status === 'cancelled').length}
+                <p className="text-sm text-gray-600 font-medium">Delivered Orders</p>
+                <p className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                  {orders.filter(order => order.status === 'delivered').length}
                 </p>
               </div>
-              <div className="p-4 bg-gradient-to-br from-red-100 to-pink-100 rounded-2xl">
-                <XCircle className="w-8 h-8 text-red-600" />
+              <div className="p-4 bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl">
+                <CheckCircle className="w-8 h-8 text-purple-600" />
               </div>
             </div>
           </div>

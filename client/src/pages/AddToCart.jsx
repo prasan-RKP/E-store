@@ -221,8 +221,8 @@ const AddToCart = () => {
   
 
   // API call for initial render
-  useEffect(() => {
-    showAddToCart();
+  useEffect(async () => {
+   await showAddToCart();
   }, [showAddToCart]);
 
   // giving the value to CartItems
