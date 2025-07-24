@@ -168,6 +168,8 @@ const OrderHistoryPage = () => {
 
 
   // feature: remove the 'cancelOrder' from the 'processing & Shipping stage and store into the 'cancel' segment.
+  // old code (The error was:- I checked your code and identified the cause of the duplicate "Cancelled" section issue:)
+  /*
   const handleCancelOrder = (orderId, itemId) => {
 
     const updatedOrders = [...orders];
@@ -226,6 +228,61 @@ const OrderHistoryPage = () => {
     setOrders(finalOrders);
 
   };
+
+  */
+
+  // New code: This function handles the cancellation of an order item and updates the orders state accordingly.
+  // TODO:- we have to understand it properly how the things is working ....
+
+  const handleCancelOrder = (orderId, itemId) => {
+    const updatedOrders = [...orders];
+    let cancelledItem = null;
+
+    // Step 1: Remove the item from its original order
+    const modifiedOrders = updatedOrders.map(order => {
+      if (order.id === orderId) {
+        const updatedItems = order.items.filter(item => {
+          if (item.id === itemId) {
+            cancelledItem = { ...item };
+            return false;
+          }
+          return true;
+        });
+        return {
+          ...order,
+          items: updatedItems,
+          total: updatedItems.reduce((sum, i) => sum + i.price * i.quantity, 0)
+        };
+      }
+      return order;
+    }).filter(order => order.items.length > 0); // Remove empty orders
+
+    // Step 2: Merge into "Cancelled" section
+    let cancelledOrderIndex = modifiedOrders.findIndex(o => o.status === 'cancelled');
+
+    if (cancelledOrderIndex !== -1) {
+      // If cancelled group exists, add item there
+      modifiedOrders[cancelledOrderIndex].items.push(cancelledItem);
+      modifiedOrders[cancelledOrderIndex].total += cancelledItem.price * cancelledItem.quantity;
+    } else {
+      // If no cancelled group exists, create one
+      modifiedOrders.push({
+        id: `ORD-CANCELLED-${Date.now()}`,
+        date: new Date().toISOString().split('T')[0],
+        status: 'cancelled',
+        total: cancelledItem.price * cancelledItem.quantity,
+        items: [cancelledItem],
+        shippingAddress: 'N/A',
+        paymentMethod: 'N/A',
+        estimatedDelivery: 'N/A'
+      });
+    }
+
+    setOrders(modifiedOrders);
+  };
+
+
+
 
   // Create consistent image mapping based on product names
   const getProductImage = (itemName, itemId) => {
