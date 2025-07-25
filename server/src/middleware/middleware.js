@@ -10,7 +10,7 @@ export const protectedRoute = async(req, res, next) => {
     try {
         const token = req.cookies.jwt;
 
-    if(!token) return res.status(400).json({message: "unAuthrized User (2).."});
+    if(!token) return res.status(400).json({message: "unAuthrized User 1.."});
 
     const decodedUser = jwt.verify(token,process.env.JWT_SECRET);
     if(!decodedUser) return res.status(400).json({message: "unAuthrized User 2.."});

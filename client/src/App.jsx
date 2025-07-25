@@ -75,10 +75,10 @@ const App = () => {
         <Route path="/fanta" element={<FantaCanShowcase />} />
         <Route path="/land" element={<ModernEcommerceLanding />} />
         <Route path="/about" element={<AboutPage />} />
-        <Route path="/ord" element={<OrderHistorySkeleton/>} />
-        
+        <Route path="/ord" element={<OrderHistorySkeleton />} />
+
         // "/order-show" use it for show orders
-        <Route path="/showorder" element={<OrderHistoryPage />} />
+        <Route path="/showorder" element={verifiedUser ? (<OrderHistoryPage />) : (<Navigate to={"/login"} replace />)} />
 
 
         <Route path="/addToWishlist" element={<AddToWishList />} />

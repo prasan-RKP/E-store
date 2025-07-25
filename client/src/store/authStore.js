@@ -89,13 +89,16 @@ export const userAuthStore = create((set, get) => ({
     try {
       await axiosInstance.post("/logout");
       set({ authUser: null }); // Clear authUser and onlineUsers
-      get().checkAuthVerify(); // call it again to check is it correctly logout or not .
+      await get().checkAuthVerify(); // call it again to check is it correctly logout or not .
       toast.success("Logged out successfully ✅");
     } catch (error) {
-      if (error.response) {
-        toast.error(error.response.data.message);
+      if (
+        error.response.data.message?.includes("unAuthrized") ||
+        error.response.data.message?.includes("Invalid User")
+      ) {
+        console.log("User is already logged out or session expired");
       } else {
-        toast.error("Something went Wrong in signup use");
+        toast.error("Something went Wrong..");
       }
     }
   },
@@ -123,7 +126,7 @@ export const userAuthStore = create((set, get) => ({
     try {
       const res = await axiosInstance.post("/addCartData", data);
       set({ verifiedUser: res.data });
-      toast.success("Item added to cart !");
+      toast.success("Item added to cart ✅");
     } catch (error) {
       //{error.response ? toast.error(error.response.data.message) : console.log("Something error occured")}
       if (error.response) {

@@ -855,7 +855,7 @@ const ProfilePage = () => {
 
                 <motion.button
                   whileTap={{ scale: 0.97 }}
-                  className="flex items-center w-full p-3 rounded-lg text-gray-400 hover:bg-red-500"
+                  className="hover:cursor-pointer flex items-center w-full p-3 rounded-lg text-gray-400 hover:bg-red-500"
                   onClick={logout}
                 >
                   <span className="mr-3">

@@ -1272,7 +1272,8 @@ router.post("/placeOrder", protectedRoute, async (req, res) => {
 
     // Transform cart items to match your schema
     const items = carts.map((cartItem) => ({
-      uid: cartItem.product?.uid || null,
+
+      uid: cartItem.product?._id || null,
       prodName: cartItem.product?.name || "Unnamed Product",
       prodPrice: cartItem.product?.price || 0,
       prodQuantity: cartItem.quantity || 1,

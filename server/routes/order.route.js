@@ -1,5 +1,6 @@
 import express from 'express';
 import Order from '../src/model/OrderPlace.js';
+import { protectedRoute } from '../src/middleware/middleware.js';
 
 const router = express.Router();
 
@@ -17,5 +18,9 @@ router.get('/fetchOrder', async (req, res) => {
         return res.status(500).json({message: "Internal Server Error"});
     }
 });
+
+router.put("/cancelOrder", protectedRoute, async(req, res)=> {
+    // Todo:- Tommorow task 
+})
 
 export default router;

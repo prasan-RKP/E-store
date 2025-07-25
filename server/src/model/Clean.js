@@ -6,6 +6,8 @@ import Order from "./OrderPlace.js";   // adjust path based on your project
 
 dotenv.config();
 
+//node src/model/Clean.js
+
 const cleanInvalidOrders = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI);

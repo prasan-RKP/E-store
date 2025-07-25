@@ -23,7 +23,7 @@ import "swiper/css/pagination";
 import confetti from "canvas-confetti";
 import { userAuthStore } from "../store/authStore.js";
 import AddToCartSkeleton from "../skeletons/AddToCartSkeleton.jsx";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 const AddToCart = () => {
@@ -64,7 +64,7 @@ const AddToCart = () => {
 
 
   console.log("CartItems", verifiedUser);
-  
+
 
   // Check if device is mobile (keeping this for general mobile-specific logic if needed elsewhere)
   useEffect(() => {
@@ -218,11 +218,14 @@ const AddToCart = () => {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
-  
+
 
   // API call for initial render
-  useEffect(async () => {
-   await showAddToCart();
+  useEffect(() => {
+    const fetchCart = async () => {
+      await showAddToCart();
+    };
+    fetchCart();
   }, [showAddToCart]);
 
   // giving the value to CartItems
@@ -242,6 +245,20 @@ const AddToCart = () => {
   useEffect(() => {
     setWishlistItems(verifiedUser?.wishlist || []);
   }, [verifiedUser?.wishlist]);
+
+  // handleProceed
+  const navigate = useNavigate();
+
+  const handleProceed = () => {
+    // Trigger exit animation by hiding cart
+    setShowCart(false);
+
+    // Wait for animation duration (300ms)
+    setTimeout(() => {
+      navigate("/checkout");
+    }, 300);
+  };
+
 
   return (
     <>
@@ -324,7 +341,7 @@ const AddToCart = () => {
                     </button>
                   </div>
 
-                  <AnimatePresence>
+                  <AnimatePresence mode="wait">
                     {cartItems.map((item, index) => (
                       <motion.div
                         key={item?.productId}
@@ -366,7 +383,7 @@ const AddToCart = () => {
                                 {/* Size Selector */}
                                 <div className="size-dropdown-container">
                                   {item?.product?.sizes &&
-                                  item.product.sizes.length > 0 ? (
+                                    item.product.sizes.length > 0 ? (
                                     <div className="relative">
                                       <button
                                         onClick={() =>
@@ -458,7 +475,7 @@ const AddToCart = () => {
                               <div className="flex-1 space-y-2">
                                 {/* Buy Now Button */}
                                 <button
-                                 onClick={()=> toast.info('Feature Coming Soon 🔜 ...')}
+                                  onClick={() => toast.info('Feature Coming Soon 🔜 ...')}
                                   className="w-full px-2 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-xs disabled:opacity-50 disabled:cursor-not-allowed"
                                   disabled={isChecking}
                                 >
@@ -536,7 +553,7 @@ const AddToCart = () => {
                                 {/* Size Selector */}
                                 <div className="relative mr-4 size-dropdown-container  text-black">
                                   {item?.product?.sizes &&
-                                  item.product.sizes.length > 0 ? (
+                                    item.product.sizes.length > 0 ? (
                                     <>
                                       <button
                                         onClick={() =>
@@ -681,7 +698,7 @@ const AddToCart = () => {
                                     {/* Size Selector */}
                                     <div className="relative mr-4 size-dropdown-container">
                                       {item?.product?.sizes &&
-                                      item.product.sizes.length > 0 ? (
+                                        item.product.sizes.length > 0 ? (
                                         <>
                                           {/* Dropdown Button */}
                                           <button
@@ -694,7 +711,7 @@ const AddToCart = () => {
                                             disabled={isUpdatingProdSize}
                                           >
                                             {isAddingProdId ===
-                                            item?.productId ? (
+                                              item?.productId ? (
                                               <Loader2 className="h-5 w-5 animate-spin mx-auto" />
                                             ) : (
                                               <>
@@ -712,38 +729,38 @@ const AddToCart = () => {
                                           {/* Dropdown List */}
                                           {openSizeDropdown ===
                                             item?.productId && (
-                                            <div className="absolute z-50 top-full left-0 mt-1 w-40 bg-white border border-gray-200 rounded-md shadow-lg">
-                                              <div
-                                                className="max-h-24 overflow-y-auto"
-                                                style={{
-                                                  scrollbarWidth: "thin",
-                                                  scrollbarColor:
-                                                    "#CBD5E0 #F9FAFB",
-                                                }}
-                                              >
-                                                {item.product.sizes.map(
-                                                  (size) => (
-                                                    <button
-                                                      key={size}
-                                                      onClick={() =>
-                                                        handleSizeSelect(
-                                                          item?.productId,
-                                                          size
-                                                        )
-                                                      }
-                                                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
-                                                      disabled={
-                                                        isAddingProdId ===
-                                                        item?.productId
-                                                      }
-                                                    >
-                                                      {size}
-                                                    </button>
-                                                  )
-                                                )}
+                                              <div className="absolute z-50 top-full left-0 mt-1 w-40 bg-white border border-gray-200 rounded-md shadow-lg">
+                                                <div
+                                                  className="max-h-24 overflow-y-auto"
+                                                  style={{
+                                                    scrollbarWidth: "thin",
+                                                    scrollbarColor:
+                                                      "#CBD5E0 #F9FAFB",
+                                                  }}
+                                                >
+                                                  {item.product.sizes.map(
+                                                    (size) => (
+                                                      <button
+                                                        key={size}
+                                                        onClick={() =>
+                                                          handleSizeSelect(
+                                                            item?.productId,
+                                                            size
+                                                          )
+                                                        }
+                                                        className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                                                        disabled={
+                                                          isAddingProdId ===
+                                                          item?.productId
+                                                        }
+                                                      >
+                                                        {size}
+                                                      </button>
+                                                    )
+                                                  )}
+                                                </div>
                                               </div>
-                                            </div>
-                                          )}
+                                            )}
                                         </>
                                       ) : (
                                         <div className="px-2 py-1 border border-gray-300 rounded-md bg-white text-gray-700">
@@ -907,7 +924,7 @@ const AddToCart = () => {
                           <motion.div
                             whileHover={{ y: -5 }}
                             className="bg-white rounded-xl shadow-md overflow-hidden h-full flex flex-col"
-                            
+
                           >
                             <Link to={`/productshow/${product.id}`}>
                               <div className="aspect-square relative">
@@ -931,7 +948,7 @@ const AddToCart = () => {
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 className="mt-3 w-full bg-blue-600 text-white font-medium py-2 rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center text-sm"
-                                onClick={()=> toast.info('Feature Coming Soon 🔜 ...')}
+                                onClick={() => toast.info('Feature Coming Soon 🔜 ...')}
                               >
                                 <Plus className="h-4 w-4 mr-1" /> Add to Cart
                               </motion.button>
@@ -975,9 +992,10 @@ const AddToCart = () => {
                     <span>Order Total:</span>
                     <span>₹{total.toFixed(2)}</span>
                   </div>
-                  <Link to={"/checkout"} state={{total: total}}>
+                  {/* <Link to={"/checkout"}> */}
                   <button
                     // onClick={handleCheckout}
+                    onClick={handleProceed}
                     className="w-full h hover:cursor-pointer bg-green-600 text-white py-3 mt-6 rounded-lg flex items-center justify-center hover:bg-green-700 transition-colors font-semibold shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={isChecking || cartItems.length === 0}
                   >
@@ -988,7 +1006,7 @@ const AddToCart = () => {
                     )}
                     {isChecking ? "Processing..." : "Proceed to Checkout"}
                   </button>
-                  </Link>
+                  {/* </Link> */}
 
                   <div className="mt-6 space-y-3 text-sm text-gray-500">
                     <div className="flex items-center">

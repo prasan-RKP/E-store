@@ -22,6 +22,10 @@ import {
 } from 'lucide-react';
 import { useOrderStore } from '../store/OrderStore.js';
 import OrderHistorySkeletonPage from '../skeletons/OrderHistorySkeleton';
+import { motion } from 'framer-motion';
+import { toast } from 'sonner';
+import { userAuthStore } from '../store/authStore.js';
+import { RiLoader4Line } from 'react-icons/ri';
 
 
 const OrderHistoryPage = () => {
@@ -30,10 +34,14 @@ const OrderHistoryPage = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [expandedItems, setExpandedItems] = useState(new Set());
   const [length, setLength] = useState(0);
+  const [isAddingToCart, setIsAddingToCart] = useState(null);
 
-  // API call for fetching orders
+  // State management destructured functions. 
   const { fetchOrder, order, isFetchingOrder } = useOrderStore();
+  const { addCart } = userAuthStore();
 
+
+  // Intial API call to fetch orders
   useEffect(() => {
     const loadOrders = async () => {
       await fetchOrder();
@@ -163,8 +171,19 @@ const OrderHistoryPage = () => {
     setOrders(updatedOrders);
   };
 
-  const shopAgain = (item) => {
-    alert(`Added "${item.name}" to cart for reorder!`);
+  // feature:- The ordered products will be added to the cart for re-order
+  const shopAgain = async (item) => {
+    //alert(`Adding "${item.id}" to cart for re-order`);
+    if (item) {
+      setIsAddingToCart(item.id);
+      await addCart({ productId: item.id, size: item.size });
+    }
+    else {
+      toast.error("Item not found in order history ❌");
+      return;
+    }
+    setIsAddingToCart(null);
+    //6850bb2ccfc30a45789a4b55
   };
 
   const downloadInvoice = (item, orderId) => {
@@ -177,50 +196,7 @@ const OrderHistoryPage = () => {
 
   // handleCancelOrder 
   const handleCancelOrder = (orderId, itemId) => {
-    const updatedOrders = [...orders];
-    let cancelledItem = null;
-
-    // Step 1: Remove the item from its original order
-    const modifiedOrders = updatedOrders.map(order => {
-      if (order.id === orderId) {
-        const updatedItems = order.items.filter(item => {
-          if (item.id === itemId) {
-            cancelledItem = { ...item, status: 'cancelled' };
-            return false;
-          }
-          return true;
-        });
-        return {
-          ...order,
-          items: updatedItems,
-          total: updatedItems.reduce((sum, i) => sum + i.price * i.quantity, 0)
-        };
-      }
-      return order;
-    }).filter(order => order.items.length > 0); // Remove empty orders
-
-    // Step 2: Merge into "Cancelled" section
-    let cancelledOrderIndex = modifiedOrders.findIndex(o => o.status === 'cancelled');
-
-    if (cancelledOrderIndex !== -1) {
-      // If cancelled group exists, add item there
-      modifiedOrders[cancelledOrderIndex].items.push(cancelledItem);
-      modifiedOrders[cancelledOrderIndex].total += cancelledItem.price * cancelledItem.quantity;
-    } else {
-      // If no cancelled group exists, create one
-      modifiedOrders.push({
-        id: `ORD-CANCELLED-${Date.now()}`,
-        date: new Date().toISOString().split('T')[0],
-        status: 'cancelled',
-        total: cancelledItem.price * cancelledItem.quantity,
-        items: [cancelledItem],
-        shippingAddress: 'N/A',
-        paymentMethod: 'N/A',
-        estimatedDelivery: 'N/A'
-      });
-    }
-
-    setOrders(modifiedOrders);
+    // Todo we will do it tommrow.
   };
 
   const filteredOrders = orders.filter(order => {
@@ -295,14 +271,35 @@ const OrderHistoryPage = () => {
         <div className="space-y-8">
           {filteredOrders.length === 0 ? (
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-12 text-center border border-white/50">
-              <Package className="w-20 h-20 text-gray-300 mx-auto mb-6" />
-              <h3 className="text-2xl font-semibold text-gray-900 mb-3">No orders found</h3>
-              <p className="text-gray-600 text-lg">
+              <motion.img
+                src="/illus/order.svg"
+                alt="No Orders"
+                className="w-40 h-40 mx-auto mb-6"
+                initial={{ opacity: 0, y: 30, rotate: -10 }}
+                animate={{ opacity: 1, y: 0, rotate: 0 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+                whileHover={{ scale: 1.05, rotate: 3 }}
+              />
+
+              <motion.h3
+                className="text-2xl font-semibold text-gray-900 mb-3"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3, duration: 0.6 }}
+              >
+                No orders found
+              </motion.h3>
+
+              <motion.p
+                className="text-gray-600 text-lg"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.6 }}
+              >
                 {orders.length === 0
                   ? "You haven't placed any orders yet"
-                  : "Try adjusting your search or filters"
-                }
-              </p>
+                  : "Try adjusting your search or filters"}
+              </motion.p>
             </div>
           ) : (
             filteredOrders.map((order) => (
@@ -424,9 +421,18 @@ const OrderHistoryPage = () => {
                               <button
                                 onClick={() => shopAgain(item)}
                                 className="hover:cursor-pointer flex items-center space-x-2 px-4 py-3 bg-gradient-to-r from-green-50 to-green-100 hover:from-green-100 hover:to-green-200 text-green-700 rounded-xl transition-all duration-300 hover:shadow-md transform hover:scale-105"
+                                disabled={isAddingToCart === item.id} // Prevent double click
                               >
-                                <ShoppingCart className="w-4 h-4" />
-                                <span className="font-medium">Shop Again</span>
+                                {isAddingToCart === item.id ? (
+                                  <span className="flex items-center justify-center">
+                                    Loading... <RiLoader4Line className="w-6 h-6 animate-spin" />
+                                  </span>
+                                ) : (
+                                  <>
+                                    <ShoppingCart className="w-4 h-4" />
+                                    <span className="font-medium">Shop Again</span>
+                                  </>
+                                )}
                               </button>
 
                               {/* Conditional rendering for cancel/delete buttons */}
