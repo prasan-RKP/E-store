@@ -26,6 +26,7 @@ import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { userAuthStore } from '../store/authStore.js';
 import { RiLoader4Line } from 'react-icons/ri';
+import { Link } from 'react-router-dom';
 
 
 const OrderHistoryPage = () => {
@@ -335,17 +336,20 @@ const OrderHistoryPage = () => {
                       <div key={item.id} className="group">
                         <div className="flex items-center justify-between p-6 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl hover:from-blue-50 hover:to-purple-50 transition-all duration-300 border border-gray-200 hover:border-blue-200">
                           <div className="flex items-center space-x-4 flex-1">
-                            <div className="relative overflow-hidden rounded-xl">
-                              <img
-                                src={item.image || `https://images.unsplash.com/photo-${1500000000 + parseInt(item.id)}?w=600&auto=format&fit=crop&q=60`}
-                                alt={item.name}
-                                className="w-20 h-20 rounded-xl object-cover transition-transform duration-300 group-hover:scale-110"
-                                onError={(e) => {
-                                  e.target.src = `https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600&auto=format&fit=crop&q=60`;
-                                }}
-                              />
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                            </div>
+                            <Link to={`/productshow/${item?.id}`}>
+                              <div className="hover:cursor-pointer relative overflow-hidden rounded-xl">
+                                <img
+                                  src={item.image || `https://as1.ftcdn.net/v2/jpg/11/07/10/76/1000_F_1107107684_npR9Dk3AmlvssBE7MGwKTwHzRrEgdlzl.jpg`}
+                                  alt={item.name}
+                                  className="hover:cursor-pointer w-20 h-20 rounded-xl object-cover transition-transform duration-300 group-hover:scale-110"
+                                  onError={(e) => {
+                                    e.target.src = `https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600&auto=format&fit=crop&q=60`;
+                                  }}
+                                />
+
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                              </div>
+                            </Link>
                             <div className="flex-1 min-w-0">
                               <p className="text-lg font-semibold text-gray-900 truncate group-hover:text-blue-600 transition-colors">
                                 {item.name}
