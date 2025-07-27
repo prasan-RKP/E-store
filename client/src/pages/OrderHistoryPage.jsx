@@ -196,8 +196,9 @@ const OrderHistoryPage = () => {
   };
 
   // handleCancelOrder 
-  const handleCancelOrder = (orderId, itemId) => {
+  const handleCancelOrder = (orderId, itemName) => {
     // Todo we will do it tommrow.
+    console.log(`Cancelling ItemId: ${itemName}`);
   };
 
   const filteredOrders = orders.filter(order => {
@@ -442,7 +443,7 @@ const OrderHistoryPage = () => {
                               {/* Conditional rendering for cancel/delete buttons */}
                               {order.status === 'shipped' || order.status === 'processing' ? (
                                 <button
-                                  onClick={() => handleCancelOrder(order.id, item.id)}
+                                  onClick={() => handleCancelOrder(order.id, item._id)}
                                   className="flex items-center space-x-2 px-4 py-3 bg-gradient-to-r from-red-50 to-red-100 hover:from-red-100 hover:to-red-200 text-red-700 rounded-xl transition-all duration-300 hover:shadow-md transform hover:scale-105 hover:cursor-pointer"
                                 >
                                   <X className="w-4 h-4" />
