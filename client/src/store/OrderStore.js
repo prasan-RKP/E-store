@@ -24,19 +24,19 @@ export const useOrderStore = create((set, get) => ({
   },
 
   cancelOrder: async (data) => {
-    set({ isCancelingOrder: true });
-    try {
-      const res = await orderInstance.put("/cancelOrder", data);
-      set({ order: res.data });
-      toast.success("Order canceled successfully 📦");
-    } catch (error) {
-      if (error.response) {
-        toast.error(error.response.data.message);
-      } else {
-        toast.error("Something Went Wrong...");
-      }
-    } finally {
-      set({ isCancelingOrder: false });
+  set({ isCancelingOrder: true });
+  try {
+    const res = await orderInstance.put("/cancelOrder", data);
+    set({ order: res.data }); // ✅ But this might replace `order` state with raw API response
+    toast.success("Order cancelled successfully 📦");
+  } catch (error) {
+    if (error.response) {
+      toast.error(error.response.data.message);
+    } else {
+      toast.error("Something Went Wrong...");
     }
-  },
+  } finally {
+    set({ isCancelingOrder: false });
+  }
+}
 }));

@@ -17,6 +17,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { FaShippingFast, FaLock } from "react-icons/fa";
+import { GoPackage } from "react-icons/go";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
@@ -25,6 +26,7 @@ import { userAuthStore } from "../store/authStore.js";
 import AddToCartSkeleton from "../skeletons/AddToCartSkeleton.jsx";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useOrderStore } from "../store/OrderStore.js";
 
 const AddToCart = () => {
   const {
@@ -40,6 +42,8 @@ const AddToCart = () => {
     removeAllCartItems,
     isRemovingAllCartItem,
   } = userAuthStore();
+
+  const {order, fetchOrder} = useOrderStore();
 
   const [showCart, setShowCart] = useState(true);
   const [isChecking, setIsChecking] = useState(false);
@@ -64,6 +68,16 @@ const AddToCart = () => {
 
 
   console.log("CartItems", verifiedUser);
+  // TODO: for tommorow to show the orders length
+
+  // useEffect(()=> {
+  //   const callOrder = async() => {
+  //         await fetchOrder();
+  //   }
+
+  //   callOrder();
+  // }, [])
+  // console.log("The orders", order);
 
 
   // Check if device is mobile (keeping this for general mobile-specific logic if needed elsewhere)
@@ -299,7 +313,7 @@ const AddToCart = () => {
                   </Link>
 
                   <button className="relative cursor-pointer">
-                    <ShoppingCart className="h-6 w-6 text-gray-600" />
+                    <GoPackage className="h-6 w-6 hover:text-amber-800 text-gray-600" />
                     <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                       {cartItems.length}
                     </span>

@@ -102,46 +102,46 @@ const MenAccessories = () => {
 
   // Hero section slides
   const heroSlides = useMemo(
-  () => [
-    {
-      uid: 1,
-      image:
-        "https://res.cloudinary.com/dlkmhoueb/image/upload/f_auto,q_auto/v1751508396/ecom_store/slider/sjrkvgp6mmfh4adgoqwg.jpg",
-      title: "Summer Collection",
-      subtitle: "Discover the latest trends for hot days",
-      cta: "Shop Now",
-    },
-    {
-      uid: 2,
-      image:
-        "https://res.cloudinary.com/dlkmhoueb/image/upload/f_auto,q_auto/v1751508408/ecom_store/slider/scgi4a2cyx0ucflj0dbm.jpg",
-      title: "Premium Denim",
-      subtitle: "Quality jeans for every occasion",
-      cta: "View Collection",
-    },
-    {
-      uid: 3,
-      image:
-        "https://res.cloudinary.com/dlkmhoueb/image/upload/f_auto,q_auto/v1751508415/ecom_store/slider/bub0xfkz3dyv18gkdpkt.jpg",
-      title: "New Arrivals",
-      subtitle: "Be the first to wear our latest styles",
-      cta: "Explore",
-    },
-    {
-      uid: 4,
-      image:
-        "https://res.cloudinary.com/dlkmhoueb/image/upload/f_auto,q_auto/v1751508458/ecom_store/slider/xlmdpofqx9vtnp7xsznv.jpg",
-      title: "Spring Sale",
-      subtitle: "Up to 40% off select items",
-      cta: "Shop Sale",
-    },
-  ],
-  []
-);
+    () => [
+      {
+        uid: 1,
+        image:
+          "https://res.cloudinary.com/dlkmhoueb/image/upload/f_auto,q_auto/v1751508396/ecom_store/slider/sjrkvgp6mmfh4adgoqwg.jpg",
+        title: "Summer Collection",
+        subtitle: "Discover the latest trends for hot days",
+        cta: "Shop Now",
+      },
+      {
+        uid: 2,
+        image:
+          "https://res.cloudinary.com/dlkmhoueb/image/upload/f_auto,q_auto/v1751508408/ecom_store/slider/scgi4a2cyx0ucflj0dbm.jpg",
+        title: "Premium Denim",
+        subtitle: "Quality jeans for every occasion",
+        cta: "View Collection",
+      },
+      {
+        uid: 3,
+        image:
+          "https://res.cloudinary.com/dlkmhoueb/image/upload/f_auto,q_auto/v1751508415/ecom_store/slider/bub0xfkz3dyv18gkdpkt.jpg",
+        title: "New Arrivals",
+        subtitle: "Be the first to wear our latest styles",
+        cta: "Explore",
+      },
+      {
+        uid: 4,
+        image:
+          "https://res.cloudinary.com/dlkmhoueb/image/upload/f_auto,q_auto/v1751508458/ecom_store/slider/xlmdpofqx9vtnp7xsznv.jpg",
+        title: "Spring Sale",
+        subtitle: "Up to 40% off select items",
+        cta: "Shop Sale",
+      },
+    ],
+    []
+  );
 
 
   // Featured outfit combinations
-  
+
 
   //Sample products
 
@@ -210,7 +210,7 @@ const MenAccessories = () => {
       // Size filter
       const matchesSize =
         selectedSizes.length === 0 ||
-        product.sizes.some((size) => selectedSizes.includes(size));
+        (Array.isArray(product.sizes) && product.sizes.some((size) => selectedSizes.includes(size)));
 
       // Rating filter
       const matchesRating =
@@ -385,11 +385,10 @@ const MenAccessories = () => {
                   <button
                     key={index}
                     onClick={() => setCurrentSlide(index)}
-                    className={`w-2 h-2 rounded-full transition-all ${
-                      index === currentSlide
+                    className={`w-2 h-2 rounded-full transition-all ${index === currentSlide
                         ? "w-8 bg-primary"
                         : "bg-white bg-opacity-50 hover:bg-opacity-75"
-                    }`}
+                      }`}
                   />
                 ))}
               </div>
@@ -488,19 +487,17 @@ const MenAccessories = () => {
                         <li key={category.id}>
                           <button
                             onClick={() => setActiveCategory(category.name)}
-                            className={`w-full flex justify-between items-center py-2.5 px-4 rounded-xl transition-all ${
-                              activeCategory === category.name
+                            className={`w-full flex justify-between items-center py-2.5 px-4 rounded-xl transition-all ${activeCategory === category.name
                                 ? "bg-primary text-white font-medium"
                                 : "text-white hover:bg-gray-700 hover:bg-opacity-10"
-                            }`}
+                              }`}
                           >
                             <span>{category.name}</span>
                             <span
-                              className={`text-sm px-2 py-0.5 rounded-full ${
-                                activeCategory === category.name
+                              className={`text-sm px-2 py-0.5 rounded-full ${activeCategory === category.name
                                   ? "bg-white bg-opacity-20"
                                   : "bg-white bg-opacity-10"
-                              }`}
+                                }`}
                             >
                               {category.count}
                             </span>
@@ -649,11 +646,10 @@ const MenAccessories = () => {
                             {Array.from({ length: 5 }).map((_, index) => (
                               <Star
                                 key={index}
-                                className={`h-4 w-4 ${
-                                  index < rating
+                                className={`h-4 w-4 ${index < rating
                                     ? "text-yellow-400"
                                     : "text-gray-500"
-                                }`}
+                                  }`}
                                 fill={index < rating ? "#FACC15" : "none"}
                               />
                             ))}
@@ -705,30 +701,28 @@ const MenAccessories = () => {
                         </div>
 
                         {/* Categories for Mobile */}
-                        <div className="bg-white bg-opacity-5 backdrop-blur-sm rounded-2xl p-4 mb-6">
+                        <div className="bg-[#4b447b] bg-opacity-5 backdrop-blur-sm rounded-2xl p-4 mb-6">
                           <h2 className="text-lg font-bold text-white mb-3">
                             Categories
                           </h2>
                           <ul className="space-y-2">
                             {categories.map((category) => (
-                              <li key={categoryproduct.uid}>
+                              <li key={category.uid}>
                                 <button
                                   onClick={() => {
                                     setActiveCategory(category.name);
                                   }}
-                                  className={`w-full flex justify-between items-center py-2 px-3 rounded-xl transition-all ${
-                                    activeCategory === category.name
+                                  className={`w-full flex justify-between items-center py-2 px-3 rounded-xl transition-all ${activeCategory === category.name
                                       ? "bg-primary text-white font-medium"
-                                      : "text-white hover:bg-white hover:bg-opacity-10"
-                                  }`}
+                                      : "text-white hover:bg-gray-500 hover:bg-opacity-10"
+                                    }`}
                                 >
                                   <span>{category.name}</span>
                                   <span
-                                    className={`text-sm px-2 py-0.5 rounded-full ${
-                                      activeCategory === category.name
+                                    className={`text-sm px-2 py-0.5 rounded-full ${activeCategory === category.name
                                         ? "bg-white bg-opacity-20"
                                         : "bg-white bg-opacity-10"
-                                    }`}
+                                      }`}
                                   >
                                     {category.count}
                                   </span>
@@ -739,7 +733,7 @@ const MenAccessories = () => {
                         </div>
 
                         {/* Price Range for Mobile */}
-                        <div className="bg-white bg-opacity-5 backdrop-blur-sm rounded-2xl p-4 mb-6">
+                        <div className="bg-[#4b447b] bg-opacity-5 backdrop-blur-sm rounded-2xl p-4 mb-6">
                           <h2 className="text-lg font-bold text-white mb-3">
                             Price Range
                           </h2>
@@ -778,7 +772,7 @@ const MenAccessories = () => {
                         </div>
 
                         {/* Size Filter for Mobile */}
-                        <div className="bg-white bg-opacity-5 backdrop-blur-sm rounded-2xl p-4 mb-6">
+                        <div className="bg-[#4b447b] bg-opacity-5 backdrop-blur-sm rounded-2xl p-4 mb-6">
                           <h2 className="text-lg font-bold text-white mb-3">
                             Size
                           </h2>
@@ -787,11 +781,10 @@ const MenAccessories = () => {
                               <button
                                 key={size}
                                 onClick={() => toggleSize(size)}
-                                className={`flex items-center justify-center w-12 h-12 rounded-lg text-white transition-colors ${
-                                  selectedSizes.includes(size)
+                                className={`flex items-center justify-center w-12 h-12 rounded-lg text-gray-700 transition-colors ${selectedSizes.includes(size)
                                     ? "bg-primary text-white"
                                     : "bg-white bg-opacity-10 hover:bg-white hover:bg-opacity-20"
-                                }`}
+                                  }`}
                               >
                                 {size}
                               </button>
@@ -800,7 +793,7 @@ const MenAccessories = () => {
                         </div>
 
                         {/* Discount Filter for Mobile */}
-                        <div className="bg-white bg-opacity-5 backdrop-blur-sm rounded-2xl p-4 mb-6">
+                        <div className="bg-[#4b447b] bg-opacity-5 backdrop-blur-sm rounded-2xl p-4 mb-6">
                           <h2 className="text-lg font-bold text-white mb-3">
                             Discount
                           </h2>
@@ -826,7 +819,7 @@ const MenAccessories = () => {
                         </div>
 
                         {/* Rating Filter for Mobile */}
-                        <div className="bg-white bg-opacity-5 backdrop-blur-sm rounded-2xl p-4">
+                        <div className="bg-[#4b447b] bg-opacity-5 backdrop-blur-sm rounded-2xl p-4">
                           <h2 className="text-lg font-bold text-white mb-3">
                             Customer Rating
                           </h2>
@@ -851,11 +844,10 @@ const MenAccessories = () => {
                                   {Array.from({ length: 5 }).map((_, index) => (
                                     <Star
                                       key={index}
-                                      className={`h-4 w-4 ${
-                                        index < rating
+                                      className={`h-4 w-4 ${index < rating
                                           ? "text-yellow-400"
                                           : "text-gray-500"
-                                      }`}
+                                        }`}
                                       fill={index < rating ? "#FACC15" : "none"}
                                     />
                                   ))}
@@ -940,11 +932,10 @@ const MenAccessories = () => {
                                 {Array.from({ length: 5 }).map((_, index) => (
                                   <Star
                                     key={index}
-                                    className={`h-4 w-4 ${
-                                      index < product.rating
+                                    className={`h-4 w-4 ${index < product.rating
                                         ? "text-yellow-400"
                                         : "text-gray-500"
-                                    }`}
+                                      }`}
                                     fill={
                                       index < product.rating
                                         ? "#FACC15"

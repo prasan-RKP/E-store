@@ -1,85 +1,97 @@
-import express from 'express';
-import Order from '../src/model/OrderPlace.js';
-import { protectedRoute } from '../src/middleware/middleware.js';
+import express from "express";
+import Order from "../src/model/OrderPlace.js";
+import { protectedRoute } from "../src/middleware/middleware.js";
 
 const router = express.Router();
 
-router.get('/fetchOrder', async (req, res) => {
-    
-    try {
-        const orders = await Order.find();
-        if(!orders) {
-            return res.status(400).json({message: "Unable to Fetching Orders now..."});
-        }
-
-        return res.status(200).json(orders);
-    } catch (error) {
-        console.log("Error in Fetching orders", error);
-        return res.status(500).json({message: "Internal Server Error"});
-    }
-});
-
-/*
-TODO:- for tommorow
-router.get('/fetchOrder', async (req, res) => {
+router.get("/fetchOrder", async (req, res) => {
   try {
     const orders = await Order.find();
 
-    if (!orders || orders.length === 0) {
-      return res.status(404).json({ message: "No orders found" });
+    if (orders.length === 0 || !orders) {
+      return res.status(404).json({ message: "No Orders Found.." });
     }
 
-    // Transform orders for frontend
-    const transformedOrders = orders.map(order => ({
-      id: order.orderNumber || order._id.toString(),  // For UI
-      date: new Date(order.createdAt).toISOString().split('T')[0],
-      status: getOrderStatus(order.items),  // Determine overall order status
+    const transformedOrders = orders.map((order) => ({
+      id: order._id.toString(),
+      date: new Date(order.createdAt).toISOString().split("T")[0],
       total: order.totalAmount,
-      items: order.items.map(item => ({
-        _id: item._id,      // ✅ Keep DB _id for cancel API
-        uid: item.uid,      // Original UID
-        name: item.prodName,
-        price: item.prodPrice,
-        quantity: item.prodQuantity,
-        image: item.prodImage,
-        size: item.prodSize,
-        status: item.prodStatus
-      })),
+      orderNumber: order.orderNumber,
       shippingAddress: order.shippingAddress,
       paymentMethod: order.paymentMethod,
       estimatedDelivery: order.deliveryTime,
       customerName: order.customerName,
       customerEmail: order.customerEmail,
       customerPhoneNo: order.customerPhoneNo,
-      zipCode: order.zipCode
+      zipcode: order.zipCode,
+      items: order.items.map((item) => ({
+        pid: item.uid, // help to get acces from where the product Came(mean from which schema "Men", "Women", "Accessory", "Footwears")
+        id: item._id,
+        name: item.prodName,
+        price: item.prodPrice,
+        quantity: item.prodQuantity,
+        image: item.prodImage,
+        size: item.prodSize,
+        status: item.prodStatus,
+      })),
     }));
 
-    return res.status(200).json(transformedOrders);
+    return res.status(200).json({ orders: transformedOrders });
   } catch (error) {
-    console.error("Error in Fetching orders:", error);
+    console.log("Error in Fetching orders", error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
-// Helper function to calculate overall order status
-function getOrderStatus(items) {
-  if (!items || items.length === 0) return 'unknown';
+router.put("/cancelOrder", protectedRoute, async (req, res) => {
+  const { orderId, itemId } = req.body;
 
-  const statuses = items.map(item => item.prodStatus);
-  const uniqueStatuses = [...new Set(statuses)];
+  try {
+    if (!orderId)
+      return res.status(400).json({ message: "Your Order not Found" });
+    if (!itemId)
+      return res.status(400).json({ message: "Your Product not Found" });
 
-  if (uniqueStatuses.length === 1) return uniqueStatuses[0];
-  if (statuses.includes('cancelled')) return 'cancelled';
-  if (statuses.includes('delivered')) return 'delivered';
-  if (statuses.includes('shipped')) return 'shipped';
-  return 'processing'; // Default
-}
+    const order = await Order.findById(orderId);
+    if (!order) return res.status(404).json({ message: "Order not found" });
 
+    const item = order.items.id(itemId);
+    if (!item)
+      return res.status(404).json({ message: "Item not found in the order" });
 
-*/
+    // Update status
+    item.prodStatus = "cancelled";
+    await order.save();
 
-router.put("/cancelOrder", protectedRoute, async(req, res)=> {
-    // Todo:- Tommorow task 
-})
+    // ✅ Transform order for consistency
+    const transformedOrder = {
+      id: order._id.toString(),
+      date: new Date(order.createdAt).toISOString().split("T")[0],
+      total: order.totalAmount,
+      orderNumber: order.orderNumber,
+      shippingAddress: order.shippingAddress,
+      paymentMethod: order.paymentMethod,
+      estimatedDelivery: order.deliveryTime,
+      customerName: order.customerName,
+      customerEmail: order.customerEmail,
+      customerPhoneNo: order.customerPhoneNo,
+      zipcode: order.zipCode,
+      items: order.items.map((item) => ({
+        id: item._id,
+        name: item.prodName,
+        price: item.prodPrice,
+        quantity: item.prodQuantity,
+        image: item.prodImage,
+        size: item.prodSize,
+        status: item.prodStatus,
+      })),
+    };
+
+    return res.status(200).json({ order: transformedOrder });
+  } catch (error) {
+    console.error("Cancel Order Error:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
 
 export default router;
