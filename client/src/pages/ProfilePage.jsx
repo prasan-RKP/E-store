@@ -34,26 +34,19 @@ import {
   Loader2,
 } from "lucide-react";
 import { userAuthStore } from "../store/authStore.js";
+import { GoPackage } from "react-icons/go";
+import { useProdStore } from "../store/prodStore.js";
 //import {toast} from 'sonner';
 
 const ProfilePage = () => {
   // userAuthStore access here --->
-  const {
-    logout,
-    verifiedUser,
-    checkAuthVerify,
-    isSavingChanges,
-    saveChange,
-    showWishListItem,
-    removeWishListProd,
-    moveToAddCart,
-  } = userAuthStore();
 
   const MotionLink = motion(Link);
 
   // console.log('verifedUser', verifiedUser);
 
   const naviagte = useNavigate();
+  const [length, setLength] = useState(0);
   const [cartId, setCartId] = useState(null);
   const [storeProdId, setStoreProdId] = useState(null);
   const [wishItems, setWishItems] = useState([]);
@@ -136,7 +129,37 @@ const ProfilePage = () => {
     ],
   });
 
+
   // Authstores values
+  const {
+    logout,
+    verifiedUser,
+    checkAuthVerify,
+    isSavingChanges,
+    saveChange,
+    showWishListItem,
+    removeWishListProd,
+    moveToAddCart,
+  } = userAuthStore();
+
+  // OrderStore values
+  const {order, orderItemLength, fetchOrder} = useProdStore();
+
+  // To set the totalOrder length -> functionality 
+  // Todo: Tommorow
+  useEffect(() => {
+      const loadOrders = async () => {
+        await fetchOrder();
+      };
+      loadOrders();
+    }, [fetchOrder]);
+  
+    useEffect(() => {
+      setLength(orderItemLength || 0);
+    }, [orderItemLength])
+
+   // console.log('The orderLength', order?.orders);
+  // 
 
   const [profileInfo, setProfileInfo] = useState({
     username: verifiedUser?.username || "@john Doe",
@@ -726,12 +749,12 @@ const ProfilePage = () => {
               </motion.div>
 
               <motion.div whileHover={{ scale: 1.1 }} className="relative">
-                <Bell
+                <GoPackage
                   size={24}
                   className="text-gray-300 hover:text-white cursor-pointer"
                 />
                 <span className="absolute -top-2 -right-2 bg-pink-600 text-xs text-white w-5 h-5 flex items-center justify-center rounded-full">
-                  2
+                  {length}
                 </span>
               </motion.div>
               {/* nav Profile Image */}

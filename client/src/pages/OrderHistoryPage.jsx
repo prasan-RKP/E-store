@@ -40,7 +40,7 @@ const OrderHistoryPage = () => {
   const [isCancelling, setIsCancelling] = useState(null);
 
   // State management destructured functions. 
-  const { fetchOrder, order, isFetchingOrder, cancelOrder } = useOrderStore();
+  const { fetchOrder, order, isFetchingOrder, cancelOrder, orderItemLength } = useOrderStore();
   const { addCart } = userAuthStore();
 
 
@@ -87,7 +87,7 @@ const OrderHistoryPage = () => {
     }
   }, [orders]);
 
-  console.log("The orders in FRTND", orders);
+  //console.log("The updated orderLength", orderItemLength);
   console.log("All flattened order items:", allOrderItems);
 
   //feature:-  It will count the totalOrders (now counting individual items)

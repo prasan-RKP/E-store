@@ -43,7 +43,7 @@ const AddToCart = () => {
     isRemovingAllCartItem,
   } = userAuthStore();
 
-  const {order, fetchOrder} = useOrderStore();
+
 
   const [showCart, setShowCart] = useState(true);
   const [isChecking, setIsChecking] = useState(false);
@@ -56,6 +56,22 @@ const AddToCart = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [isAddingProdId, setIsAddingProdId] = useState(null);
   const [wishlistItems, setWishlistItems] = useState([]);
+  const [length, setLength] = useState(0);
+
+  const { order, orderItemLength, fetchOrder } = useOrderStore();
+
+  useEffect(() => {
+    const loadOrders = async () => {
+      await fetchOrder();
+    };
+    loadOrders();
+  }, [fetchOrder]);
+
+  useEffect(() => {
+    setLength(orderItemLength || 0);
+  }, [orderItemLength])
+
+  console.log("The orders length is", order)
 
   // Calculate total amount
   const subtotal = cartItems?.reduce(
@@ -68,17 +84,6 @@ const AddToCart = () => {
 
 
   console.log("CartItems", verifiedUser);
-  // TODO: for tommorow to show the orders length
-
-  // useEffect(()=> {
-  //   const callOrder = async() => {
-  //         await fetchOrder();
-  //   }
-
-  //   callOrder();
-  // }, [])
-  // console.log("The orders", order);
-
 
   // Check if device is mobile (keeping this for general mobile-specific logic if needed elsewhere)
   useEffect(() => {
@@ -312,12 +317,14 @@ const AddToCart = () => {
                     </button>
                   </Link>
 
-                  <button className="relative cursor-pointer">
-                    <GoPackage className="h-6 w-6 hover:text-amber-800 text-gray-600" />
-                    <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                      {cartItems.length}
-                    </span>
-                  </button>
+                  <Link to={"/showorder"}>
+                    <button className="relative cursor-pointer">
+                      <GoPackage className="h-6 w-6 hover:text-amber-800 text-gray-600" />
+                      <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                        {length}
+                      </span>
+                    </button>
+                  </Link>
                 </div>
               </div>
             </div>
