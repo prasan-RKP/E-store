@@ -35,11 +35,25 @@ import {
 } from "lucide-react";
 import { userAuthStore } from "../store/authStore.js";
 import { GoPackage } from "react-icons/go";
-import { useProdStore } from "../store/prodStore.js";
+import { useOrderStore } from "../store/OrderStore.js";
 //import {toast} from 'sonner';
 
 const ProfilePage = () => {
   // userAuthStore access here --->
+   // Authstores values
+  const {
+    logout,
+    verifiedUser,
+    checkAuthVerify,
+    isSavingChanges,
+    saveChange,
+    showWishListItem,
+    removeWishListProd,
+    moveToAddCart,
+  } = userAuthStore();
+
+  // OrderStore values
+  const {order, orderItemLength, fetchOrder} = useOrderStore();
 
   const MotionLink = motion(Link);
 
@@ -130,20 +144,7 @@ const ProfilePage = () => {
   });
 
 
-  // Authstores values
-  const {
-    logout,
-    verifiedUser,
-    checkAuthVerify,
-    isSavingChanges,
-    saveChange,
-    showWishListItem,
-    removeWishListProd,
-    moveToAddCart,
-  } = userAuthStore();
-
-  // OrderStore values
-  const {order, orderItemLength, fetchOrder} = useProdStore();
+ 
 
   // To set the totalOrder length -> functionality 
   // Todo: Tommorow
@@ -749,6 +750,7 @@ const ProfilePage = () => {
               </motion.div>
 
               <motion.div whileHover={{ scale: 1.1 }} className="relative">
+                <Link to={"/showorder"}>
                 <GoPackage
                   size={24}
                   className="text-gray-300 hover:text-white cursor-pointer"
@@ -756,6 +758,7 @@ const ProfilePage = () => {
                 <span className="absolute -top-2 -right-2 bg-pink-600 text-xs text-white w-5 h-5 flex items-center justify-center rounded-full">
                   {length}
                 </span>
+                </Link>
               </motion.div>
               {/* nav Profile Image */}
               <img

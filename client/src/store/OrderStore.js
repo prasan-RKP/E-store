@@ -20,7 +20,7 @@ export const useOrderStore = create((set, get) => ({
         (sum, order) => sum + (order.items?.length || 0),
         0
       );
-      set({orderItemLength: totalItems});
+      set({ orderItemLength: totalItems });
     } catch (error) {
       if (error.response) {
         toast.error(error.response.data.message);
