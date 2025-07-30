@@ -29,6 +29,8 @@ import { RiLoader4Line } from "react-icons/ri";
 import { Link } from "react-router-dom";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import "../../customs/WomenCloth.css";
+import { useOrderStore } from "../../store/OrderStore.js";
+import { GoPackage } from "react-icons/go";
 
 // <img alt="Casual Linen Shirt" class="w-full h-72 object-cover" src="https://res.cloudinary.com/dkaxf2nqt/image/upload/v1713692108/womenCollection/shirt1.jpg">
 
@@ -50,9 +52,15 @@ const WomenClothing = () => {
   const [wishlist, setWishlist] = useState({});
   const [isAddingToWishList, setIsAddingToWishList] = useState(null);
   const [wishItems, setWishItems] = useState([]);
+  const [length, setLength] = useState(0)
+
+
   //console.log("Imported outfit", outfitCombinations1);
+  // Store Values from the store like 'userAuthStore' ,'useProdStore' & 'useOrderStore'
   const { fetchingWomenCloth, products } = useProdStore();
   const { verifiedUser, addCart, fetchWishListProd } = userAuthStore();
+  const {orderItemLength, fetchOrder}  =  useOrderStore();
+
 
   // Categories for filtering
   const categories = [
@@ -142,8 +150,20 @@ const WomenClothing = () => {
 
   //const allSizes = ["M", "L", "XL", "XXL"];
 
-  // Fetching Women Collection
+  // Fectching orders And set the length of orders
+useEffect(() => {
+    const loadOrders = async () => {
+      await fetchOrder();
+    };
+    loadOrders();
+  }, [fetchOrder]);
 
+  useEffect(() => {
+    setLength(orderItemLength || 0);
+  }, [orderItemLength])
+  
+
+  // Fetching Women Collection
   useEffect(() => {
     fetchingWomenCloth();
     setCartItems(verifiedUser?.cart || []);
@@ -346,6 +366,17 @@ const WomenClothing = () => {
                     <Star className="h-5 w-5 mr-1" />
                     <span className="hidden sm:inline">Rate Us</span>
                   </button> */}
+
+                  <div className="relative ">
+                    <Link to={"/showorder"}>
+                      <button className="text-white flex items-center hover:text-primary hover:cursor-pointer transition-colors">
+                        <GoPackage className="h-5 w-5" />
+                        <span className="absolute -top-2 -right-2 bg-primary text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                          {length}
+                        </span>
+                      </button>
+                    </Link>
+                  </div>
 
                   <div className="relative ">
                     <Link to={"/addtocart"}>

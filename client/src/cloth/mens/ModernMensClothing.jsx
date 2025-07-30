@@ -22,12 +22,13 @@ import { useProdStore } from "../../store/prodStore.js";
 import AccSkeleton from "../../skeletons/AccSkeleton.jsx";
 import { RiLoader4Line } from "react-icons/ri";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { useOrderStore } from "../../store/OrderStore.js";
+import { GoPackage } from "react-icons/go";
 //import {Link} from 'react-router-dom';
 
 const ModernMensClothing = () => {
   const [selectedSize, setSelectedSize] = useState({});
   const [dropdownOpen, setDropdownOpen] = useState(null);
-
   const [cartItems, setCartItems] = useState([]);
   const [wishItems, setWishItems] = useState([]);
   const [activeCategory, setActiveCategory] = useState("All");
@@ -42,12 +43,14 @@ const ModernMensClothing = () => {
   const [isAddingToCart, setIsAddingToCart] = useState(null);
   const [isAddingToWishList, setIsAddingToWishList] = useState(null);
   const [wishlist, setWishlist] = useState({});
+  const [length, setLength] = useState(0);
 
   //console.log('IMported heroSlides:', Array.isArray(heroSlides1) ? heroSlides1 : 'Not an array');
 
   const { addCart, verifiedUser, fetchWishListProd, isWishListing } =
     userAuthStore();
   const { fetchingMenCloth, products } = useProdStore();
+  const { orderItemLength, fetchOrder } = useOrderStore();
 
   const handleAddtoCart = async (id, size) => {
     const selected = selectedSize[id];
@@ -128,6 +131,20 @@ const ModernMensClothing = () => {
 
   // ----------  Dynamic functionality goes here...   -------------
 
+  /// Fetching OrdersLength 
+  useEffect(() => {
+    const loadOrders = async () => {
+      await fetchOrder();
+    };
+    loadOrders();
+  }, [fetchOrder]);
+
+  useEffect(() => {
+    setLength(orderItemLength || 0);
+  }, [orderItemLength])
+
+  //console.log("Order Item Length:", length);
+
   useEffect(() => {
     fetchingMenCloth();
     setCartItems(verifiedUser?.cart || []);
@@ -140,9 +157,6 @@ const ModernMensClothing = () => {
 
   let isLoading = allProducts.length === 0;
 
-  //console.log("All Prods", allProducts);
-
-  // Todo from here.....
 
   // ----------  Dynamic functionality Ends here...   -------------
 
@@ -357,6 +371,17 @@ const ModernMensClothing = () => {
                   </button> */}
 
                   <div className="relative">
+                    <Link to={"/showorder"}>
+                      <button className="text-white cursor-pointer flex items-center hover:text-primary transition-colors">
+                        <GoPackage className="h-6 w-6" />
+                        <span className="absolute -top-2 -right-2 bg-blue-400 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                          {length}
+                        </span>
+                      </button>
+                    </Link>
+                  </div>
+
+                  <div className="relative">
                     <Link to={"/addtocart"}>
                       <button className="text-white cursor-pointer flex items-center hover:text-primary transition-colors">
                         <ShoppingCart className="h-6 w-6" />
@@ -444,8 +469,8 @@ const ModernMensClothing = () => {
                     key={index}
                     onClick={() => setCurrentSlide(index)}
                     className={`w-2 h-2 rounded-full transition-all ${index === currentSlide
-                        ? "w-8 bg-primary"
-                        : "bg-white bg-opacity-50 hover:bg-opacity-75"
+                      ? "w-8 bg-primary"
+                      : "bg-white bg-opacity-50 hover:bg-opacity-75"
                       }`}
                   />
                 ))}
@@ -544,15 +569,15 @@ const ModernMensClothing = () => {
                           <button
                             onClick={() => setActiveCategory(category.name)}
                             className={`w-full flex justify-between items-center py-2.5 px-4 rounded-xl transition-all ${activeCategory === category.name
-                                ? "bg-primary text-white font-medium"
-                                : "text-white hover:bg-gray-700 hover:bg-opacity-10"
+                              ? "bg-primary text-white font-medium"
+                              : "text-white hover:bg-gray-700 hover:bg-opacity-10"
                               }`}
                           >
                             <span>{category.name}</span>
                             <span
                               className={`text-sm px-2 py-0.5 rounded-full ${activeCategory === category.name
-                                  ? "bg-white bg-opacity-20"
-                                  : "bg-white bg-opacity-10"
+                                ? "bg-white bg-opacity-20"
+                                : "bg-white bg-opacity-10"
                                 }`}
                             >
                               {category.count}
@@ -639,8 +664,8 @@ const ModernMensClothing = () => {
                           key={size}
                           onClick={() => toggleSize(size)}
                           className={`flex items-center justify-center w-12 h-12 rounded-lg text-black transition-colors ${selectedSizes.includes(size)
-                              ? "bg-primary"
-                              : "bg-white bg-opacity-10 hover:bg-white hover:bg-opacity-20"
+                            ? "bg-primary"
+                            : "bg-white bg-opacity-10 hover:bg-white hover:bg-opacity-20"
                             }`}
                         >
                           {size}
@@ -702,8 +727,8 @@ const ModernMensClothing = () => {
                               <Star
                                 key={index}
                                 className={`h-4 w-4 ${index < rating
-                                    ? "text-yellow-400"
-                                    : "text-gray-500"
+                                  ? "text-yellow-400"
+                                  : "text-gray-500"
                                   }`}
                                 fill={index < rating ? "#FACC15" : "none"}
                               />
@@ -768,15 +793,15 @@ const ModernMensClothing = () => {
                                     setActiveCategory(category.name);
                                   }}
                                   className={`w-full flex justify-between items-center py-2 px-3 rounded-xl transition-all ${activeCategory === category.name
-                                      ? "bg-primary text-white font-medium"
-                                      : "text-white hover:bg-white hover:bg-opacity-10"
+                                    ? "bg-primary text-white font-medium"
+                                    : "text-white hover:bg-white hover:bg-opacity-10"
                                     }`}
                                 >
                                   <span>{category.name}</span>
                                   <span
                                     className={`text-sm px-2 py-0.5 rounded-full ${activeCategory === category.name
-                                        ? "bg-white bg-opacity-20"
-                                        : "bg-white bg-opacity-10"
+                                      ? "bg-white bg-opacity-20"
+                                      : "bg-white bg-opacity-10"
                                       }`}
                                   >
                                     {category.count}
@@ -837,8 +862,8 @@ const ModernMensClothing = () => {
                                 key={size}
                                 onClick={() => toggleSize(size)}
                                 className={`flex items-center justify-center w-12 h-12 rounded-lg text-blue-900 transition-colors ${selectedSizes.includes(size)
-                                    ? "bg-primary text-white"
-                                    : "bg-white bg-opacity-10 hover:bg-white hover:bg-opacity-20"
+                                  ? "bg-primary text-white"
+                                  : "bg-white bg-opacity-10 hover:bg-white hover:bg-opacity-20"
                                   }`}
                               >
                                 {size}
@@ -900,8 +925,8 @@ const ModernMensClothing = () => {
                                     <Star
                                       key={index}
                                       className={`h-4 w-4 ${index < rating
-                                          ? "text-yellow-400"
-                                          : "text-gray-500"
+                                        ? "text-yellow-400"
+                                        : "text-gray-500"
                                         }`}
                                       fill={index < rating ? "#FACC15" : "none"}
                                     />
@@ -988,8 +1013,8 @@ const ModernMensClothing = () => {
                                   <Star
                                     key={index}
                                     className={`h-4 w-4 ${index < product.rating
-                                        ? "text-yellow-400"
-                                        : "text-gray-500"
+                                      ? "text-yellow-400"
+                                      : "text-gray-500"
                                       }`}
                                     fill={
                                       index < product.rating

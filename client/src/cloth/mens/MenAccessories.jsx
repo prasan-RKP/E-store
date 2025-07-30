@@ -27,6 +27,7 @@ import AccSkeleton from "../../skeletons/AccSkeleton.jsx";
 import { userAuthStore } from "../../store/authStore.js";
 import { Link } from "react-router-dom";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { useOrderStore } from "../../store/OrderStore.js";
 
 const MenAccessories = () => {
   const [isAddingToWishList, setIsAddingToWishList] = useState(null);
@@ -43,12 +44,14 @@ const MenAccessories = () => {
   const [addingProductId, setAddingProductId] = useState(null);
   const isFetched = useRef(false);
   const [wishItems, setWishItems] = useState([]);
+  const [length, setLength] = useState(0);
   //const [wishlist, setWishlist] = useState({});
   //console.log('IMported heroSlides:', Array.isArray(heroSlides1) ? heroSlides1 : 'Not an array');
 
   const { fetchAccs, products } = useProdStore();
   const { addCart, verifiedUser, fetchWishListProd, setStatus, wishlist } =
     userAuthStore();
+  const { orderItemLength, fetchOrder } = useOrderStore();
 
   const handleAddToCart = async (productId) => {
     setAddingProductId(productId);
@@ -63,8 +66,17 @@ const MenAccessories = () => {
 
   let totalCartItems =
     verifiedUser?.cart?.reduce((acc, item) => acc + item.quantity, 0) || 0;
+  // Fectching orders And set the length of orders
+  useEffect(() => {
+    const loadOrders = async () => {
+      await fetchOrder();
+    };
+    loadOrders();
+  }, [fetchOrder]);
 
-  // const allProducts = useMemo(()=> products || [], [products]);
+  useEffect(() => {
+    setLength(orderItemLength || 0);
+  }, [orderItemLength])
 
   // if(!allProducts) {return <AccSkeleton />}
   useEffect(() => {
@@ -386,8 +398,8 @@ const MenAccessories = () => {
                     key={index}
                     onClick={() => setCurrentSlide(index)}
                     className={`w-2 h-2 rounded-full transition-all ${index === currentSlide
-                        ? "w-8 bg-primary"
-                        : "bg-white bg-opacity-50 hover:bg-opacity-75"
+                      ? "w-8 bg-primary"
+                      : "bg-white bg-opacity-50 hover:bg-opacity-75"
                       }`}
                   />
                 ))}
@@ -488,15 +500,15 @@ const MenAccessories = () => {
                           <button
                             onClick={() => setActiveCategory(category.name)}
                             className={`w-full flex justify-between items-center py-2.5 px-4 rounded-xl transition-all ${activeCategory === category.name
-                                ? "bg-primary text-white font-medium"
-                                : "text-white hover:bg-gray-700 hover:bg-opacity-10"
+                              ? "bg-primary text-white font-medium"
+                              : "text-white hover:bg-gray-700 hover:bg-opacity-10"
                               }`}
                           >
                             <span>{category.name}</span>
                             <span
                               className={`text-sm px-2 py-0.5 rounded-full ${activeCategory === category.name
-                                  ? "bg-white bg-opacity-20"
-                                  : "bg-white bg-opacity-10"
+                                ? "bg-white bg-opacity-20"
+                                : "bg-white bg-opacity-10"
                                 }`}
                             >
                               {category.count}
@@ -647,8 +659,8 @@ const MenAccessories = () => {
                               <Star
                                 key={index}
                                 className={`h-4 w-4 ${index < rating
-                                    ? "text-yellow-400"
-                                    : "text-gray-500"
+                                  ? "text-yellow-400"
+                                  : "text-gray-500"
                                   }`}
                                 fill={index < rating ? "#FACC15" : "none"}
                               />
@@ -713,15 +725,15 @@ const MenAccessories = () => {
                                     setActiveCategory(category.name);
                                   }}
                                   className={`w-full flex justify-between items-center py-2 px-3 rounded-xl transition-all ${activeCategory === category.name
-                                      ? "bg-primary text-white font-medium"
-                                      : "text-white hover:bg-gray-500 hover:bg-opacity-10"
+                                    ? "bg-primary text-white font-medium"
+                                    : "text-white hover:bg-gray-500 hover:bg-opacity-10"
                                     }`}
                                 >
                                   <span>{category.name}</span>
                                   <span
                                     className={`text-sm px-2 py-0.5 rounded-full ${activeCategory === category.name
-                                        ? "bg-white bg-opacity-20"
-                                        : "bg-white bg-opacity-10"
+                                      ? "bg-white bg-opacity-20"
+                                      : "bg-white bg-opacity-10"
                                       }`}
                                   >
                                     {category.count}
@@ -782,8 +794,8 @@ const MenAccessories = () => {
                                 key={size}
                                 onClick={() => toggleSize(size)}
                                 className={`flex items-center justify-center w-12 h-12 rounded-lg text-gray-700 transition-colors ${selectedSizes.includes(size)
-                                    ? "bg-primary text-white"
-                                    : "bg-white bg-opacity-10 hover:bg-white hover:bg-opacity-20"
+                                  ? "bg-primary text-white"
+                                  : "bg-white bg-opacity-10 hover:bg-white hover:bg-opacity-20"
                                   }`}
                               >
                                 {size}
@@ -845,8 +857,8 @@ const MenAccessories = () => {
                                     <Star
                                       key={index}
                                       className={`h-4 w-4 ${index < rating
-                                          ? "text-yellow-400"
-                                          : "text-gray-500"
+                                        ? "text-yellow-400"
+                                        : "text-gray-500"
                                         }`}
                                       fill={index < rating ? "#FACC15" : "none"}
                                     />
@@ -933,8 +945,8 @@ const MenAccessories = () => {
                                   <Star
                                     key={index}
                                     className={`h-4 w-4 ${index < product.rating
-                                        ? "text-yellow-400"
-                                        : "text-gray-500"
+                                      ? "text-yellow-400"
+                                      : "text-gray-500"
                                       }`}
                                     fill={
                                       index < product.rating

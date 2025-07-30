@@ -21,6 +21,8 @@ import { toast } from "sonner";
 import { RiLoader4Line } from "react-icons/ri";
 import { Link } from "react-router-dom";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { useOrderStore } from "../../store/OrderStore.js";
+import { GoPackage } from "react-icons/go";
 
 const FootWear = () => {
   const [activeCategory, setActiveCategory] = useState("all");
@@ -41,10 +43,12 @@ const FootWear = () => {
   const [wishlist, setWishlist] = useState({});
   const [isAddingToWishList, setIsAddingToWishList] = useState(null);
   const [wishItems, setWishItems] = useState([]);
+  const [length, setLength] = useState(0);
 
-  // "AuthStore" & "ProdStore"
+  // "AuthStore","ProdStore" & 'orderStore' imports
   const { fetchingFootWear, products } = useProdStore();
   const { verifiedUser, addCart, fetchWishListProd } = userAuthStore();
+  const { orderItemLength, fetchOrder } = useOrderStore();
 
   // Categories for filtering
   const categories = useMemo(
@@ -70,50 +74,50 @@ const FootWear = () => {
 
   // Hero section slides
   const heroSlides = useMemo(
-  () => [
-    {
-      id: 1,
-      image:
-        "https://res.cloudinary.com/dlkmhoueb/image/upload/f_auto,q_auto/v1751508462/ecom_store/slider/cfsd3pedrgyja8yhciso.jpg",
-      title: "Addidas Summer Collection",
-      subtitle: "Discover the latest trends new days",
-      cta: "Shop Now",
-    },
-    {
-      id: 2,
-      image:
-        "https://res.cloudinary.com/dlkmhoueb/image/upload/f_auto,q_auto/v1751508464/ecom_store/slider/avt6w6eqeytkrrq81f9f.jpg",
-      title: "Luxen Premium Feel",
-      subtitle: "Quality Footwear for every occasion",
-      cta: "View Collection",
-    },
-    {
-      id: 3,
-      image:
-        "https://res.cloudinary.com/dlkmhoueb/image/upload/f_auto,q_auto/v1751508469/ecom_store/slider/doeeep5qpvypurgaocdk.jpg",
-      title: "New Nike Air-4.1",
-      subtitle: "Be the first to wear our New Release",
-      cta: "Explore",
-    },
-    {
-      id: 4,
-      image:
-        "https://res.cloudinary.com/dlkmhoueb/image/upload/f_auto,q_auto/v1751508473/ecom_store/slider/elwrkzvfw1qzb9ftawd4.jpg",
-      title: "Spring Nike-B/W combo",
-      subtitle: "Up to 10% off on Drop",
-      cta: "Shop Sale",
-    },
-    {
-      id: 5,
-      image:
-        "https://res.cloudinary.com/dlkmhoueb/image/upload/f_auto,q_auto/v1751508476/ecom_store/slider/cttniw7bqizakk05hjlu.jpg",
-      title: "Nike Old REal md",
-      subtitle: "Up to 2%, Hurry On",
-      cta: "Go on",
-    },
-  ],
-  []
-);
+    () => [
+      {
+        id: 1,
+        image:
+          "https://res.cloudinary.com/dlkmhoueb/image/upload/f_auto,q_auto/v1751508462/ecom_store/slider/cfsd3pedrgyja8yhciso.jpg",
+        title: "Addidas Summer Collection",
+        subtitle: "Discover the latest trends new days",
+        cta: "Shop Now",
+      },
+      {
+        id: 2,
+        image:
+          "https://res.cloudinary.com/dlkmhoueb/image/upload/f_auto,q_auto/v1751508464/ecom_store/slider/avt6w6eqeytkrrq81f9f.jpg",
+        title: "Luxen Premium Feel",
+        subtitle: "Quality Footwear for every occasion",
+        cta: "View Collection",
+      },
+      {
+        id: 3,
+        image:
+          "https://res.cloudinary.com/dlkmhoueb/image/upload/f_auto,q_auto/v1751508469/ecom_store/slider/doeeep5qpvypurgaocdk.jpg",
+        title: "New Nike Air-4.1",
+        subtitle: "Be the first to wear our New Release",
+        cta: "Explore",
+      },
+      {
+        id: 4,
+        image:
+          "https://res.cloudinary.com/dlkmhoueb/image/upload/f_auto,q_auto/v1751508473/ecom_store/slider/elwrkzvfw1qzb9ftawd4.jpg",
+        title: "Spring Nike-B/W combo",
+        subtitle: "Up to 10% off on Drop",
+        cta: "Shop Sale",
+      },
+      {
+        id: 5,
+        image:
+          "https://res.cloudinary.com/dlkmhoueb/image/upload/f_auto,q_auto/v1751508476/ecom_store/slider/cttniw7bqizakk05hjlu.jpg",
+        title: "Nike Old REal md",
+        subtitle: "Up to 2%, Hurry On",
+        cta: "Go on",
+      },
+    ],
+    []
+  );
 
 
   // Featured outfit combinations
@@ -138,6 +142,18 @@ const FootWear = () => {
   );
 
   const genderOptions = useMemo(() => ["m", "f", "ux"], []);
+
+  // Fectching orders And set the length of orders
+  useEffect(() => {
+    const loadOrders = async () => {
+      await fetchOrder();
+    };
+    loadOrders();
+  }, [fetchOrder]);
+
+  useEffect(() => {
+    setLength(orderItemLength || 0);
+  }, [orderItemLength])
 
   // Main Functionality starts here ....
   useEffect(() => {
@@ -371,6 +387,16 @@ const FootWear = () => {
                     <Star className="h-5 w-5 mr-1" />
                     <span className="hidden sm:inline">Rate Us</span>
                   </button> */}
+                  <div className="relative">
+                    <Link to={`/showorder`}>
+                      <button className="hover:cursor-pointer text-white flex items-center hover:text-primary transition-colors">
+                        <GoPackage className="h-5 w-5" />
+                        <span className="absolute -top-2 -right-2 bg-primary text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                          {length}
+                        </span>
+                      </button>
+                    </Link>
+                  </div>
 
                   <div className="relative">
                     <Link to={`/addtocart`}>
@@ -459,11 +485,10 @@ const FootWear = () => {
                   <button
                     key={index}
                     onClick={() => setCurrentSlide(index)}
-                    className={`w-2 h-2 rounded-full transition-all ${
-                      index === currentSlide
+                    className={`w-2 h-2 rounded-full transition-all ${index === currentSlide
                         ? "w-8 bg-primary"
                         : "bg-white bg-opacity-50 hover:bg-opacity-75"
-                    }`}
+                      }`}
                   />
                 ))}
               </div>
@@ -559,19 +584,17 @@ const FootWear = () => {
                         <li key={category.id}>
                           <button
                             onClick={() => setActiveCategory(category.name)}
-                            className={`w-full flex justify-between items-center py-2.5 px-4 rounded-xl transition-all ${
-                              activeCategory === category.name
+                            className={`w-full flex justify-between items-center py-2.5 px-4 rounded-xl transition-all ${activeCategory === category.name
                                 ? "bg-primary text-white font-medium"
                                 : "text-white hover:bg-gray-700 hover:bg-opacity-10"
-                            }`}
+                              }`}
                           >
                             <span>{category.name}</span>
                             <span
-                              className={`text-sm px-2 py-0.5 rounded-full ${
-                                activeCategory === category.name
+                              className={`text-sm px-2 py-0.5 rounded-full ${activeCategory === category.name
                                   ? "bg-white bg-opacity-20"
                                   : "bg-white bg-opacity-10"
-                              }`}
+                                }`}
                             >
                               {category.count}
                             </span>
@@ -656,11 +679,10 @@ const FootWear = () => {
                         <button
                           key={size}
                           onClick={() => toggleSize(size)}
-                          className={`flex items-center justify-center w-12 h-12 rounded-lg text-black transition-colors ${
-                            selectedSizes.includes(size)
+                          className={`flex items-center justify-center w-12 h-12 rounded-lg text-black transition-colors ${selectedSizes.includes(size)
                               ? "bg-primary"
                               : "bg-white bg-opacity-10 hover:bg-white hover:bg-opacity-20"
-                          }`}
+                            }`}
                         >
                           {size}
                         </button>
@@ -720,11 +742,10 @@ const FootWear = () => {
                             {Array.from({ length: 5 }).map((_, index) => (
                               <Star
                                 key={index}
-                                className={`h-4 w-4 ${
-                                  index < rating
+                                className={`h-4 w-4 ${index < rating
                                     ? "text-yellow-400"
                                     : "text-gray-500"
-                                }`}
+                                  }`}
                                 fill={index < rating ? "#FACC15" : "none"}
                               />
                             ))}
@@ -787,19 +808,17 @@ const FootWear = () => {
                                   onClick={() => {
                                     setActiveCategory(category.name);
                                   }}
-                                  className={`w-full flex justify-between items-center py-2 px-3 rounded-xl transition-all ${
-                                    activeCategory === category.name
+                                  className={`w-full flex justify-between items-center py-2 px-3 rounded-xl transition-all ${activeCategory === category.name
                                       ? "bg-primary text-white font-medium"
                                       : "text-white hover:bg-white hover:bg-opacity-10"
-                                  }`}
+                                    }`}
                                 >
                                   <span>{category.name}</span>
                                   <span
-                                    className={`text-sm px-2 py-0.5 rounded-full ${
-                                      activeCategory === category.name
+                                    className={`text-sm px-2 py-0.5 rounded-full ${activeCategory === category.name
                                         ? "bg-white bg-opacity-20"
                                         : "bg-white bg-opacity-10"
-                                    }`}
+                                      }`}
                                   >
                                     {category.count}
                                   </span>
@@ -858,11 +877,10 @@ const FootWear = () => {
                               <button
                                 key={size}
                                 onClick={() => toggleSize(size)}
-                                className={`flex items-center justify-center w-12 h-12 rounded-lg text-white transition-colors ${
-                                  selectedSizes.includes(size)
+                                className={`flex items-center justify-center w-12 h-12 rounded-lg text-white transition-colors ${selectedSizes.includes(size)
                                     ? "bg-primary text-white"
                                     : "bg-gray-500 bg-opacity-10 hover:bg-white hover:bg-opacity-20"
-                                }`}
+                                  }`}
                               >
                                 {size}
                               </button>
@@ -922,11 +940,10 @@ const FootWear = () => {
                                   {Array.from({ length: 5 }).map((_, index) => (
                                     <Star
                                       key={index}
-                                      className={`h-4 w-4 ${
-                                        index < rating
+                                      className={`h-4 w-4 ${index < rating
                                           ? "text-yellow-400"
                                           : "text-gray-500"
-                                      }`}
+                                        }`}
                                       fill={index < rating ? "#FACC15" : "none"}
                                     />
                                   ))}
@@ -1006,11 +1023,10 @@ const FootWear = () => {
                                 {Array.from({ length: 5 }).map((_, index) => (
                                   <Star
                                     key={index}
-                                    className={`h-4 w-4 ${
-                                      index < product.rating
+                                    className={`h-4 w-4 ${index < product.rating
                                         ? "text-yellow-400"
                                         : "text-gray-600"
-                                    }`}
+                                      }`}
                                     fill={
                                       index < product.rating
                                         ? "#FACC15"
