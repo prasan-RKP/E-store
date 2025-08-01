@@ -191,23 +191,13 @@ const WishlistComponent = () => {
                   >
                     Home
                   </motion.a>
-                  <motion.a
+                  <Link to={"/#products"}
                     whileHover={{ scale: 1.05, color: "#c084fc" }}
-                    href="#"
+                    href="/#products"
                     className="text-gray-300 transition duration-300 ease-in-out"
                   >
                     Shop
-                  </motion.a>
-                  <motion.a
-                    whileHover={{ scale: 1.05 }}
-                    href="#"
-                    className="relative font-medium bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"
-                  >
-                    Wishlist
-                    <span className="absolute -top-2 -right-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                      {wishItems?.length}
-                    </span>
-                  </motion.a>
+                  </Link>
 
                   <Link to={"/addtocart"}>
                     <motion.div
@@ -392,7 +382,7 @@ const WishlistComponent = () => {
                   Start saving items you love to your wishlist
                 </p>
 
-                <Link to={"/"}>
+                <Link to={"/#products"}>
                   <motion.button
                     whileHover={buttonVariants.hover}
                     whileTap={buttonVariants.tap}
@@ -502,7 +492,7 @@ const WishlistComponent = () => {
                       </h4>
                       <div className="flex items-center mb-2">
                         <span className="text-medium font-bold text-pink-400 mr-2">
-                          ${item?.product?.price}
+                          ₹{item?.product?.price}
                         </span>
                         {item?.product?.discount > 0 && (
                           <span className="text-gray-400 line-through text-xs mr-2">

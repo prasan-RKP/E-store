@@ -156,6 +156,7 @@ const FootWear = () => {
   }, [orderItemLength])
 
   // Main Functionality starts here ....
+  // Initial API Call -> to show the toal footwear 
   useEffect(() => {
     fetchingFootWear();
     setCartItems(verifiedUser?.cart || []);
@@ -204,11 +205,12 @@ const FootWear = () => {
       [productId]: { id: productId, size: size },
     }));
     setDropdownOpen(null);
+    
   };
 
+  // feature:- addTocart()
   const handleAddtoCart = async (id, size) => {
     const selected = selectedSize[id];
-
     if (!selected) {
       toast.info("Do Select Your Product Size");
       return false;
@@ -232,6 +234,7 @@ const FootWear = () => {
 
   // All backend functionality Ends here
 
+  // feature:- add product in addToWishList()
   const handleWishlist = async (product) => {
     setWishlist((prev) => ({
       ...prev,

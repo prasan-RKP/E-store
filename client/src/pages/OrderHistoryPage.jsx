@@ -232,6 +232,15 @@ const OrderHistoryPage = () => {
                 <div className="bg-gradient-to-r from-blue-100 to-purple-200 px-6 py-3 rounded-xl border border-blue-100">
                   <span className="text-blue-700 font-semibold text-lg">{length} Orders</span>
                 </div>
+
+                <Link to={"/addTocart"} >
+                  <div className="hover:cursor-pointer relative text-blue-700">
+                    <ShoppingCart className="h-6 w-6" />
+                    <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                      {2}
+                    </span>
+                  </div>
+                </Link>
               </div>
             </div>
           </div>

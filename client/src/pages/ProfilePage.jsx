@@ -36,11 +36,11 @@ import {
 import { userAuthStore } from "../store/authStore.js";
 import { GoPackage } from "react-icons/go";
 import { useOrderStore } from "../store/OrderStore.js";
-//import {toast} from 'sonner';
+
 
 const ProfilePage = () => {
   // userAuthStore access here --->
-   // Authstores values
+  // Authstores values
   const {
     logout,
     verifiedUser,
@@ -51,15 +51,16 @@ const ProfilePage = () => {
     removeWishListProd,
     moveToAddCart,
   } = userAuthStore();
-
   // OrderStore values
-  const {order, orderItemLength, fetchOrder} = useOrderStore();
+  const { order, orderItemLength, fetchOrder } = useOrderStore();
 
   const MotionLink = motion(Link);
 
   // console.log('verifedUser', verifiedUser);
 
   const naviagte = useNavigate();
+  const [allOrderItems, setAllOrderItems] = useState([]);
+  const [orders, setOrders] = useState([]);
   const [length, setLength] = useState(0);
   const [cartId, setCartId] = useState(null);
   const [storeProdId, setStoreProdId] = useState(null);
@@ -71,96 +72,58 @@ const ProfilePage = () => {
   const [cartCount, setCartCount] = useState(3);
   const [showAllOrders, setShowAllOrders] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const [profileData, setProfileData] = useState({
-    name: "Alexandra Morgan",
-    email: "alex.morgan@example.com",
-    constact: "7735452856",
-    joined: "2022-05-15",
-    avatarUrl: "/api/placeholder/150/150",
-    bio: "Fashion enthusiast and minimalist design lover. Always looking for sustainable brands and unique pieces.",
-    location: "San Francisco, CA",
-    orders: [
-      {
-        id: "#ORD-7291",
-        date: "2025-03-28",
-        status: "Delivered",
-        amount: 129.99,
-        image: "/man1.jpg",
-        productName: "Premium Leather Jacket",
-      },
-      {
-        id: "#ORD-6845",
-        date: "2025-03-15",
-        status: "Shipped",
-        amount: 89.5,
-        image: "/man2.jpg",
-        productName: "Casual Denim Shirt",
-      },
-      {
-        id: "#ORD-5721",
-        date: "2025-02-27",
-        status: "Delivered",
-        amount: 235.75,
-        image: "/api/placeholder/120/120",
-        productName: "Designer Sunglasses",
-      },
-      {
-        id: "#ORD-4982",
-        date: "2025-02-12",
-        status: "Delivered",
-        amount: 67.25,
-        image: "/api/placeholder/120/120",
-        productName: "Cotton T-shirt Set",
-      },
-      {
-        id: "#ORD-4215",
-        date: "2025-01-30",
-        status: "Delivered",
-        amount: 149.99,
-        image: "/api/placeholder/120/120",
-        productName: "Winter Boots",
-      },
-      {
-        id: "#ORD-3789",
-        date: "2025-01-18",
-        status: "Delivered",
-        amount: 79.5,
-        image: "/api/placeholder/120/120",
-        productName: "Casual Jeans",
-      },
-      {
-        id: "#ORD-2954",
-        date: "2024-12-27",
-        status: "Delivered",
-        amount: 225.0,
-        image: "/api/placeholder/120/120",
-        productName: "Designer Dress",
-      },
-    ],
-    paymentMethods: [
-      { id: 1, type: "Visa", last4: "4242", expiry: "09/26" },
-      { id: 2, type: "Mastercard", last4: "8123", expiry: "12/25" },
-    ],
-  });
 
 
- 
 
   // To set the totalOrder length -> functionality 
   // Todo: Tommorow
   useEffect(() => {
-      const loadOrders = async () => {
-        await fetchOrder();
-      };
-      loadOrders();
-    }, [fetchOrder]);
-  
-    useEffect(() => {
-      setLength(orderItemLength || 0);
-    }, [orderItemLength])
+    const loadOrders = async () => {
+      await fetchOrder();
+    };
+    loadOrders();
+  }, [fetchOrder]);
 
-   // console.log('The orderLength', order?.orders);
-  // 
+  useEffect(() => {
+    setOrders(order?.orders || []);
+  }, [order])
+
+  useEffect(() => {
+    setLength(orderItemLength || 0);
+  }, [orderItemLength])
+
+  // Total orders
+  useEffect(() => {
+    const flattenOrderItems = () => {
+      const flattened = [];
+      orders.forEach(order => {
+        order.items.forEach(item => {
+          flattened.push({
+            ...item,
+            orderId: order.id,
+            orderNumber: order.orderNumber,
+            orderDate: order.date,
+            orderTotal: order.total,
+            shippingAddress: order.shippingAddress,
+            zipCode: order.zipCode,
+            paymentMethod: order.paymentMethod,
+            estimatedDelivery: order.estimatedDelivery,
+            itemTotal: item.price * item.quantity
+          });
+        });
+      });
+      setAllOrderItems(flattened);
+    };
+
+    if (orders.length > 0) {
+      flattenOrderItems();
+    } else {
+      setAllOrderItems([]);
+    }
+  }, [orders]);
+
+  console.log("All ordersItems", allOrderItems);
+
 
   const [profileInfo, setProfileInfo] = useState({
     username: verifiedUser?.username || "@john Doe",
@@ -295,6 +258,11 @@ const ProfilePage = () => {
     // In a real app, you would save the changes to the backend here
   };
 
+
+
+  // Sync local orders state with global store
+
+
   useEffect(() => {
     checkAuthVerify();
   }, [checkAuthVerify, profileUpdated]);
@@ -330,6 +298,18 @@ const ProfilePage = () => {
     await moveToAddCart({ productId: id, size });
     setCartId(null);
     //toast.success("Product moved to Cart ✅");
+  };
+
+  //status Styles for coloring 
+  const getStatusStyles = (status) => {
+    const statusLower = status.toLowerCase();
+    switch (statusLower) {
+      case 'delivered': return 'bg-green-900/50 text-green-400';
+      case 'shipped': return 'bg-blue-900/50 text-blue-400';
+      case 'processing': return 'bg-yellow-900/50 text-yellow-400';
+      case 'cancelled': return 'bg-red-600/90 text-white';
+      default: return 'bg-gray-600/50 text-gray-300';
+    }
   };
 
   const renderProfileContent = () => {
@@ -492,7 +472,7 @@ const ProfilePage = () => {
             </div>
             <div className="stat-title text-gray-400">Total Orders</div>
             <div className="stat-value text-indigo-400">
-              {verifiedUser?.cart?.length}
+              {length}
             </div>
           </motion.div>
 
@@ -515,8 +495,8 @@ const ProfilePage = () => {
   //   uto
   const renderOrdersContent = () => {
     const displayOrders = showAllOrders
-      ? profileData.orders
-      : profileData.orders.slice(0, 3);
+      ? allOrderItems
+      : allOrderItems.slice(0, 3);
 
     return (
       <motion.div
@@ -531,10 +511,47 @@ const ProfilePage = () => {
 
         {/* Fixed height scrollable container */}
         <div className="h-[500px] overflow-y-auto pr-2 space-y-4">
-          <h2 className="text-primary text-center">Coming Soon ...</h2>
+          {/* Only show first 3 when collapsed, all when expanded */}
+          {(showAllOrders ? allOrderItems : allOrderItems.slice(0, 4)).map((order, index) => (
+            <motion.div
+              key={order.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+              whileHover={{ scale: 1.01 }}
+              className="bg-gray-800 p-4 rounded-lg border border-gray-700 flex flex-col md:flex-row md:items-center justify-between"
+            >
+              <div className="flex items-center gap-4">
+                <img
+                  src={order?.image}
+                  alt={order?.name}
+                  className="w-16 h-16 rounded-md object-cover border border-gray-700"
+                />
+                <div>
+                  <h4 className="font-medium text-white">{order?.name}</h4>
+                  <p className="text-sm text-gray-400">{order?.orderDate}</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-6 mt-3 md:mt-0">
+                <div>
+                  <span className="text-gray-400 text-sm">Amount</span>
+                  <p className="font-medium text-white">₹{order?.itemTotal}</p>
+                </div>
+
+                <div>
+                  <span className={`px-3 py-1 rounded-full text-xs ${getStatusStyles(order.status)}`}>
+                    {order.status}
+                  </span>
+                </div>
+
+                <Link to={"/showorder"}> <button className="btn btn-outline btn-xs">Details</button></Link>
+              </div>
+            </motion.div>
+          ))}
         </div>
 
-        {profileData.orders.length > 3 && (
+        {allOrderItems.length > 3 && (
           <div className="text-center">
             <button
               onClick={() => setShowAllOrders(!showAllOrders)}
@@ -547,7 +564,7 @@ const ProfilePage = () => {
               ) : (
                 <>
                   <ChevronDown size={18} className="mr-1" /> Show All Orders (
-                  {profileData.orders.length})
+                  {allOrderItems?.length})
                 </>
               )}
             </button>
@@ -565,7 +582,7 @@ const ProfilePage = () => {
         variants={fadeIn}
         className="space-y-4"
       >
-        <h3 className="text-lg font-semibold text-center text-gray-200 mb-4">
+        <h3 className="text-lg font-semibold text-center text-gray-200 mb-8">
           {wishItems?.length === 0
             ? "No WishItems Available ☹️ ..."
             : "WishListItems ❤️"}
@@ -636,63 +653,12 @@ const ProfilePage = () => {
     );
   };
 
-  const renderPaymentContent = () => {
-    return (
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={fadeIn}
-        className="space-y-4"
-      >
-        <h3 className="text-lg font-semibold text-gray-200 mb-4">
-          Payment Methods
-        </h3>
 
-        {profileData.paymentMethods.map((method, index) => (
-          <motion.div
-            key={method.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-            className="bg-slate-950 p-4 rounded-lg border border-gray-700 flex justify-between items-center"
-          >
-            <div className="flex items-center gap-3">
-              {method.type === "Visa" ? (
-                <div className="bg-blue-800 rounded p-2 text-white font-bold text-sm">
-                  VISA
-                </div>
-              ) : (
-                <div className="bg-red-800 rounded p-2 text-white font-bold text-sm">
-                  MC
-                </div>
-              )}
-              <div>
-                <p className="text-white">•••• {method.last4}</p>
-                <p className="text-sm text-gray-400">Expires {method.expiry}</p>
-              </div>
-            </div>
-
-            <div className="flex gap-2">
-              <button className="btn btn-outline btn-xs">Edit</button>
-              <button className="btn btn-outline btn-error btn-xs">
-                Remove
-              </button>
-            </div>
-          </motion.div>
-        ))}
-
-        <button onClick={() => toast.info("Feature in progress...")} className="btn btn-outline w-full mt-4">
-          <CreditCard size={16} className="mr-2" /> Add New Payment Method
-        </button>
-      </motion.div>
-    );
-  };
 
   const tabContent = {
     profile: renderProfileContent(),
     orders: renderOrdersContent(),
     wishlist: renderWishlistContent(),
-    payment: renderPaymentContent(),
   };
 
   return (
@@ -751,13 +717,13 @@ const ProfilePage = () => {
 
               <motion.div whileHover={{ scale: 1.1 }} className="relative">
                 <Link to={"/showorder"}>
-                <GoPackage
-                  size={24}
-                  className="text-gray-300 hover:text-white cursor-pointer"
-                />
-                <span className="absolute -top-2 -right-2 bg-pink-600 text-xs text-white w-5 h-5 flex items-center justify-center rounded-full">
-                  {length}
-                </span>
+                  <GoPackage
+                    size={24}
+                    className="text-gray-300 hover:text-white cursor-pointer"
+                  />
+                  <span className="absolute -top-2 -right-2 bg-pink-600 text-xs text-white w-5 h-5 flex items-center justify-center rounded-full">
+                    {length}
+                  </span>
                 </Link>
               </motion.div>
               {/* nav Profile Image */}
@@ -846,11 +812,6 @@ const ProfilePage = () => {
                     icon: <Heart size={18} />,
                   },
                   {
-                    id: "payment",
-                    name: "Payment Methods",
-                    icon: <CreditCard size={18} />,
-                  },
-                  {
                     id: "settings",
                     name: "Settings",
                     icon: <Settings size={18} />,
@@ -861,8 +822,8 @@ const ProfilePage = () => {
                     whileTap={{ scale: 0.97 }}
                     onClick={() => setActiveTab(tab.id)}
                     className={`flex items-center w-full p-3 rounded-lg transition-colors ${activeTab === tab.id
-                        ? "bg-indigo-900/40 text-indigo-400"
-                        : "hover:bg-gray-800 text-gray-400"
+                      ? "bg-indigo-900/40 text-indigo-400"
+                      : "hover:bg-gray-800 text-gray-400"
                       }`}
                   >
                     <motion.span
@@ -887,7 +848,7 @@ const ProfilePage = () => {
                   <span className="mr-3">
                     <LogOut size={18} />
                   </span>
-                  <span className="font-medium">Log Out</span>
+                  <span className="font-medium">Sign Out</span>
                 </motion.button>
               </nav>
             </div>
@@ -917,8 +878,8 @@ const ProfilePage = () => {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={`inline-flex items-center px-4 py-2 mr-2 rounded-lg ${activeTab === tab.id
-                      ? "bg-indigo-900/40 text-indigo-400"
-                      : "text-gray-400"
+                    ? "bg-indigo-900/40 text-indigo-400"
+                    : "text-gray-400"
                     }`}
                 >
                   <span className="mr-1">{tab.icon}</span>
@@ -1029,7 +990,7 @@ const ProfilePage = () => {
                     placeholder="Your email"
                     className="input input-bordered input-sm bg-gray-700 text-white flex-1"
                   />
-                  <button className="btn btn-primary btn-sm ml-2">
+                  <button onClick={() => toast.info("Feature Coming Soon 🔜 ...")} className="btn btn-primary btn-sm ml-2">
                     Subscribe
                   </button>
                 </div>
@@ -1040,7 +1001,7 @@ const ProfilePage = () => {
           <div className="divider my-6"></div>
 
           <div className="text-center text-gray-500 text-sm">
-            © 2025 StyleShop. All rights reserved.
+            © 2025 Luxe. All rights reserved.
           </div>
         </div>
       </div>
