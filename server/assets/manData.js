@@ -1,5 +1,5 @@
 // manImg.js
-export const allProducts = [
+export const manProducts = [
   {
     uid: 1,
     name: "Classic Slim Fit Jeans",

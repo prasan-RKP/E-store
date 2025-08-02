@@ -8,7 +8,8 @@ router.get("/fetchOrder", async (req, res) => {
   try {
     const orders = await Order.find();
 
-    if (orders.length === 0 || !orders) {
+    // TO tackle some error
+    if (!orders) {
       return res.status(404).json({ message: "No Orders Found.." });
     }
 

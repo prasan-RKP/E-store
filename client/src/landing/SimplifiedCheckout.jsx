@@ -198,6 +198,7 @@ const SimplifiedCheckout = () => {
   const [isShippingValid, setIsShippingValid] = useState(false);
   const [cartItems, setCartItems] = useState([]);
   //const [subtotal, setSubTotal] = useState(0);
+  const [initialCartCheckDone, setInitialCartCheckDone] = useState(false);
 
   // to open/clsoe the orderSuccess modal
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -353,22 +354,17 @@ const SimplifiedCheckout = () => {
   // conditional rendering test - 3
   useEffect(() => {
     const timeout = setTimeout(() => {
-      if (Array.isArray(cartItems)) {
+      if (!initialCartCheckDone && Array.isArray(cartItems)) {
         if (cartItems.length === 0 || subtotal === 0) {
-          if (location.pathname !== "/") {
-            navigate("/", { replace: true });
-            toast.info("Your cart is empty ☹️");
-          }
-        } else {
-          if (location.pathname !== "/checkout") {
-            navigate("/checkout", { replace: true });
-          }
+          navigate("/", { replace: true });
+          toast.info("Your cart is empty ☹️");
         }
+        setInitialCartCheckDone(true);
       }
     }, 1000);
 
     return () => clearTimeout(timeout);
-  }, [cartItems, subtotal, navigate, location.pathname]);
+  }, [cartItems, subtotal, navigate, initialCartCheckDone]);
 
 
 

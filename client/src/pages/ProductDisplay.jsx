@@ -13,6 +13,7 @@ import {
 import { Link, useParams } from "react-router-dom";
 import { userAuthStore } from "../store/authStore";
 import { toast } from "sonner";
+import ProductDisplaySkeleton from "../skeletons/ProductDisplaySkeleton.jsx";
 
 const ProductDisplay = () => {
   const [isAddingProdId, setIsAddingProdId] = useState(null);
@@ -31,6 +32,7 @@ const ProductDisplay = () => {
   const headerRef = useRef(null);
   const [cartItems, setCartItems] = useState([]);
   const [myReviews, setMyReviews] = useState([]);
+  const[isLoading, setIsLoading] = useState(true);
 
   const { id } = useParams();
 
@@ -77,9 +79,13 @@ const ProductDisplay = () => {
   }, [review, id]);
 
   useEffect(() => {
-    productShow({ pid: id });
+  setIsLoading(true);
+  (async () => {
+    await productShow({ pid: id });
+    setIsLoading(false);
     setCartItems(verifiedUser?.cart || []);
-  }, [id, verifiedUser?.cart]);
+  })();
+}, [id, verifiedUser?.cart]);
 
   // Product images array
   // const productImages = [
@@ -251,6 +257,11 @@ const ProductDisplay = () => {
     initial: { width: 0, opacity: 0 },
     hover: { width: "100%", opacity: 1, transition: { duration: 0.3 } },
   };
+
+  // condition for skeleton view
+  if(isLoading || !authProdDetail?.product){
+    return <ProductDisplaySkeleton />;
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-950 text-gray-100">

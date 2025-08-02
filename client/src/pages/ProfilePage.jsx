@@ -69,12 +69,16 @@ const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState("profile");
   const [isEditing, setIsEditing] = useState(false);
   const [isEditingBio, setIsEditingBio] = useState(false);
-  const [cartCount, setCartCount] = useState(3);
+  const [cartCount, setCartCount] = useState(0);
   const [showAllOrders, setShowAllOrders] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
 
 
+ // console.log("VerifiedUser", verifiedUser)
 
+ useEffect(()=> {
+setCartCount(verifiedUser?.cart.length);
+ }, [verifiedUser?.cart])
   // To set the totalOrder length -> functionality 
   // Todo: Tommorow
   useEffect(() => {
@@ -505,8 +509,9 @@ const ProfilePage = () => {
         variants={fadeIn}
         className="space-y-4"
       >
-        <h3 className="text-lg font-semibold text-gray-200 mb-4">
-          Order History
+        <h3 className="text-center text-lg font-semibold text-gray-200 mb-4">
+          {allOrderItems.length === 0
+            ? "No Orders Available ☹️ ...": "Order History"}
         </h3>
 
         {/* Fixed height scrollable container */}
@@ -521,17 +526,20 @@ const ProfilePage = () => {
               whileHover={{ scale: 1.01 }}
               className="bg-gray-800 p-4 rounded-lg border border-gray-700 flex flex-col md:flex-row md:items-center justify-between"
             >
-              <div className="flex items-center gap-4">
-                <img
-                  src={order?.image}
-                  alt={order?.name}
-                  className="w-16 h-16 rounded-md object-cover border border-gray-700"
-                />
-                <div>
-                  <h4 className="font-medium text-white">{order?.name}</h4>
-                  <p className="text-sm text-gray-400">{order?.orderDate}</p>
+              <Link to={`/productshow/${order?.pid}`}>
+                <div className="flex items-center gap-4">
+                  <img
+                    src={order?.image}
+                    alt={order?.name}
+                    className="hover:cursor-pointer w-16 h-16 rounded-md object-cover border border-gray-700"
+                  />
+
+                  <div>
+                    <h4 className="font-medium text-white">{order?.name}</h4>
+                    <p className="text-sm text-gray-400">{order?.orderDate}</p>
+                  </div>
                 </div>
-              </div>
+              </Link>
 
               <div className="flex items-center gap-6 mt-3 md:mt-0">
                 <div>
@@ -599,11 +607,13 @@ const ProfilePage = () => {
               className="bg-gray-800 p-4 rounded-lg border border-gray-700"
             >
               <div className="flex flex-col sm:flex-row gap-4">
+                <Link to={`/productshow/${item?.productId}`} >
                 <img
                   src={item?.product?.img}
                   alt={item.name}
                   className="w-full sm:w-44 h-44 rounded-md object-cover border border-gray-700"
                 />
+                </Link>
                 <div className="flex flex-col justify-between">
                   <div>
                     <h4 className="font-medium text-white">
@@ -688,7 +698,7 @@ const ProfilePage = () => {
                   className="flex items-center text-gray-300 hover:text-white px-2"
                 >
                   <Package size={18} className="mr-1" />
-                  <span>Products</span>
+                  <span>Go to Shop</span>
                 </MotionLink>
 
                 <MotionLink

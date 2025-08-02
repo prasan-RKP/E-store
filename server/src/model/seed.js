@@ -2,11 +2,12 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 //import { footwearData } from '../../assets/footWearData.js';
 //import Footwear from '../model/FootwearModel.js';
-// import { allProducts } from '../../assets/access.js';
-// import Accessory from './accessoryModel.js';
-import {womenProds} from '../../assets/women.js';
-import Women from './womenModel.js';
-
+ //import { allProducts } from '../../assets/access.js';
+ //import Accessory from './accessoryModel.js';
+//import {womenProds} from '../../assets/women.js'; ✅
+//import Women from './womenModel.js';
+import { manProducts } from '../../assets/manData.js';
+import Men from './manModel.js';
 dotenv.config();
 
 const seedData = async () => {
@@ -24,12 +25,12 @@ const seedData = async () => {
     console.log("MongoDB connected");
 
     // Remove existing data from Men collection
-    await Women.deleteMany();
+    await Men.deleteMany();
     console.log('Old data removed');
 
     // Insert the new data from manImages
-    await Women.insertMany(womenProds);
-    console.log("New data seeded successfully");
+    await Men.insertMany(manProducts);
+    console.log("New data seeded successfully ✅");
 
     // Close the MongoDB connection
     await mongoose.connection.close();
@@ -44,3 +45,5 @@ const seedData = async () => {
 };
 
 seedData();
+
+//node src/model/seed.js

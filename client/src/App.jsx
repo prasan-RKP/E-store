@@ -48,6 +48,8 @@ import OrderPlace from "./landing/segement/OrderPlace";
 import SuccessModal from "./landing/segement/SuccessModal";
 import OrderHistoryPage from "./pages/OrderHistoryPage";
 import OrderHistorySkeleton from "./skeletons/OrderHistorySkeleton";
+import ProdDisplaySke from "./skeletons/ProductDisplaySkeleton";
+import ProductDisplaySkeleton from "./skeletons/ProductDisplaySkeleton";
 //import CheckoutWizard from "./pages/checkout/CheckoutWizard";
 
 const App = () => {
@@ -75,7 +77,7 @@ const App = () => {
         <Route path="/fanta" element={<FantaCanShowcase />} />
         <Route path="/land" element={<ModernEcommerceLanding />} />
         <Route path="/about" element={<AboutPage />} />
-        <Route path="/ord" element={<OrderHistorySkeleton />} />
+        <Route path="/ord" element={<ProductDisplaySkeleton/>} />
 
         // "/order-show" use it for show orders
         <Route path="/showorder" element={verifiedUser ? (<OrderHistoryPage />) : (<Navigate to={"/login"} replace />)} />

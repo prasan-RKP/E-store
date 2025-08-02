@@ -1319,7 +1319,6 @@ router.post("/placeOrder", protectedRoute, async (req, res) => {
 router.get("/call", (req, res)  => {
   res.send("Succesfully checked, testing route !");
 });
-
 export default router;
 
 /*
