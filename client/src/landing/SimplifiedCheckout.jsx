@@ -197,12 +197,15 @@ const SimplifiedCheckout = () => {
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [isShippingValid, setIsShippingValid] = useState(false);
   const [cartItems, setCartItems] = useState([]);
+  const [isCartLoading, setIsCartLoading] = useState(true);
+  const [cartBackup, setCartBackup] = useState([]); // backup cart
   //const [subtotal, setSubTotal] = useState(0);
   const [initialCartCheckDone, setInitialCartCheckDone] = useState(false);
 
   // to open/clsoe the orderSuccess modal
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [orderDetailsForModal, setOrderDetailsForModal] = useState(null);
+  const [isGoingBack, setIsGoingBack] = useState(false);
 
   const { isSavingShippingAddress2, verifiedUser, isCheckingOut, checkout, placeOrder, isPlacingOrder, removeAllCartItems } = userAuthStore();
 
@@ -225,11 +228,30 @@ const SimplifiedCheckout = () => {
 
   //setting cartItems
   useEffect(() => {
-    if (verifiedUser?.cart && Array.isArray(verifiedUser.cart)) {
-      setCartItems(verifiedUser.cart);
-    }
-  }, [verifiedUser]);
+    const fetchCart = async () => {
+      setIsCartLoading(true);
+      try {
+        if (verifiedUser?.cart) {
+          setCartItems(verifiedUser.cart);
+          setCartBackup(cartItems); // backup cart
+        }
+      } finally {
+        setIsCartLoading(false);
+      }
+    };
 
+    fetchCart();
+  }, [verifiedUser?.cart]);
+
+  console.log("The cartBackup is here", cartBackup);
+
+
+  // BackUp useEffect
+  useEffect(() => {
+    if (cartItems.length === 0 && cartBackup.length > 0) {
+      setCartItems(cartBackup);
+    }
+  }, [cartItems, cartBackup]);
 
 
 
@@ -271,8 +293,15 @@ const SimplifiedCheckout = () => {
   const [shippingMethod, setShippingMethod] = useState("standard");
   const [promoCode, setPromoCode] = useState("");
 
+
   // Pricing
-  const subtotal = cartItems.reduce((total, item) => total + item?.product?.price * item?.quantity, 0) || 0;
+  const effectiveCart = cartItems.length > 0 ? cartItems : cartBackup;
+  //const subtotal = effectiveCart.reduce((total, item) => total + item?.product?.price * item?.quantity, 0) || 0;
+  const subtotal = isCartLoading ?
+    // Show loading state in UI or use previous value
+    cartItems.reduce((total, item) => total + item?.product?.price * item?.quantity, 0) || 0
+    :
+    effectiveCart.reduce((total, item) => total + item?.product?.price * item?.quantity, 0) || 0;
 
   const shippingCosts = { standard: 7.99, express: 15.99, overnight: 29.99 };
   const shipping = shippingCosts[shippingMethod];
@@ -315,57 +344,48 @@ const SimplifiedCheckout = () => {
     if (currentStep < 3) setCurrentStep(currentStep + 1);
   };
 
-  const prevStep = () => {
-    if (currentStep > 1) setCurrentStep(currentStep - 1);
+  
+  const prevStep = async() => {
+    if (currentStep === 2) {
+      setIsGoingBack(true);
+
+      // Subscribe to Zustand store updates
+      const unsubscribe = userAuthStore.subscribe((state) => {
+        if (state.verifiedUser?.cart && state.verifiedUser.cart.length > 0) {
+          unsubscribe();
+          setIsGoingBack(false);
+          setCartItems(state.verifiedUser.cart); // refresh local cart
+          setCurrentStep(1); // only go back when ready
+        }
+      });
+
+      // Trigger a refresh of checkout/cart if needed
+     //await checkout();
+     window.location.reload();
+    } else if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
   };
+
+
 
   //if someone having no cart item then he/she should navigate to homePage
   // conditional rendering test - 1
-
-  // useEffect(() => {
-  //   if (subtotal === 0 || cartItems.length === 0) {
-  //     navigate("/", { replace: true });
-  //   }
-
-  //   else {
-  //     navigate("/checkout")
-  //   }
-  // }, [subtotal, cartItems])
-
-  // conditional rendering test - 2
-
-  // Trying concept for conditional rendering
-  // useEffect(() => {
-  //   const timeout = setTimeout(() => {
-  //     if (Array.isArray(cartItems)) {
-  //       if (cartItems.length === 0 || subtotal === 0) {
-  //         navigate("/", { replace: true });
-  //       } else {
-  //         navigate("/checkout", { replace: true });
-  //       }
-  //     }
-  //   }, 1000); // small delay to ensure cart is set
-
-  //   return () => clearTimeout(timeout);
-  // }, [cartItems, subtotal]);
 
 
 
   // conditional rendering test - 3
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (!initialCartCheckDone && Array.isArray(cartItems)) {
-        if (cartItems.length === 0 || subtotal === 0) {
-          navigate("/", { replace: true });
-          toast.info("Your cart is empty ☹️");
-        }
-        setInitialCartCheckDone(true);
-      }
-    }, 1000);
+    // Only check for empty cart when initially loading the checkout page
+    if (currentStep === 1 && !isCartLoading && cartItems.length === 0) {
+      const timer = setTimeout(() => {
+        navigate("/", { replace: true });
+        toast.info("Your cart is empty ☹️");
+      }, 500);
 
-    return () => clearTimeout(timeout);
-  }, [cartItems, subtotal, navigate, initialCartCheckDone]);
-
+      return () => clearTimeout(timer);
+    }
+  }, [currentStep, isCartLoading, cartItems.length, navigate]);
 
 
 
@@ -679,15 +699,26 @@ const SimplifiedCheckout = () => {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={prevStep}
+                    disabled={isGoingBack} // ✅ Only disable when loading back
                     className={`flex items-center gap-2 px-6 py-3 rounded-xl border font-medium transition-all duration-200 ${isDark
                       ? "border-gray-600 hover:bg-gray-700 text-gray-300"
                       : "border-gray-300 hover:bg-gray-50 text-gray-600"
-                      }`}
+                      } ${isGoingBack ? "opacity-50 cursor-not-allowed" : ""}`}
                   >
-                    <FiArrowLeft />
-                    Previous
+                    {isGoingBack ? (
+                      <>
+                        <TbLoader3 className="h-5 w-5 animate-spin" />
+                        Loading...
+                      </>
+                    ) : (
+                      <>
+                        <FiArrowLeft />
+                        Previous
+                      </>
+                    )}
                   </motion.button>
                 )}
+
 
                 {currentStep < 3 && (
                   <motion.button

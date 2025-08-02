@@ -168,17 +168,21 @@ const OrderHistoryPage = () => {
 
   // feature:- The ordered products will be added to the cart for re-order
   const shopAgain = async (item) => {
-    //console.log("The item is ", item.pid.toString());
-    if (item) {
-      setIsAddingToCart(item.pid);
-      await addCart({ productId: item.pid, size: item.size });
-    }
-    else {
-      toast.error("Item not found in order history ❌");
-      return;
-    }
-    setIsAddingToCart(null);
-  };
+  if (item) {
+    setIsAddingToCart(item.pid);
+    await addCart({ productId: item.pid, size: item.size });
+    // Collapse the expanded item after adding to cart
+    setExpandedItems(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(`${item.orderId}-${item.id}`);
+      return newSet;
+    });
+  } else {
+    toast.error("Item not found in order history ❌");
+    return;
+  }
+  setIsAddingToCart(null);
+};
 
   // feature: DownLoad Invoice
   const downloadInvoice = (item, orderId) => {
@@ -191,18 +195,22 @@ const OrderHistoryPage = () => {
 
   // handleCancelOrder 
   const handleCancelOrder = async (orderId, itemId) => {
-    //alert(`The orderId is ${orderId} and itemId is ${itemId}`);
-    if (orderId && itemId) {
-      setIsCancelling(itemId);
-      await cancelOrder({ orderId: orderId, itemId: itemId });
-      await fetchOrder(); // Refresh orders after cancellation
-    }
-    else {
-      toast.error("Your Product is not found ☹️");
-      return;
-    }
-    setIsCancelling(null);
-  };
+  if (orderId && itemId) {
+    setIsCancelling(itemId);
+    await cancelOrder({ orderId: orderId, itemId: itemId });
+    await fetchOrder(); // Refresh orders after cancellation
+    // Collapse the expanded item after cancellation
+    setExpandedItems(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(`${orderId}-${itemId}`);
+      return newSet;
+    });
+  } else {
+    toast.error("Your Product is not found ☹️");
+    return;
+  }
+  setIsCancelling(null);
+};
 
   // NEW: Filter individual order items instead of orders
   const filteredOrderItems = allOrderItems.filter(item => {

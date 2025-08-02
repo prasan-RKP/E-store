@@ -8,7 +8,7 @@ import orderRoute from "../server/routes/order.route.js";
 import mongoose from "mongoose";
 
 dotenv.config();
-//MONGO_URI=mongodb://127.0.0.1:27017/EcomDB
+//MONGO_URI="mongodb+srv://Prasan12:PlafhhELkA2ZPeOy@devtest.33xkmhn.mongodb.net/EcomDB?retryWrites=true&w=majority&appName=DevTest"
 
 const PORT = process.env.PORT || 5000; // Fallback to 5000 if PORT isn't set in .env
 

@@ -74,11 +74,11 @@ const ProfilePage = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
 
 
- // console.log("VerifiedUser", verifiedUser)
+  // console.log("VerifiedUser", verifiedUser)
 
- useEffect(()=> {
-setCartCount(verifiedUser?.cart.length);
- }, [verifiedUser?.cart])
+  useEffect(() => {
+    setCartCount(verifiedUser?.cart?.length);
+  }, [verifiedUser?.cart])
   // To set the totalOrder length -> functionality 
   // Todo: Tommorow
   useEffect(() => {
@@ -511,7 +511,7 @@ setCartCount(verifiedUser?.cart.length);
       >
         <h3 className="text-center text-lg font-semibold text-gray-200 mb-4">
           {allOrderItems.length === 0
-            ? "No Orders Available ☹️ ...": "Order History"}
+            ? "No Orders Available ☹️ ..." : "Order History"}
         </h3>
 
         {/* Fixed height scrollable container */}
@@ -608,11 +608,11 @@ setCartCount(verifiedUser?.cart.length);
             >
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link to={`/productshow/${item?.productId}`} >
-                <img
-                  src={item?.product?.img}
-                  alt={item.name}
-                  className="w-full sm:w-44 h-44 rounded-md object-cover border border-gray-700"
-                />
+                  <img
+                    src={item?.product?.img}
+                    alt={item.name}
+                    className="w-full sm:w-44 h-44 rounded-md object-cover border border-gray-700"
+                  />
                 </Link>
                 <div className="flex flex-col justify-between">
                   <div>
