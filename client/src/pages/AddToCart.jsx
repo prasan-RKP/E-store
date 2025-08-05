@@ -890,7 +890,7 @@ const AddToCart = () => {
                         Looks like you haven't added any items to your cart yet.
                       </p>
                       <button className="btn btn-primary bg-blue-600 text-white px-6 py-3 rounded-lg shadow hover:bg-blue-700 transition-colors">
-                        <Link to={"/"}>Start Shopping</Link>
+                        <Link to={"/#products"}>Start Shopping</Link>
                       </button>
                     </motion.div>
                   )}

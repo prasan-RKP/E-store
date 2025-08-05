@@ -113,20 +113,20 @@ const HomePageShop = () => {
   const featuredProducts = [
     {
       name: "Premium Cotton T-Shirt",
-      price: "$29.99",
+      price: "₹29.99",
       image: "/feature/shirt1.jpg",
       discount: "20%",
     },
     { name: "Designer Jeans", price: "$89.99", image: "/feature/jean1.jpg" },
     {
       name: "Leather Crossbody Bag",
-      price: "$119.99",
+      price: "₹119.99",
       image: "/feature/gucci1.jpg",
       label: "NEW",
     },
     {
       name: "Classic Sneakers",
-      price: "$69.99",
+      price: "₹69.99",
       image: "/feature/shoe.jpg",
     },
   ];
@@ -490,73 +490,227 @@ const HomePageShop = () => {
         </section>
 
         {/* Featured products section */}
-        <section className="py-16 bg-base-200">
-          <div className="container mx-auto px-4">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-              className="text-center mb-12"
-            >
-              <h2 className="text-3xl font-bold mb-2" ref={collectionRef} id="feature-section">Featured Products</h2>
-              <p className="text-gray-500" >
-                Discover our most popular items
-              </p>
-            </motion.div>
+        <section className="py-20 bg-gradient-to-br from-base-200 to-base-300 relative overflow-hidden">
+  {/* Background decoration */}
+  <div className="absolute inset-0 opacity-5">
+    <div className="absolute top-10 left-10 w-32 h-32 bg-primary rounded-full blur-3xl"></div>
+    <div className="absolute bottom-20 right-20 w-40 h-40 bg-secondary rounded-full blur-3xl"></div>
+  </div>
+  
+  {/* Custom animations and styles */}
+  <style jsx>{`
+    @keyframes shimmer {
+      0% { transform: translateX(-100%) skewX(-12deg); }
+      100% { transform: translateX(200%) skewX(-12deg); }
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0; }
+      50% { transform: translateY(-20px) rotate(180deg); opacity: 1; }
+    }
+    
+    @keyframes glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+      50% { box-shadow: 0 0 40px rgba(59, 130, 246, 0.6); }
+    }
+    
+    .animate-shimmer {
+      animation: shimmer 2s infinite;
+    }
+    
+    .animate-float {
+      animation: float 3s infinite ease-in-out;
+    }
+    
+    .animate-glow {
+      animation: glow 2s infinite ease-in-out;
+    }
+    
+    .group:hover .animate-float {
+      animation-play-state: running;
+    }
+  `}</style>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {featuredProducts.map((product, index) => (
-                // <Link to={"/login"} >
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                  whileHover={{ y: -10 }}
-                  className="card bg-base-100 shadow-sm  overflow-hidden"
-                >
-                  <figure className="relative">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="h-80 w-full object-cover transition-transform duration-500 hover:scale-110"
-                    />
-                    {product.discount && (
-                      <div className="absolute top-3 left-3 bg-error text-white text-sm px-2 py-1 rounded">
-                        {product.discount} OFF
-                      </div>
-                    )}
-                    {product.label && (
-                      <div className="absolute top-3 left-3 bg-primary text-white text-sm px-2 py-1 rounded">
-                        {product.label}
-                      </div>
-                    )}
-                    <button className="absolute right-3 top-3 btn btn-circle btn-sm bg-white text-gray-700 border-none hover:bg-primary hover:text-white">
-                      <Heart size={16} />
-                    </button>
-                  </figure>
-                  <div className="card-body p-4">
-                    <h3 className="card-title text-base font-medium">
-                      {product.name}
-                    </h3>
-                    <p className="text-primary font-bold">{product.price}</p>
-                    <div className="card-actions mt-3">
-                      <button
-                        className="btn btn-primary btn-sm btn-block"
-                        onClick={() => toast.info("Feature Coming Soon 🔜 ...")}
-                      >
-                        Add to Cart
-                      </button>
-                    </div>
+  <div className="container mx-auto px-4 relative z-10">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      viewport={{ once: true }}
+      className="text-center mb-16"
+    >
+      <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-4">
+        <span className="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
+        TOP PERFORMERS
+      </div>
+      <h2 className="text-4xl lg:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent" ref={collectionRef} id="feature-section">
+        Our Best Sellers
+      </h2>
+      <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+        Join thousands of satisfied customers who can't get enough of these crowd favorites
+      </p>
+    </motion.div>
+
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      {featuredProducts.map((product, index) => (
+        <motion.div
+          key={index}
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: index * 0.1 }}
+          viewport={{ once: true }}
+          whileHover={{ y: -15, transition: { duration: 0.3 } }}
+          className="group relative"
+        >
+          {/* Bestseller rank badge */}
+          <div className="absolute -top-3 -left-3 z-20 w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg">
+            #{index + 1}
+          </div>
+
+          <div className="card bg-base-100 shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-base-300 group-hover:border-primary/30">
+            <figure className="relative overflow-hidden group/image">
+              {/* Main image with premium hover effects */}
+              <div className="relative h-80 w-full overflow-hidden">
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="h-full w-full object-cover transition-all duration-1000 ease-out group-hover:scale-125 group-hover:rotate-2 group-hover:brightness-110 group-hover:contrast-110 group-hover:saturate-110"
+                />
+                
+                {/* Premium overlay gradients */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-secondary/20 opacity-0 group-hover:opacity-100 transition-all duration-1000"></div>
+                
+                {/* Shimmer effect */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+                  <div className="absolute inset-0 -skew-x-12 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer"></div>
+                </div>
+
+                {/* Floating particles effect */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                  {[...Array(6)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="absolute w-1 h-1 bg-white/60 rounded-full animate-float"
+                      style={{
+                        left: `${20 + i * 15}%`,
+                        top: `${30 + (i % 2) * 40}%`,
+                        animationDelay: `${i * 0.3}s`,
+                        animationDuration: `${2 + i * 0.5}s`
+                      }}
+                    ></div>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Labels and badges with enhanced animations */}
+              <div className="absolute top-3 left-3 flex flex-col gap-2 z-10">
+                {product.discount && (
+                  <div className="bg-gradient-to-r from-red-500 to-red-600 text-white text-xs px-3 py-1 rounded-full font-semibold shadow-xl border border-red-400/50 animate-pulse transform group-hover:scale-110 transition-transform duration-300">
+                    <span className="drop-shadow-sm">{product.discount} OFF</span>
                   </div>
-                </motion.div>
-                // </Link>
-              ))}
+                )}
+                {product.label && (
+                  <div className="bg-gradient-to-r from-primary to-primary-focus text-white text-xs px-3 py-1 rounded-full font-semibold shadow-xl border border-primary/50 transform group-hover:scale-110 transition-transform duration-300">
+                    <span className="drop-shadow-sm">{product.label}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Enhanced heart icon */}
+              <button className="absolute right-3 top-3 z-10 btn btn-circle btn-sm bg-white/95 backdrop-blur-md text-gray-700 border border-white/50 hover:bg-primary hover:text-white hover:scale-125 hover:rotate-12 transition-all duration-500 shadow-xl hover:shadow-2xl group-hover:animate-bounce">
+                <Heart size={16} className="drop-shadow-sm" />
+              </button>
+
+              {/* Premium trending indicator */}
+              <div className="absolute bottom-3 right-3 z-10 bg-gradient-to-r from-emerald-500 to-green-500 text-white text-xs px-3 py-1 rounded-full font-semibold flex items-center gap-1.5 shadow-xl border border-emerald-400/50 transform group-hover:scale-110 transition-all duration-300">
+                <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse shadow-sm"></span>
+                <span className="drop-shadow-sm">TRENDING</span>
+              </div>
+
+              {/* Premium glow effect */}
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
+                <div className="absolute inset-0 bg-gradient-to-t from-primary/10 via-transparent to-secondary/10 blur-sm"></div>
+              </div>
+            </figure>
+
+            <div className="card-body p-6">
+              <div className="flex items-start justify-between mb-2">
+                <h3 className="card-title text-lg font-semibold line-clamp-2 group-hover:text-primary transition-colors duration-300">
+                  {product.name}
+                </h3>
+              </div>
+              
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-primary font-bold text-xl">{product.price}</p>
+                
+                {/* Rating stars */}
+                <div className="flex items-center gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <svg key={i} className="w-4 h-4 fill-yellow-400" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                  ))}
+                  <span className="text-sm text-gray-500 ml-1">(4.9)</span>
+                </div>
+              </div>
+
+              {/* Enhanced social proof with dynamic numbers */}
+              
+              {/* Call to action - view details instead of add to cart */}
+              <div className="card-actions">
+                <button className="btn btn-outline btn-primary btn-sm btn-block group-hover:btn-primary group-hover:text-white transition-all duration-300 hover:scale-105">
+                  <span className="flex items-center gap-2">
+                    View Details
+                    <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            {/* Subtle glow effect on hover */}
+            <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary/5 to-secondary/5"></div>
             </div>
           </div>
-        </section>
+        </motion.div>
+      ))}
+    </div>
+
+    {/* Bottom CTA section */}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, delay: 0.4 }}
+      viewport={{ once: true }}
+      className="text-center mt-16"
+    >
+      <div className="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-2xl p-8 border border-primary/20">
+        <h3 className="text-2xl font-bold mb-3">Why These Are Our Best Sellers</h3>
+        <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+          Handpicked by our customers, these products have earned their place at the top through 
+          exceptional quality, unmatched value, and thousands of 5-star reviews.
+        </p>
+        <div className="flex flex-wrap justify-center gap-4 text-sm">
+          <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm">
+            <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+            <span className="text-amber-600">Premium Quality</span>
+          </div>
+          <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm">
+            <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+            <span className="text-blue-900">Customer Favorite</span>
+          </div>
+          <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm">
+            <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+            <span className="text-pink-400">Fast Shipping</span>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  </div>
+</section>
 
         {/* Newsletter section */}
         <section className="py-16 bg-primary text-primary-content">
