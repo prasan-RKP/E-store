@@ -802,20 +802,16 @@ const AddToCart = () => {
                               {/* Quantity Control, Buy Now and Remove */}
                               <div className="flex flex-col sm:flex-row items-center justify-between mt-4">
                                 <div className="flex items-center space-x-3 mb-3 sm:mb-0">
+                                  {/* Quantity Control */}
                                   <div className="flex items-center border border-gray-300 rounded-lg">
                                     <button
-                                      onClick={() =>
-                                        handleQuantityDec(item?.productId)
-                                      }
-                                      className="px-3 py-1 text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                                      disabled={
-                                        loadQuantity === item?.productId ||
-                                        item.quantity <= 1
-                                      }
+                                      onClick={() => handleQuantityDec(item?.productId)}
+                                      className="px-3 py-2 text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                      disabled={loadQuantity === item?.productId || item.quantity <= 1}
                                     >
                                       <Minus className="h-4 w-4" />
                                     </button>
-                                    <span className="px-3 py-1 text-gray-800 font-medium">
+                                    <span className="px-4 py-2 text-gray-800 font-medium">
                                       {loadQuantity === item?.productId ? (
                                         <TbLoader2 className="h-5 w-5 animate-spin" />
                                       ) : (
@@ -823,32 +819,29 @@ const AddToCart = () => {
                                       )}
                                     </span>
                                     <button
-                                      onClick={() =>
-                                        handleQuantityInc(item?.productId)
-                                      }
-                                      className="px-3 py-1 text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                                      disabled={
-                                        loadQuantity === item?.productId
-                                      }
+                                      onClick={() => handleQuantityInc(item?.productId)}
+                                      className="px-3 py-2 text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                      disabled={loadQuantity === item?.productId}
                                     >
                                       <Plus className="h-4 w-4" />
                                     </button>
                                   </div>
 
-                                  {/* Buy Now Button */}
+                                  {/* Move to Wishlist Button */}
                                   <button
-                                    onClick={() => toast.info('Feature Coming Soon 🔜 ...')}
-                                    className="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+                                    onClick={() => toast.info("Feature Coming Soon 🔜 ...")}
+                                    className="hover:cursor-pointer px-4 py-2 bg-gray-300 text-gray-600 rounded-lg hover:bg-gray-400 transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
                                     disabled={isChecking}
                                   >
                                     {isChecking ? (
                                       <Loader2 className="h-5 w-5 animate-spin inline-block mr-2" />
                                     ) : (
-                                      "Buy Now"
+                                      "Add to Wishlist ❤️"
                                     )}
                                   </button>
                                 </div>
 
+                                {/* Remove Button */}
                                 <button
                                   onClick={() => removeItem(item?.productId)}
                                   className="text-red-500 hover:text-red-700 flex items-center cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
@@ -856,8 +849,7 @@ const AddToCart = () => {
                                 >
                                   {storeProdId === item?.productId ? (
                                     <span className="flex items-center justify-center">
-                                      <Loader2 className="w-5 h-5 animate-spin mr-1" />{" "}
-                                      Removing...
+                                      <Loader2 className="w-5 h-5 animate-spin mr-1" /> Removing...
                                     </span>
                                   ) : (
                                     <>
@@ -867,6 +859,7 @@ const AddToCart = () => {
                                   )}
                                 </button>
                               </div>
+
                             </div>
                           </div>
                         </div>
