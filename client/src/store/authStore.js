@@ -286,7 +286,11 @@ export const userAuthStore = create((set, get) => ({
 
       const productId = data.pid; // ✅ This is what you sent from frontend
       set((state) => ({
-        verifiedUser: res.data,
+        //verifiedUser: res.data, (old code-> which was not working)
+        verifiedUser: {
+          ...state.verifiedUser, // Preserve existing data
+          wishlist: res.data.wishlist, // Only update wishlist
+        },
         wishlist: { ...state.wishlist, [productId]: true },
         setStatus: res.status,
       }));
