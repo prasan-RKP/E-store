@@ -41,6 +41,7 @@ const AddToCart = () => {
     showWishListItem,
     removeAllCartItems,
     isRemovingAllCartItem,
+    fetchWishListProd
   } = userAuthStore();
 
 
@@ -57,8 +58,11 @@ const AddToCart = () => {
   const [isAddingProdId, setIsAddingProdId] = useState(null);
   const [wishlistItems, setWishlistItems] = useState([]);
   const [length, setLength] = useState(0);
+  const [wishlistId, setWishListId] = useState(null);
+  const [wishlistLoading, setWishlistLoading] = useState({});
 
   const { order, orderItemLength, fetchOrder } = useOrderStore();
+
 
   useEffect(() => {
     const loadOrders = async () => {
@@ -83,7 +87,7 @@ const AddToCart = () => {
   const total = subtotal + shipping + tax;
 
 
-  console.log("CartItems", verifiedUser);
+  console.log("CartItems", cartItems);
 
   // Check if device is mobile (keeping this for general mobile-specific logic if needed elsewhere)
   useEffect(() => {
@@ -272,12 +276,21 @@ const AddToCart = () => {
     // Trigger exit animation by hiding cart
     setShowCart(false);
 
+
     // Wait for animation duration (300ms)
     setTimeout(() => {
       navigate("/checkout");
     }, 300);
   };
 
+  // handleWishListItem
+
+  const handleWishList = async (item) => {
+    console.log("Item ID", item);
+    setWishlistLoading(prev => ({ ...prev, [item.productId]: true }));
+    await fetchWishListProd({ pid: item.productId });
+    setWishlistLoading(prev => ({ ...prev, [item.productId]: false }));
+  }
 
   return (
     <>
@@ -430,7 +443,7 @@ const AddToCart = () => {
                                       {openSizeDropdown === item?.productId && (
                                         <div className="absolute z-50 top-full left-0 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-lg">
                                           <div className="max-h-16 overflow-y-auto">
-                                            {item.product.sizes.map((size) => (
+                                            {item?.product?.sizes.map((size) => (
                                               <button
                                                 key={size}
                                                 onClick={() =>
@@ -496,16 +509,17 @@ const AddToCart = () => {
                               <div className="flex-1 space-y-2">
                                 {/* Buy Now Button */}
                                 <button
-                                  onClick={() => toast.info('Feature Coming Soon 🔜 ...')}
-                                  className="w-full px-2 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-xs disabled:opacity-50 disabled:cursor-not-allowed"
-                                  disabled={isChecking}
+                                  onClick={() => handleWishList(item)}
+                                  className="hover:cursor-pointer px-4 py-2 bg-gray-300 text-gray-600 rounded-lg hover:bg-gray-400 transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+                                  disabled={wishlistLoading[item?.productId]} // Changed from wishlistId
                                 >
-                                  {isChecking ? (
-                                    <Loader2 className="h-3 w-3 animate-spin mx-auto" />
+                                  {wishlistLoading[item?.productId] ? ( // Changed from item?._id
+                                    <Loader2 className="h-5 w-5 animate-spin inline-block mr-2" />
                                   ) : (
-                                    "Buy Now"
+                                    "Add to Wishlist ❤️"
                                   )}
                                 </button>
+
 
                                 {/* Product Price */}
                                 <div className="text-center">
@@ -829,11 +843,11 @@ const AddToCart = () => {
 
                                   {/* Move to Wishlist Button */}
                                   <button
-                                    onClick={() => toast.info("Feature Coming Soon 🔜 ...")}
+                                    onClick={() => handleWishList(item)}
                                     className="hover:cursor-pointer px-4 py-2 bg-gray-300 text-gray-600 rounded-lg hover:bg-gray-400 transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
-                                    disabled={isChecking}
+                                    disabled={wishlistLoading[item?.productId]} // Changed from wishlistId
                                   >
-                                    {isChecking ? (
+                                    {wishlistLoading[item?.productId] ? ( // Changed from item?._id
                                       <Loader2 className="h-5 w-5 animate-spin inline-block mr-2" />
                                     ) : (
                                       "Add to Wishlist ❤️"
