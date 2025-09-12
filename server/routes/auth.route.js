@@ -401,7 +401,9 @@ router.post("/removeCartProduct", protectedRoute, async (req, res) => {
   }
 });
 
-// ProdDisplay functionality
+// ProdDisplay old code functionality
+
+/*
 router.get("/prodDisplay/:pid", protectedRoute, async (req, res) => {
   const userId = req.user?.id;
   const { pid } = req.params;
@@ -419,7 +421,7 @@ router.get("/prodDisplay/:pid", protectedRoute, async (req, res) => {
     else if ((product = await Footwear.findById(pid))) itemModel = "Footwear";
     else return res.status(404).json({ message: "Product not found" });
 
-    //console.log("user value is ", user);
+
     const pidStr = pid.toString();
     const matchedCartItem = user.cart.find(
       ({ productId }) => productId.toString() === pidStr
@@ -431,6 +433,46 @@ router.get("/prodDisplay/:pid", protectedRoute, async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 });
+
+*/
+
+router.get("/prodDisplay/:pid", protectedRoute, async (req, res) => {
+  const userId = req.user?.id;
+  const { pid } = req.params;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) return res.status(400).json({ message: "User not registered" });
+
+    let product = null;
+    let itemModel = null;
+
+    if ((product = await Women.findById(pid))) itemModel = "Women";
+    else if ((product = await Men.findById(pid))) itemModel = "Men";
+    else if ((product = await Accessory.findById(pid))) itemModel = "Accessory";
+    else if ((product = await Footwear.findById(pid))) itemModel = "Footwear";
+    else return res.status(404).json({ message: "Product not found" });
+
+    const pidStr = pid.toString();
+    const matchedCartItem = user.cart.find(
+      ({ productId }) => productId.toString() === pidStr
+    );
+
+    // 👉 At the end, attach wishlist also
+    const wishlistItems = user.wishlist || [];
+
+    return res.status(200).json({ 
+      product, 
+      cartDetail: matchedCartItem, 
+      wishlist: wishlistItems 
+    });
+  } catch (error) {
+    console.error("Error fetching product:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
 
 router.post("/updateSize", protectedRoute, async (req, res) => {
   const userId = req.user?.id;
@@ -496,8 +538,6 @@ router.post("/postReview", protectedRoute, async (req, res) => {
   const userId = req?.user.id;
   const { name, rating, comment, productId } = req.body;
 
-  //console.log("ProductId", productId);
-
   try {
     if (!productId) {
       return res.status(400).json({ message: "Product not Found" });
@@ -517,7 +557,6 @@ router.post("/postReview", protectedRoute, async (req, res) => {
     });
 
     const savedReview = await newReview.save();
-    //console.log("Saved review:", savedReview);
 
     await User.findByIdAndUpdate(
       userId,
@@ -534,11 +573,10 @@ router.post("/postReview", protectedRoute, async (req, res) => {
     });
 
     if (!userWithReviews) {
-      //console.log("User not found");
+      
       return res.status(404).json({ message: "User not found" });
     }
-
-    //console.log("New Review is", userWithReviews.reviews);
+    
     return res.status(200).json({ review: userWithReviews.reviews });
   } catch (error) {
     console.error("Error posting review:", error);
@@ -547,7 +585,6 @@ router.post("/postReview", protectedRoute, async (req, res) => {
 });
 
 // Checking the Item is presentIn
-
 router.get("/fetchReview/:pid", protectedRoute, async (req, res) => {
   const { pid } = req.params;
 
@@ -569,59 +606,6 @@ router.get("/fetchReview/:pid", protectedRoute, async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-
-// router.post("/addWishlistProd",protectedRoute ,async(req, res)=>{
-
-//   const userId = req.user?.id;
-//   const {pid} = req.body;
-//   console.log("ProductId", pid);
-//   const productId = pid;
-
-//   try {
-//     if(!pid) {return res.status(400).json({message: "Product not found"})};
-
-//     const user = await User.findById(userId);
-//     if(!user) {return res.status(400).json({message: "User not Found"})};
-
-//     let itemModel = null;
-
-//     if (await Women.findById(productId)) itemModel = "Women";
-//     else if (await Men.findById(productId)) itemModel = "Men";
-//     else if (await Accessory.findById(productId)) itemModel = "Accessory";
-//     else if(await Footwear.findById(productId)) itemModel = "Footwear";
-//     else return res.status(400).json({ message: "Product not found" });
-
-//     if ((itemModel === "Women" || itemModel === "Men" || itemModel === "Footwear") && !size) {
-//       return res.status(400).json({ message: "Size is required, Select your Size" });
-//     }
-
-//     const existingIndex = user.wishlist.findIndex(
-//       (item) =>
-//         item.productId.toString() === pid && item.itemModel === itemModel
-//     );
-
-//     if(existingIndex !== -1){
-//       return res.status(400).json({message: "Product already in WishList"});
-//     }
-
-//     else{
-//       user.wishlist.push({
-//         productId: pid,
-//         itemModel,
-//         ...(size && {size}),
-//         quantity: 1
-//       })
-//     }
-
-//     await user.save();
-//     res.status(200).json(user);
-
-//   } catch (error) {
-//     console.error("Add to cart error:", error);
-//     res.status(500).json({ message: "Internal Server Error" });
-//   }
-
-// })
 
 router.post("/addWishlistProd", protectedRoute, async (req, res) => {
   const userId = req.user?.id;
