@@ -71,7 +71,6 @@ const buttonVariants = {
 };
 
 const WishlistComponent = () => {
-  // const [wishlistItems, setWishlistItems] = useState(initialWishlistItems);
   const [cartItems, setCartItems] = useState([]);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
