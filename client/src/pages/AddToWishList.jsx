@@ -11,6 +11,7 @@ import {
   Plus,
   Loader2,
   ArrowRight,
+  Shirt
 } from "lucide-react";
 import { motion, AnimatePresence, useAnimation } from "framer-motion";
 import { userAuthStore } from "../store/authStore.js";
@@ -132,7 +133,6 @@ const WishlistComponent = () => {
     }
   }, [verifiedUser?.wishlist]);
 
-  //console.log("WishItems", verifiedUser?.wishlist);
 
   // for smooth scroll to top
   useEffect(() => {
@@ -155,10 +155,6 @@ const WishlistComponent = () => {
     //toast.success("Product moved to Cart ✅");
   };
 
-  //console.log("verfiedUser from component", wishItems);
-  // wishItems.map((item)=> console.log("WishItems", item?.product?.img) || "Nothing inside the wishItems")
-  //console.log(verifiedUser?.cart?.length);
-
   return (
     <>
       {isShowingWishlistItem ? (
@@ -178,25 +174,24 @@ const WishlistComponent = () => {
                     whileHover={{ scale: 1.05 }}
                     className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"
                   >
-                    ShopEase
+                    Luxe
                   </motion.div>
                 </div>
 
                 {/* Desktop Navigation */}
                 <div className="hidden md:flex items-center space-x-10">
-                  <motion.a
+                  <Link to={"/"}
                     whileHover={{ scale: 1.05, color: "#c084fc" }}
-                    href="#"
                     className="text-gray-300 transition duration-300 ease-in-out"
                   >
                     Home
-                  </motion.a>
+                  </Link>
                   <Link to={"/#products"}
                     whileHover={{ scale: 1.05, color: "#c084fc" }}
                     href="/#products"
                     className="text-gray-300 transition duration-300 ease-in-out"
                   >
-                    Shop
+                    <Shirt className="w-6 h-6 hover:text-amber-200" />
                   </Link>
 
                   <Link to={"/addtocart"}>
@@ -285,70 +280,15 @@ const WishlistComponent = () => {
                 transition={{ delay: 0.2 }}
               >
                 <h1 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-purple-300 mb-2">
-                  My Wishlist
+                  Explore WishList
                 </h1>
                 <p className="text-gray-400">
                   Discover and save your favorite items
                 </p>
               </motion.div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="flex items-center mt-4 md:mt-0"
-              >
-                <Heart className="text-pink-400 mr-2" size={22} />
-                <span className="text-gray-300 text-lg">
-                  {wishItems?.length} items
-                </span>
-              </motion.div>
+              
             </div>
-
-            {/* Filter Options */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="mb-8 flex flex-wrap gap-2 md:gap-4"
-            >
-              <motion.button
-                whileHover={buttonVariants.hover}
-                whileTap={buttonVariants.tap}
-                onClick={() => filterItems("all")}
-                className={`px-6 py-2 rounded-full text-medium font-medium transition-all ${
-                  activeFilter === "all"
-                    ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/30"
-                    : "bg-gray-800 text-gray-300 border border-gray-700"
-                }`}
-              >
-                All Items
-              </motion.button>
-              <motion.button
-                whileHover={buttonVariants.hover}
-                whileTap={buttonVariants.tap}
-                onClick={() => filterItems("discount")}
-                className={`px-6 py-2 rounded-full text-medium font-medium transition-all ${
-                  activeFilter === "discount"
-                    ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/30"
-                    : "bg-gray-800 text-gray-300 border border-gray-700"
-                }`}
-              >
-                On Sale
-              </motion.button>
-              <motion.button
-                whileHover={buttonVariants.hover}
-                whileTap={buttonVariants.tap}
-                onClick={() => filterItems("recent")}
-                className={`px-6 py-2 rounded-full text-medium font-medium transition-all ${
-                  activeFilter === "recent"
-                    ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/30"
-                    : "bg-gray-800 text-gray-300 border border-gray-700"
-                }`}
-              >
-                Recently Added
-              </motion.button>
-            </motion.div>
 
             {/* Empty Wishlist State */}
             {wishItems.length === 0 && (
