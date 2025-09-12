@@ -269,7 +269,7 @@ const ProductDisplay = () => {
           <div className="flex justify-center items-center space-x-7">
             {/* Brand */}
             <h1 className="text-white text-2xl font-bold">
-              Lu<span className="text-primary text-red-500">Xe</span>
+              Lu<span className="text-red-500">Xe</span>
             </h1>
 
             {/* Cart */}
@@ -854,7 +854,7 @@ const ProductDisplay = () => {
           <div className="flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0">
             <div>
               <div className="text-xl font-bold mb-2"><h1 className="text-white text-2xl font-bold">
-                Lu<span className="text-primary text-red-500">Xe</span>
+                Lu<span className=" text-red-500">Xe</span>
               </h1></div>
               <p className="text-gray-400 text-sm">
                 Premium clothing for everyday comfort
