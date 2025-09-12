@@ -32,11 +32,11 @@ const ProductDisplay = () => {
   const headerRef = useRef(null);
   const [cartItems, setCartItems] = useState([]);
   const [myReviews, setMyReviews] = useState([]);
-  const[isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const [wishItems, setWishItems] = useState({});
 
   const { id } = useParams();
 
-  //console.log("current prodId is",id);
 
   const {
     productShow,
@@ -47,12 +47,11 @@ const ProductDisplay = () => {
     addReview,
     review,
     fetchReviews,
+    fetchWishListProd
   } = userAuthStore();
 
   let rating = authProdDetail?.product?.rating;
 
-  //console.log("authProdDetail", authProdDetail?.cartDetail?.size);
-  //console.log("getting Review", review);
 
   // Setting the productId to
   useEffect(() => {
@@ -79,21 +78,13 @@ const ProductDisplay = () => {
   }, [review, id]);
 
   useEffect(() => {
-  setIsLoading(true);
-  (async () => {
-    await productShow({ pid: id });
-    setIsLoading(false);
-    setCartItems(verifiedUser?.cart || []);
-  })();
-}, [id, verifiedUser?.cart]);
-
-  // Product images array
-  // const productImages = [
-  //   { id: 1, src: "/man1.jpg", alt: "Product view 1" },
-  //   { id: 2, src: "/man2.jpg", alt: "Product view 2" },
-  //   { id: 3, src: "/man3.jpg", alt: "Product view 3" },
-  //   { id: 4, src: "/man4.jpg", alt: "Product view 4" },
-  // ];
+    setIsLoading(true);
+    (async () => {
+      await productShow({ pid: id });
+      setIsLoading(false);
+      setCartItems(verifiedUser?.cart || []);
+    })();
+  }, [id, verifiedUser?.cart]);
 
   // Related products array
   const relatedProducts = [
@@ -145,19 +136,15 @@ const ProductDisplay = () => {
 
   // Upload review functionality
 
-  const handleUploadReview = (userName, rating, description) => {};
-
-  //console.log("size test", selectedSize);
-
-  // Sticky header effect
+  const handleUploadReview = (userName, rating, description) => { };
 
   useState(() => {
-   // console.log("My Review is", review);
+    // console.log("My Review is", review);
   }, [review]);
 
   useEffect(() => {
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}, []);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -244,12 +231,8 @@ const ProductDisplay = () => {
       return false;
     }
 
-    //console.log("Review submitted:", reviewForm);
-    // Connecting to the Backend
     await addReview(reviewForm);
-
     setReviewForm({ name: "", rating: 5, comment: "" });
-    //toast.success("Thank you for your review!");
   };
 
   // Nav item hover animation variants
@@ -258,8 +241,18 @@ const ProductDisplay = () => {
     hover: { width: "100%", opacity: 1, transition: { duration: 0.3 } },
   };
 
+
+  console.log("AuthProdDetails", authProdDetail);
+
+  // AddToWishList ❤️
+  const handleAddToWishList = async (productId) => {
+    setWishItems(prev => ({ ...prev, [productId]: true }));
+    await fetchWishListProd({ pid: productId });
+    setWishItems(prev => ({ ...prev, [productId]: false }));
+  }
+
   // condition for skeleton view
-  if(isLoading || !authProdDetail?.product){
+  if (isLoading || !authProdDetail?.product) {
     return <ProductDisplaySkeleton />;
   }
 
@@ -268,9 +261,8 @@ const ProductDisplay = () => {
       {/* Header */}
       <header
         ref={headerRef}
-        className={`bg-slate-900 text-white py-4 px-4 md:px-0 transition-all duration-300 ${
-          isSticky ? "fixed top-0 left-0 right-0 z-50 shadow-lg" : ""
-        }`}
+        className={`bg-slate-900 text-white py-4 px-4 md:px-0 transition-all duration-300 ${isSticky ? "fixed top-0 left-0 right-0 z-50 shadow-lg" : ""
+          }`}
       >
         <div className="container mx-auto flex flex-col items-center space-y-4">
           {/* Top Centered Brand and Cart */}
@@ -286,6 +278,16 @@ const ProductDisplay = () => {
                 <ShoppingCart size={20} />
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
                   {cartItems?.length}
+                </span>
+              </Link>
+            </button>
+
+            {/* "wishList ❤️ added" */}
+            <button className="p-2 hover:bg-slate-800 rounded-full transition relative">
+              <Link to="/wishlist">
+                <Heart size={20} />
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
+                  {verifiedUser?.wishlist?.length}
                 </span>
               </Link>
             </button>
@@ -317,9 +319,8 @@ const ProductDisplay = () => {
 
       {/* Mobile Navigation */}
       <nav
-        className={`md:hidden bg-slate-800 text-white py-2 ${
-          isSticky ? "mt-16" : ""
-        }`}
+        className={`md:hidden bg-slate-800 text-white py-2 ${isSticky ? "mt-16" : ""
+          }`}
       >
         <div className="container mx-auto px-4">
           <ul className="flex justify-between">
@@ -343,9 +344,8 @@ const ProductDisplay = () => {
 
       {/* Product Navigation */}
       <nav
-        className={`bg-slate-900 shadow-sm py-3 overflow-x-auto whitespace-nowrap px-4 md:px-0 border-t border-slate-800 ${
-          isSticky ? "md:mt-16" : ""
-        }`}
+        className={`bg-slate-900 shadow-sm py-3 overflow-x-auto whitespace-nowrap px-4 md:px-0 border-t border-slate-800 ${isSticky ? "md:mt-16" : ""
+          }`}
       >
         <div className="container mx-auto flex justify-center md:justify-center space-x-6">
           {[
@@ -373,9 +373,8 @@ const ProductDisplay = () => {
 
       {/* Product Display */}
       <div
-        className={`container mx-auto flex flex-col md:flex-row py-6 px-4 md:px-6 gap-8 ${
-          isSticky ? "mt-4" : ""
-        }`}
+        className={`container mx-auto flex flex-col md:flex-row py-6 px-4 md:px-6 gap-8 ${isSticky ? "mt-4" : ""
+          }`}
       >
         {/* Left Section: Product Images */}
         <div className="md:w-1/2 flex flex-col space-y-4">
@@ -441,42 +440,6 @@ const ProductDisplay = () => {
             </div>
           </motion.div>
 
-          {/* Thumbnail Images - Hidden on mobile */}
-          {/* <div className="hidden md:flex space-x-4">
-            {productImages.map((image, index) => (
-              <motion.div
-                key={image.id}
-                className={`w-1/4 aspect-square cursor-pointer rounded-md overflow-hidden border-2 ${
-                  selectedImageIndex === index
-                    ? "border-blue-500"
-                    : "border-transparent"
-                }`}
-                onClick={() => handleImageClick(index)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <img
-                  src={image.src}
-                  alt={image.alt}
-                  className="w-full h-full object-cover"
-                />
-              </motion.div>
-            ))}
-          </div> */}
-
-          {/* Mobile Thumbnails Indicator */}
-          {/* <div className="flex justify-center space-x-2 md:hidden">
-            {productImages.map((_, index) => (
-              <button
-                key={index}
-                className={`w-2 h-2 rounded-full ${
-                  selectedImageIndex === index ? "bg-blue-500" : "bg-gray-600"
-                }`}
-                onClick={() => handleImageClick(index)}
-              />
-            ))}
-          </div> */}
-
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row w-full gap-3">
             <motion.button
@@ -503,8 +466,14 @@ const ProductDisplay = () => {
               className="flex-1 py-3 px-6 border border-blue-600 text-blue-400 hover:bg-slate-800 font-medium rounded-lg transition"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.95 }}
+              onClick={() => handleAddToWishList(authProdDetail?.product?._id)}
             >
-              Buy Now
+              {wishItems[authProdDetail?.product?._id] ? (
+                <Loader2 className="h-5 w-5 animate-spin inline-block mr-2" />
+              ) : (
+                <span>Add to WishList ❤️</span>
+              )}
+
             </motion.button>
           </div>
         </div>
@@ -558,7 +527,7 @@ const ProductDisplay = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            // onClick={()=> console.log(authProdDetail?.product?._id)}
+          // onClick={()=> console.log(authProdDetail?.product?._id)}
           >
             ₹{authProdDetail?.product?.price}
           </motion.div>
@@ -584,15 +553,14 @@ const ProductDisplay = () => {
             </h3>
             <div className="flex flex-wrap gap-2">
               {authProdDetail?.product?.sizes &&
-              authProdDetail.product.sizes.length > 0 ? (
+                authProdDetail.product.sizes.length > 0 ? (
                 authProdDetail.product.sizes.map((size) => (
                   <motion.button
                     key={size}
-                    className={`w-12 h-12 flex items-center justify-center rounded-md transition ${
-                      selectedSize === size
-                        ? "bg-blue-600 text-white border-blue-600"
-                        : "bg-slate-800 text-gray-300 border border-slate-700 hover:border-blue-500"
-                    }`}
+                    className={`w-12 h-12 flex items-center justify-center rounded-md transition ${selectedSize === size
+                      ? "bg-blue-600 text-white border-blue-600"
+                      : "bg-slate-800 text-gray-300 border border-slate-700 hover:border-blue-500"
+                      }`}
                     onClick={() => handleSizeChange(size)}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
@@ -665,9 +633,8 @@ const ProductDisplay = () => {
                 <div className="p-4 bg-slate-900">
                   {/* Review List */}
                   <div
-                    className={`space-y-4 pr-2 ${
-                      myReviews.length > 3 ? "max-h-64 overflow-y-auto" : ""
-                    }`}
+                    className={`space-y-4 pr-2 ${myReviews.length > 3 ? "max-h-64 overflow-y-auto" : ""
+                      }`}
                   >
                     {myReviews?.length > 0 ? (
                       myReviews?.map((review, index) => (
@@ -847,7 +814,7 @@ const ProductDisplay = () => {
               transition={{ duration: 0.4, delay: index * 0.1 }}
               viewport={{ once: true }}
               whileHover={{ y: -5 }}
-              onClick={()=> toast.info('Feature Coming Soon 🔜 ...')}
+              onClick={() => toast.info('Feature Coming Soon 🔜 ...')}
             >
               <div className="aspect-square bg-slate-700">
                 <img
@@ -887,8 +854,8 @@ const ProductDisplay = () => {
           <div className="flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0">
             <div>
               <div className="text-xl font-bold mb-2"><h1 className="text-white text-2xl font-bold">
-              Lu<span className="text-primary text-red-500">Xe</span>
-            </h1></div>
+                Lu<span className="text-primary text-red-500">Xe</span>
+              </h1></div>
               <p className="text-gray-400 text-sm">
                 Premium clothing for everyday comfort
               </p>
@@ -929,5 +896,3 @@ const ProductDisplay = () => {
 };
 
 export default ProductDisplay;
-
-//<div class="relative w-full h-full flex items-center justify-center" style="transform: none;"><img alt="Product view 1" class="object-contain w-full h-full" src="/man1.jpg" style="opacity: 1;"><button class="absolute top-4 right-4 p-2 bg-white bg-opacity-20 rounded-full hover:bg-opacity-40 transition" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart text-gray-300"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg></button></div>
