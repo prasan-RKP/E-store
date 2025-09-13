@@ -9,6 +9,9 @@ import {
   X,
   ChevronRight,
   ChevronLeft,
+  Github,
+  Globe,
+  User,
 } from "lucide-react";
 // import img1 from "/pexels-lazarus-ziridis-351891426-28580375.jpg";
 // import img2 from "/women3.jpg";
@@ -17,6 +20,7 @@ import {
 import { Link } from "react-router-dom";
 import AlertWindow from "./AlertWindow";
 import { toast } from "sonner";
+import { FaLinkedin, FaLinkedinIn } from "react-icons/fa";
 
 const HomePageShop = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -26,7 +30,9 @@ const HomePageShop = () => {
   // custom logicof alert window
   const collectionRef = useRef(null);
   const productsRef = useRef(null);
+  const contactRef = useRef(null);
   const location = useLocation();
+  const selRef = useRef(null)
 
   // dynamic land form other page 
   useEffect(() => {
@@ -40,6 +46,16 @@ const HomePageShop = () => {
       collectionRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [location]);
+
+
+
+  useEffect(() => {
+    if (location.hash === "#seller" && selRef.current) {
+      selRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [location]);
+
+
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -116,18 +132,24 @@ const HomePageShop = () => {
       price: "₹29.99",
       image: "/feature/shirt1.jpg",
       discount: "20%",
+      join: "/men-clothes"
     },
-    { name: "Designer Jeans", price: "$89.99", image: "/feature/jean1.jpg" },
+    {
+      name: "Designer Jeans", price: "$89.99", image: "/feature/wm1.jpg",
+      join: "/women-clothes"
+    },
     {
       name: "Leather Crossbody Bag",
       price: "₹119.99",
       image: "/feature/gucci1.jpg",
       label: "NEW",
+      join: "/accessories"
     },
     {
       name: "Classic Sneakers",
       price: "₹69.99",
       image: "/feature/shoe.jpg",
+      join: "/footwears"
     },
   ];
 
@@ -192,32 +214,32 @@ const HomePageShop = () => {
                     </a>
                   </li>
                   <li>
-                    <a
+                    <button
                       onClick={(e) => {
                         e.preventDefault();
                         setIsMenuOpen(false); // Close menu first
-
-                        setTimeout(() => {
-                          document
-                            .getElementById("feature-section")
-                            ?.scrollIntoView({
-                              behavior: "smooth",
-                              block: "start",
-                            });
-                        }, 100); // Small delay to ensure the menu is closed
+                        document
+                          .getElementById("shop-section")
+                          ?.scrollIntoView({
+                            behavior: "smooth",
+                            block: "start",
+                          });
+                        // Small delay to ensure the menu is closed
                       }}
                       className="hover:text-primary"
                     >
                       Collections
-                    </a>
+                    </button>
                   </li>
                   <li>
-                    <Link to={"/about"} className="hover:text-primary">
-                      About
-                    </Link>
-                  </li>
-                  <li>
-                    <a className="hover:text-primary">Contact</a>
+                    <button onClick={(e) => {
+                      e.preventDefault();
+                      setIsMenuOpen(false);
+                      document.getElementById("contact").scrollIntoView({
+                        behavior: "smooth",
+                        block: 'start'
+                      })
+                    }} className="hover:text-primary">Contact</button>
                   </li>
                   <li>
                     <Link to={"/login"} className="hover:text-primary">
@@ -227,7 +249,12 @@ const HomePageShop = () => {
                 </ul>
               </div>
               <div className="navbar-end">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1 sm:gap-3">
+                  <Link to={"/profile"}>
+                    <button className="btn btn-ghost btn-circle">
+                      <User className="h-6 w-6 text-blue-600" />
+                    </button>
+                  </Link>
                   <Link to={"/wishlist"}>
                     <button className="btn btn-ghost btn-circle">
                       <Heart className="h-6 w-6 text-red-600" />
@@ -253,17 +280,17 @@ const HomePageShop = () => {
           transition={{ duration: 0.3, ease: "easeInOut" }}
         >
           <div className="flex justify-between items-center mb-8">
-            <a className="text-xl font-bold">LUXE</a>
+            <a className="text-xl font-bold text-blue-400">LUXE</a>
             <button
-              className="btn btn-ghost btn-circle"
+              className="btn btn-ghost btn-circle text-red-600"
               onClick={() => setIsMenuOpen(false)}
             >
               <X />
             </button>
           </div>
-          <ul className="menu w-full gap-2">
+          <ul className="menu w-full gap-2 text-green-500">
             <li>
-              <a className="text-lg py-3">Home</a>
+              <Link className="text-lg" to={"/profile"}>Profile</Link>
             </li>
             <li>
               <a
@@ -278,7 +305,7 @@ const HomePageShop = () => {
                     });
                   }, 100); // Small delay to ensure the menu is closed
                 }}
-                className="hover:text-primary cursor-pointer"
+                className="hover:text-primary cursor-pointer text-lg"
               >
                 Shop
               </a>
@@ -288,13 +315,11 @@ const HomePageShop = () => {
                 onClick={(e) => {
                   e.preventDefault();
                   setIsMenuOpen(false); // Close menu first
-
-                  setTimeout(() => {
-                    document.getElementById("feature-section")?.scrollIntoView({
-                      behavior: "smooth",
-                      block: "start",
-                    });
-                  }, 100); // Small delay to ensure the menu is closed
+                  document.getElementById("seller")?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                  });
+                  // Small delay to ensure the menu is closed
                 }}
                 className="text-lg py-3"
               >
@@ -302,10 +327,16 @@ const HomePageShop = () => {
               </a>
             </li>
             <li>
-              <Link to={"/about"} className="text-lg py-3">About</Link>
-            </li>
-            <li>
-              <a className="text-lg py-3">Contact</a>
+
+              <button onClick={(e) => {
+                e.preventDefault();
+                setIsMenuOpen(false);
+                document.getElementById("contact").scrollIntoView({
+                  behavior: "smooth",
+                  block: 'start'
+                })
+              }} className="hover:text-primary text-lg">Contact</button>
+
             </li>
           </ul>
         </motion.div>
@@ -543,7 +574,7 @@ const HomePageShop = () => {
               <h2 className="text-4xl lg:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                 Our Best Sellers
               </h2>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              <p id="seller" ref={selRef} className="text-lg text-gray-600 max-w-2xl mx-auto">
                 Join thousands of satisfied customers who can't get enough of these crowd favorites
               </p>
             </div>
@@ -563,10 +594,10 @@ const HomePageShop = () => {
                   <div className="card bg-base-100 shadow-lg hover-glow transition-all duration-300 overflow-hidden border border-base-300">
                     <figure className="relative overflow-hidden">
                       {/* Simplified image with basic hover effect */}
-                      <div className="relative h-80 w-full overflow-hidden">
+                      <div className="relative h-[365px] sm:h-80 w-full overflow-hidden">
                         <img
-                          src={product.image}
-                          alt={product.name}
+                          src={product?.image}
+                          alt={product?.name}
                           className="h-full w-full object-cover image-hover"
                           loading="lazy"
                         />
@@ -624,13 +655,16 @@ const HomePageShop = () => {
 
                       {/* Call to action */}
                       <div className="card-actions">
+                        
                         <button className="btn btn-outline btn-primary btn-sm btn-block group-hover:btn-primary group-hover:text-white transition-all duration-200">
+                          <Link to={`${product.join}`}>
                           <span className="flex items-center gap-2">
                             View Details
                             <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                             </svg>
                           </span>
+                          </Link>
                         </button>
                       </div>
                     </div>
@@ -684,7 +718,7 @@ const HomePageShop = () => {
                 <input
                   type="email"
                   placeholder="Your email address"
-                  className="input input-bordered bg-primary-content text-base-content flex-grow text-blue-950"
+                  className="input input-bordered bg-primary-content flex-grow text-blue-950"
                 />
                 <button
                   className="btn bg-base-100 hover:bg-base-200 text-primary"
@@ -698,67 +732,38 @@ const HomePageShop = () => {
         </section>
 
         {/* Fix 2: Improve footer layout with flex and responsive design */}
-        <footer className="bg-base-200 text-base-content">
+        <footer id="contact" ref={contactRef} className="bg-base-200 text-base-content">
           <div className="container mx-auto">
             {/* Footer main section - changed to flex layout */}
-            <div className="flex flex-wrap justify-between p-10">
+            <div className="flex flex-wrap justify-between p-6">
               <div className="w-full sm:w-1/2 md:w-1/4 mb-6 md:mb-0">
-                <span className="footer-title">Company</span>
-                <a className="link link-hover block mt-2">About us</a>
-                <a className="link link-hover block mt-2">Contact</a>
-                <a className="link link-hover block mt-2">Careers</a>
-                <a className="link link-hover block mt-2">Press kit</a>
-              </div>
-              <div className="w-full sm:w-1/2 md:w-1/4 mb-6 md:mb-0">
-                <span className="footer-title">Legal</span>
-                <a className="link link-hover block mt-2">Terms of use</a>
-                <a className="link link-hover block mt-2">Privacy policy</a>
-                <a className="link link-hover block mt-2">Cookie policy</a>
+                <span className="footer-title">Quick Links</span>
+                <Link to={"/addtocart"} className="link link-hover block mt-2">Go to cart</Link>
+                <Link to={"/profile"} className="link link-hover block mt-2">Go to Profile</Link>
+                <Link to={"/showorder"} className="link link-hover block mt-2">Go to Orders</Link>
+                <Link to={"/wishlist"} className="link link-hover block mt-2">Go to WishList ❤️</Link>
+
               </div>
               <div className="w-full sm:w-1/2 md:w-1/4 mb-6 md:mb-0">
                 <span className="footer-title">Shop</span>
-                <a className="link link-hover block mt-2">New arrivals</a>
-                <a className="link link-hover block mt-2">Best sellers</a>
-                <a className="link link-hover block mt-2">Sale</a>
-                <a className="link link-hover block mt-2">Gift cards</a>
+                <Link to={"/men-clothes"} className="link link-hover block mt-2">Mens'</Link>
+                <Link to={"/women-clothes"} className="link link-hover block mt-2">Women'</Link>
+                <Link to={"//accessories"} className="link link-hover block mt-2">Accessories'</Link>
+                <Link to={"/footwears"} className="link link-hover block mt-2">FootWear'</Link>
               </div>
               <div className="w-full sm:w-1/2 md:w-1/4 mb-6 md:mb-0">
                 <span className="footer-title">Stay Connected</span>
                 <div className="form-control w-full">
                   <div className="flex space-x-2 mt-2">
-                    <button className="btn btn-circle btn-outline">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        className="fill-current"
-                      >
-                        <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"></path>
-                      </svg>
-                    </button>
-                    <button className="btn btn-circle btn-outline">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        className="fill-current"
-                      >
-                        <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"></path>
-                      </svg>
-                    </button>
-                    <button className="btn btn-circle btn-outline">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        className="fill-current"
-                      >
-                        <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"></path>
-                      </svg>
-                    </button>
+                    <a href="https://github.com/prasan-RKP" target="_blank" rel="noopener noreferrer" className="btn btn-circle btn-outline">
+                      <Github className="h-5 w-5" />
+                    </a>
+                    <a href="https://www.linkedin.com/in/prasan-kumar-05a623345?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank" rel="noopener noreferrer" className="btn btn-circle btn-outline">
+                      <FaLinkedin className="h-5 w-5" />
+                    </a>
+                    <a href="https://prasan.onrender.com" target="_blank" rel="noopener noreferrer" className="btn btn-circle btn-outline">
+                      <Globe className="h-5 w-5" />
+                    </a>
                   </div>
                 </div>
               </div>
@@ -769,13 +774,13 @@ const HomePageShop = () => {
               <div>
                 <p>© 2025 LUXE - All rights reserved</p>
               </div>
-              <div className="mt-4 md:mt-0">
+              {/* <div className="mt-4 md:mt-0">
                 <div className="flex gap-4">
                   <a className="link link-hover">Shipping</a>
                   <a className="link link-hover">Returns</a>
                   <a className="link link-hover">FAQ</a>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </footer>
