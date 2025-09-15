@@ -15,17 +15,17 @@ import "swiper/css/pagination"
 import "swiper/css/navigation"
 
 // 3D Model Component
-function ProductModel({ position = [0, 0, 0], rotation = [0, 0, 0], scale = 2.5 }) {
-  // In a real implementation, you would use your own 3D model
-  // This is just a placeholder using the sample duck model
-  const { scene } = useGLTF("/assets/duck.glb")
+// function ProductModel({ position = [0, 0, 0], rotation = [0, 0, 0], scale = 2.5 }) {
+//   // In a real implementation, you would use your own 3D model
+//   // This is just a placeholder using the sample duck model
+//   const { scene } = useGLTF("/assets/duck.glb")
 
-  return (
-    <Float rotationIntensity={0.4} floatIntensity={1.5} speed={1.5}>
-      <primitive object={scene} position={position} rotation={rotation} scale={scale} />
-    </Float>
-  )
-}
+//   return (
+//     <Float rotationIntensity={0.4} floatIntensity={1.5} speed={1.5}>
+//       <primitive object={scene} position={position} rotation={rotation} scale={scale} />
+//     </Float>
+//   )
+// }
 
 // Floating Sphere Component for background decoration
 function FloatingSphere({ position, size, color }) {
@@ -313,13 +313,13 @@ const ModernEcommerceLanding = () => {
             </div>
           </motion.div>
 
-          <div className="h-[400px] md:h-[500px] w-full">
+          {/* <div className="h-[400px] md:h-[500px] w-full">
             <Canvas dpr={[1, 2]} camera={{ position: [0, 0, 5], fov: 45 }}>
               <color attach="background" args={["transparent"]} />
               <ambientLight intensity={0.5} />
               <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={1} castShadow />
 
-              {/* Background decoration */}
+              
               <FloatingSphere position={[-4, 2, -5]} size={1} color="#8b5cf6" />
               <FloatingSphere position={[5, -2, -5]} size={0.7} color="#ec4899" />
               <FloatingSphere position={[3, 3, -4]} size={0.5} color="#3b82f6" />
@@ -337,7 +337,7 @@ const ModernEcommerceLanding = () => {
               </PresentationControls>
               <Environment preset="city" />
             </Canvas>
-          </div>
+          </div> */}
         </div>
 
         <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex space-x-2">
