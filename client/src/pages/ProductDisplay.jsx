@@ -93,39 +93,46 @@ const ProductDisplay = () => {
       src: "https://res.cloudinary.com/dlkmhoueb/image/upload/v1745644643/ecom_store/footwear/rmea5ta6t5zrupc4ejkq.jpg",
       alt: "Related product 1",
       name: "Premium Jeans",
-      price: "$89.99",
+      price: "89.99",
     },
     {
       id: 2,
       src: "https://res.cloudinary.com/dlkmhoueb/image/upload/v1745644562/ecom_store/footwear/e6otgthvbzlfl6cgmgxc.jpg",
       alt: "Related product 2",
       name: "Denim Jacket",
-      price: "$129.99",
+      price: "129.99",
     },
     {
       id: 3,
       src: "https://res.cloudinary.com/dlkmhoueb/image/upload/v1745644540/ecom_store/footwear/ik5ba8edhywvwiovkesh.jpg",
       alt: "Related product 3",
       name: "Leather Belt",
-      price: "$49.99",
+      price: "49.99",
     },
     {
       id: 4,
       src: "https://res.cloudinary.com/dlkmhoueb/image/upload/v1745644552/ecom_store/footwear/f2azgaf3ibsjogrk44hr.jpg",
       alt: "Related product 4",
       name: "Casual Shoes",
-      price: "$79.99",
+      price: "79.99",
     },
     {
       id: 5,
       src: "https://res.cloudinary.com/dlkmhoueb/image/upload/v1745644637/ecom_store/footwear/wjaa7bcz2xjeqluocgzx.jpg",
       alt: "Related product 5",
       name: "Cotton T-Shirt",
-      price: "$39.99",
+      price: "39.99",
     },
   ];
 
   //Handle AddTocartItem  functionality
+
+  // const 'navitems' for md&Above
+  const navItems = [
+    { text: "Home", join: "/" },
+    { text: "Contact", join: "/#contact" },
+    { text: "Shop", join: "/#products" }
+  ]
 
   const handleAddToCart = async (id, size) => {
     setIsAddingProdId(id);
@@ -256,6 +263,13 @@ const ProductDisplay = () => {
     return <ProductDisplaySkeleton />;
   }
 
+  const navItem = [
+    { text: "Home", link: "/" },
+    { text: "WishList ❤️", link: "/wishlist" },
+    { text: "Carts", link: "/addtocart" },
+    { text: "Contact", link: "/contact" }
+  ]
+
   return (
     <div className="min-h-screen flex flex-col bg-slate-950 text-gray-100">
       {/* Header */}
@@ -296,20 +310,20 @@ const ProductDisplay = () => {
           {/* Navigation Links (for md and above) */}
           <nav className="hidden md:block">
             <ul className="flex space-x-6">
-              {["Home", "About", "Contact"].map((item) => (
+              {navItems.map((item) => (
                 <li key={item} className="relative group">
-                  <a
-                    href="#"
+                  <Link
+                    to={`${item.join}`}
                     className="hover:text-[#FF6EC7] transition duration-300 py-2"
                   >
-                    {item}
+                    {item.text}
                     <motion.span
                       className="absolute bottom-0 left-0 h-0.5 bg-blue-400 rounded-full"
                       initial="initial"
                       whileHover="hover"
                       variants={navItemVariants}
                     />
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -403,7 +417,7 @@ const ProductDisplay = () => {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.3 }}
               />
-              <motion.button
+              {/* <motion.button
                 className="absolute top-4 right-4 p-2 bg-white bg-opacity-20 rounded-full hover:bg-opacity-40 transition"
                 onClick={toggleLove}
                 whileTap={{ scale: 0.9 }}
@@ -414,11 +428,11 @@ const ProductDisplay = () => {
                     isLoved ? "text-red-500 fill-red-500" : "text-gray-400"
                   }
                 />
-              </motion.button>
+              </motion.button> */}
             </motion.div>
 
             {/* Image navigation arrows - visible on all devices */}
-            <div className="flex justify-between absolute top-1/2 left-0 right-0 transform -translate-y-1/2 px-2">
+            {/* <div className="flex justify-between absolute top-1/2 left-0 right-0 transform -translate-y-1/2 px-2">
               <motion.button
                 className="p-2 bg-white bg-opacity-20 rounded-full hover:bg-opacity-40 transition shadow-sm"
                 onClick={() => navigateThumbnails("left")}
@@ -437,7 +451,7 @@ const ProductDisplay = () => {
               >
                 <ChevronRight size={20} className="text-gray-500" />
               </motion.button>
-            </div>
+            </div> */}
           </motion.div>
 
           {/* Action Buttons */}
@@ -594,12 +608,12 @@ const ProductDisplay = () => {
                 </summary>
                 <div className="p-4 bg-slate-900">
                   <ul className="space-y-2 text-sm text-gray-300">
-                    <li>Material: 98% Cotton, 2% Elastane</li>
-                    <li>Machine washable at 30°C</li>
+                    <li>This Segment is Coming soon. 🔜</li>
+                    {/* <li>Machine washable at 30°C</li>
                     <li>Five pocket styling</li>
                     <li>Button and zip fly fastening</li>
                     <li>Belt loops</li>
-                    <li>Regular fit</li>
+                    <li>Regular fit</li> */}
                   </ul>
                 </div>
               </details>
@@ -614,12 +628,12 @@ const ProductDisplay = () => {
                   <ChevronRight className="w-5 h-5 text-gray-400 group-open:rotate-90 transition-transform" />
                 </summary>
                 <div className="p-4 bg-slate-900 text-sm text-gray-300">
-                  <p>Free shipping on orders over $50</p>
-                  <p>Standard delivery: 3-5 business days</p>
+                  <p>This Segment is Coming soon. 🔜</p>
+                  {/* <p>Standard delivery: 3-5 business days</p>
                   <p>
                     Express delivery: 1-2 business days (additional charges
                     apply)
-                  </p>
+                  </p> */}
                 </div>
               </details>
             </div>
@@ -807,7 +821,7 @@ const ProductDisplay = () => {
         >
           {relatedProducts.map((product, index) => (
             <motion.div
-              key={product.id}
+              key={product?.id}
               className="snap-start flex-shrink-0 w-64 bg-slate-800 rounded-lg overflow-hidden shadow-lg hover:shadow-blue-900/20 transition-shadow"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -818,17 +832,17 @@ const ProductDisplay = () => {
             >
               <div className="aspect-square bg-slate-700">
                 <img
-                  src={product.src}
-                  alt={product.alt}
+                  src={product?.src}
+                  alt={product?.name}
                   className="w-full h-full object-cover"
                 />
               </div>
               <div className="p-4">
                 <h3 className="font-medium text-white group cursor-pointer inline-block">
-                  {product.name}
+                  {product?.name}
                   <span className="block max-w-0 group-hover:max-w-full transition-all duration-300 h-0.5 bg-blue-400"></span>
                 </h3>
-                <p className="text-blue-400 mt-1">{product.price}</p>
+                <p className="text-blue-400 mt-1">₹{product?.price}</p>
                 <div className="flex mt-2">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <Star
@@ -862,32 +876,27 @@ const ProductDisplay = () => {
             </div>
             <nav>
               <ul className="flex flex-wrap justify-center gap-x-6 gap-y-2">
-                {[
-                  "Privacy Policy",
-                  "Terms of Service",
-                  "Contact Us",
-                  "FAQ",
-                ].map((item) => (
+                {navItem.map((item) => (
                   <li key={item} className="relative group">
-                    <a
-                      href="#"
+                    <Link
+                      to={`${item.link}`}
                       className="text-sm hover:text-blue-400 transition"
                     >
-                      {item}
+                      {item.text}
                       <motion.span
                         className="absolute bottom-0 left-0 h-0.5 bg-blue-400 rounded-full"
                         initial="initial"
                         whileHover="hover"
                         variants={navItemVariants}
                       />
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
             </nav>
           </div>
           <div className="mt-8 pt-6 border-t border-slate-800 text-center text-sm text-gray-400">
-            © 2025 BrandName. All rights reserved.
+            © 2025 luxe. All rights reserved.
           </div>
         </div>
       </footer>
