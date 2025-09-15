@@ -44,6 +44,7 @@ const SignUp = () => {
   };
 
   const validForm = () => {
+     if (!formData.username.trim()) return toast.error("username required"), false;
     if (!formData.email.trim()) return toast.error("Email required"), false;
     if (!formData.contact.trim())
       return toast.error("Contact No required"), false;
@@ -231,6 +232,7 @@ const SignUp = () => {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 className="btn btn-outline gap-2"
+                onClick={()=> toast.info("Feature Coming Soon 🔜 ...")}
               >
                 <GrGoogle size={20} />
                 Continue with Google
@@ -239,6 +241,7 @@ const SignUp = () => {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 className="btn btn-outline gap-2"
+                onClick={()=> toast.info("Feature Coming Soon 🔜 ...")}
               >
                 <FaGithub size={20} />
                 Continue with Github
