@@ -50,6 +50,7 @@ import OrderHistoryPage from "./pages/OrderHistoryPage";
 import OrderHistorySkeleton from "./skeletons/OrderHistorySkeleton";
 import ProdDisplaySke from "./skeletons/ProductDisplaySkeleton";
 import ProductDisplaySkeleton from "./skeletons/ProductDisplaySkeleton";
+import OrderListLoader from "./skeletons/OrderListSkeleton";
 //import CheckoutWizard from "./pages/checkout/CheckoutWizard";
 
 const App = () => {
@@ -69,7 +70,7 @@ const App = () => {
   return (
     <div>
       <Routes>
-        <Route path="/my" element={<MyProfile />} />
+        <Route path="/my" element={<OrderListLoader />} />
         <Route path="/" element={<HomePageShop />} />
         <Route path="/alert" element={<CardComponent />} />
         <Route path="/ske" element={<LuxeLoader />} />
@@ -77,13 +78,18 @@ const App = () => {
         <Route path="/fanta" element={<FantaCanShowcase />} />
         <Route path="/land" element={<ModernEcommerceLanding />} />
         <Route path="/about" element={<AboutPage />} />
-        <Route path="/ord" element={<ProductDisplaySkeleton/>} />
+        <Route path="/ord" element={<ProductDisplaySkeleton />} />
 
         // "/order-show" use it for show orders
         <Route path="/showorder" element={verifiedUser ? (<OrderHistoryPage />) : (<Navigate to={"/login"} replace />)} />
 
 
-        <Route path="/addToWishlist" element={<AddToWishList />} />
+        <Route
+          path="/addToWishlist"
+          element={
+            verifiedUser ? <AddToWishList /> : <Navigate to="/login" replace />
+          }
+        />
 
         <Route
           path="/checkout"
@@ -142,8 +148,7 @@ const App = () => {
             verifiedUser ? <ProfilePage /> : <Navigate to={"/login"} replace />
           }
         />
-        {/* testing loader */}
-        <Route path="/lo" element={<AddToCartSkeleton />} />
+
 
         {/* Men's section  */}
         <Route
