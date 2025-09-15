@@ -186,7 +186,7 @@ router.post("/addCartData", protectedRoute, async (req, res) => {
       //  user.cart[existingIndex].quantity += 1;
       return res
         .status(400)
-        .json({ message: "Product already exists in cart" });
+        .json({ message: "Product already in Cart 🛍️" });
     } else {
       user.cart.push({
         productId,
