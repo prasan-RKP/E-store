@@ -10,7 +10,7 @@ import mongoose from "mongoose";
 dotenv.config();
 //MONGO_URI="mongodb+srv://Prasan12:PlafhhELkA2ZPeOy@devtest.33xkmhn.mongodb.net/EcomDB?retryWrites=true&w=majority&appName=DevTest"
 
-const PORT = process.env.PORT || 5000; // Fallback to 5000 if PORT isn't set in .env
+const PORT = process.env.PORT || 3002; // Fallback to 5000 if PORT isn't set in .env
 
 const app = express();
 
@@ -20,7 +20,7 @@ app.use(
   cors({
     origin: "http://localhost:5173", // Ensure this is the correct client-side URL
     // for mobile testing
-    //origin: "http://192.168.3.238:5173",
+    //origin: "http://192.168.29.238:5173",
     credentials: true,
   })
 );
