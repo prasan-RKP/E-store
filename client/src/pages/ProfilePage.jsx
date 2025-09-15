@@ -32,10 +32,16 @@ import {
   Phone,
   Trash,
   Loader2,
+  Globe,
+  HeartCrack,
 } from "lucide-react";
 import { userAuthStore } from "../store/authStore.js";
 import { GoPackage } from "react-icons/go";
 import { useOrderStore } from "../store/OrderStore.js";
+import { FaLinkedin } from "react-icons/fa";
+import OrderListLoader from "../skeletons/OrderListSkeleton.jsx";
+import WishlistSkeleton from "../skeletons/WishlistSkeleton.jsx";
+import OrderListSkeleton from "../skeletons/OrderListSkeleton.jsx";
 
 
 const ProfilePage = () => {
@@ -50,9 +56,11 @@ const ProfilePage = () => {
     showWishListItem,
     removeWishListProd,
     moveToAddCart,
+    isShowingWishlistItem
   } = userAuthStore();
   // OrderStore values
-  const { order, orderItemLength, fetchOrder } = useOrderStore();
+
+  const { order, orderItemLength, fetchOrder, isFetchingOrder } = useOrderStore();
 
   const MotionLink = motion(Link);
 
@@ -72,6 +80,8 @@ const ProfilePage = () => {
   const [cartCount, setCartCount] = useState(0);
   const [showAllOrders, setShowAllOrders] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [orgOrders, setOrgOrders] = useState([]);
+  const [wishLength, setWishLength] = useState('');
 
 
   // console.log("VerifiedUser", verifiedUser)
@@ -88,45 +98,28 @@ const ProfilePage = () => {
     loadOrders();
   }, [fetchOrder]);
 
+  // re-defined for orders
   useEffect(() => {
-    setOrders(order?.orders || []);
-  }, [order])
+    if (order?.orders?.length > 0) {
+      // flatten all items from all orders
+      const allItems = order.orders.flatMap(ord => ord.items || []);
+      setOrgOrders(allItems);
+    } else {
+      setOrgOrders([]); // reset if no orders
+    }
+  }, [order]);
 
+  // setting the length of 'orders' for 
   useEffect(() => {
     setLength(orderItemLength || 0);
-  }, [orderItemLength])
+  }, [orgOrders])
 
-  // Total orders
   useEffect(() => {
-    const flattenOrderItems = () => {
-      const flattened = [];
-      orders.forEach(order => {
-        order.items.forEach(item => {
-          flattened.push({
-            ...item,
-            orderId: order.id,
-            orderNumber: order.orderNumber,
-            orderDate: order.date,
-            orderTotal: order.total,
-            shippingAddress: order.shippingAddress,
-            zipCode: order.zipCode,
-            paymentMethod: order.paymentMethod,
-            estimatedDelivery: order.estimatedDelivery,
-            itemTotal: item.price * item.quantity
-          });
-        });
-      });
-      setAllOrderItems(flattened);
-    };
+    setWishLength(verifiedUser?.wishlist?.length);
+  }, [verifiedUser?.wishlist])
 
-    if (orders.length > 0) {
-      flattenOrderItems();
-    } else {
-      setAllOrderItems([]);
-    }
-  }, [orders]);
 
-  console.log("All ordersItems", allOrderItems);
+  console.log("allItems Orgords", orgOrders)
 
 
   const [profileInfo, setProfileInfo] = useState({
@@ -135,9 +128,6 @@ const ProfilePage = () => {
     address: verifiedUser?.address || "San Francisco, CA",
     contact: verifiedUser?.contact || "+91 995....8",
   });
-
-  //checkAtuhVerify
-  // userAuthStore.js
 
   // Helper function to format dates instead of using moment
   const formatDate = (dateString, format) => {
@@ -201,6 +191,7 @@ const ProfilePage = () => {
     setIsEditingBio(!isEditingBio);
   };
 
+  // FORM-> Validation 
   // profile updation valid form
   const validForm = () => {
     const { email, username, contact, address } = profileInfo;
@@ -282,11 +273,12 @@ const ProfilePage = () => {
 
   useEffect(() => {
     if (verifiedUser?.wishlist) {
-      setWishItems(verifiedUser.wishlist);
+      setWishItems(verifiedUser?.wishlist);
     }
   }, [verifiedUser?.wishlist]);
   //console.log("WishItems", verifiedUser);
   // WishlIst Items from backend
+
 
   // Remove the WishItems
   const removeWishItem = async (id) => {
@@ -303,6 +295,8 @@ const ProfilePage = () => {
     setCartId(null);
     //toast.success("Product moved to Cart ✅");
   };
+
+  console.log("verif", verifiedUser);
 
   //status Styles for coloring 
   const getStatusStyles = (status) => {
@@ -439,7 +433,7 @@ const ProfilePage = () => {
               </span>
             </div>
             <p className="text-gray-400 text-sm mt-1">
-              Member since{" "}
+              👤 Member since{" "}
               {new Date(verifiedUser.createdAt).toLocaleString("default", {
                 month: "long",
                 year: "numeric",
@@ -496,11 +490,38 @@ const ProfilePage = () => {
     );
   };
 
-  //   uto
+  //   updated Orders Content 
   const renderOrdersContent = () => {
-    const displayOrders = showAllOrders
-      ? allOrderItems
-      : allOrderItems.slice(0, 3);
+    if (isFetchingOrder) {
+      return (
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={fadeIn}
+          className="space-y-4"
+        >
+          <h3 className="text-center text-lg font-semibold text-gray-200 mb-4">
+            Loading Orders...
+          </h3>
+          <OrderListSkeleton />
+        </motion.div>
+      );
+    }
+
+    if (!orgOrders || orgOrders.length === 0) {
+      return (
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={fadeIn}
+          className="space-y-4"
+        >
+          <h3 className="text-center text-lg font-semibold text-gray-200 mb-4">
+            No Orders Available ☹️ ...
+          </h3>
+        </motion.div>
+      );
+    }
 
     return (
       <motion.div
@@ -510,16 +531,14 @@ const ProfilePage = () => {
         className="space-y-4"
       >
         <h3 className="text-center text-lg font-semibold text-gray-200 mb-4">
-          {allOrderItems.length === 0
-            ? "No Orders Available ☹️ ..." : "Order History"}
+          Order History 🛍️
         </h3>
 
-        {/* Fixed height scrollable container */}
+        {/* Scrollable Orders list */}
         <div className="h-[500px] overflow-y-auto pr-2 space-y-4">
-          {/* Only show first 3 when collapsed, all when expanded */}
-          {(showAllOrders ? allOrderItems : allOrderItems.slice(0, 4)).map((order, index) => (
+          {orgOrders.map((order, index) => (
             <motion.div
-              key={order.id}
+              key={index}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
@@ -533,10 +552,11 @@ const ProfilePage = () => {
                     alt={order?.name}
                     className="hover:cursor-pointer w-16 h-16 rounded-md object-cover border border-gray-700"
                   />
-
                   <div>
                     <h4 className="font-medium text-white">{order?.name}</h4>
-                    <p className="text-sm text-gray-400">{order?.orderDate}</p>
+                    <p className="text-sm text-gray-400">
+                      {order?.orderDate || "NA"}
+                    </p>
                   </div>
                 </div>
               </Link>
@@ -544,45 +564,55 @@ const ProfilePage = () => {
               <div className="flex items-center gap-6 mt-3 md:mt-0">
                 <div>
                   <span className="text-gray-400 text-sm">Amount</span>
-                  <p className="font-medium text-white">₹{order?.itemTotal}</p>
+                  <p className="font-medium text-white">
+                    ₹{order?.price || "NA"}
+                  </p>
                 </div>
 
                 <div>
-                  <span className={`px-3 py-1 rounded-full text-xs ${getStatusStyles(order.status)}`}>
-                    {order.status}
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs ${getStatusStyles(
+                      order.status
+                    )}`}
+                  >
+                    {order?.status}
                   </span>
                 </div>
 
-                <Link to={"/showorder"}> <button className="btn btn-outline btn-xs">Details</button></Link>
+                <Link to={"/showorder"}>
+                  <button className="btn btn-outline btn-xs">Details</button>
+                </Link>
               </div>
             </motion.div>
           ))}
         </div>
-
-        {allOrderItems.length > 3 && (
-          <div className="text-center">
-            <button
-              onClick={() => setShowAllOrders(!showAllOrders)}
-              className="btn btn-outline btn-sm text-indigo-400 border-indigo-400 hover:bg-indigo-900 hover:border-indigo-400"
-            >
-              {showAllOrders ? (
-                <>
-                  <ChevronUp size={18} className="mr-1" /> Show Less
-                </>
-              ) : (
-                <>
-                  <ChevronDown size={18} className="mr-1" /> Show All Orders (
-                  {allOrderItems?.length})
-                </>
-              )}
-            </button>
-          </div>
-        )}
       </motion.div>
     );
   };
 
+
+  // Updated "WISHLIST ❤️" code
   const renderWishlistContent = () => {
+    if (isShowingWishlistItem) {
+      return <WishlistSkeleton />;
+    }
+
+    if (!wishItems || wishItems.length === 0) {
+      return (
+        <div className="text-center py-12">
+          <h3 className="text-lg font-semibold text-gray-200 mb-4">
+            No WishItems Available Now ☹️
+          </h3>
+          <Link
+            to="/addtowishlist"
+            className="inline-block px-6 py-2 rounded-lg bg-primary text-white font-medium hover:bg-primary/80 transition"
+          >
+            Add Items to Wishlist
+          </Link>
+        </div>
+      );
+    }
+
     return (
       <motion.div
         initial="hidden"
@@ -591,15 +621,13 @@ const ProfilePage = () => {
         className="space-y-4"
       >
         <h3 className="text-lg font-semibold text-center text-gray-200 mb-8">
-          {wishItems?.length === 0
-            ? "No WishItems Available ☹️ ..."
-            : "WishListItems ❤️"}
+          WishListItems ❤️
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto pr-2">
           {wishItems?.map((item, index) => (
             <motion.div
-              key={item._id}
+              key={item?._id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
@@ -607,7 +635,7 @@ const ProfilePage = () => {
               className="bg-gray-800 p-4 rounded-lg border border-gray-700"
             >
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link to={`/productshow/${item?.productId}`} >
+                <Link to={`/productshow/${item?.productId}`}>
                   <img
                     src={item?.product?.img}
                     alt={item.name}
@@ -626,15 +654,13 @@ const ProfilePage = () => {
 
                   <div className="flex gap-2 mt-4 sm:mt-2">
                     <button
-                      onClick={() => {
-                        handleMoveToCart(item?.product?._id, item?.size);
-                      }}
+                      onClick={() =>
+                        handleMoveToCart(item?.product?._id, item?.size)
+                      }
                       className="btn btn-primary btn-sm hover:bg-blue-800"
                     >
                       {cartId === item?.product?._id ? (
-                        <>
-                          <Loader2 className="w-5 h-5 animate-spin" />
-                        </>
+                        <Loader2 className="w-5 h-5 animate-spin" />
                       ) : (
                         <>AddToCart</>
                       )}
@@ -644,13 +670,9 @@ const ProfilePage = () => {
                       className="btn btn-outline btn-sm border-red-500 text-red-400"
                     >
                       {storeProdId === item?.product?._id ? (
-                        <>
-                          <Loader2 className="w-5 h-5 animate-spin" />
-                        </>
+                        <Loader2 className="w-5 h-5 animate-spin" />
                       ) : (
-                        <>
-                          <Trash size={16} fill="#f472b6" />
-                        </>
+                        <Trash size={16} fill="#f472b6" />
                       )}
                     </button>
                   </div>
@@ -662,7 +684,6 @@ const ProfilePage = () => {
       </motion.div>
     );
   };
-
 
 
   const tabContent = {
@@ -702,7 +723,7 @@ const ProfilePage = () => {
                 </MotionLink>
 
                 <MotionLink
-                  to="/#collection"
+                  to="/#seller"
                   whileHover={{ y: -2 }}
                   className="flex items-center text-gray-300 hover:text-white px-2"
                 >
@@ -736,22 +757,25 @@ const ProfilePage = () => {
                   </span>
                 </Link>
               </motion.div>
+              <motion.div whileHover={{ scale: 1.1 }} className="relative">
+                <Link to={"/addToWishlist"}>
+                  <HeartCrack
+                    size={24}
+                    className="text-pink-500 hover:text-white cursor-pointer"
+                  />
+                  <span className="absolute -top-2 -right-2 bg-pink-600 text-xs text-white w-5 h-5 flex items-center justify-center rounded-full">
+                    {wishLength}
+                  </span>
+                </Link>
+              </motion.div>
               {/* nav Profile Image */}
-              <img
-                src={
-                  verifiedUser.profilePic ||
-                  "https://img.freepik.com/premium-psd/contact-icon-illustration-isolated_23-2151903357.jpg?ga=GA1.1.609031703.1716957572&semt=ais_hybrid&w=740"
-                }
-                alt="Profile"
-                className="w-9 h-9 rounded-full object-cover border-2 border-indigo-600"
-              />
 
               {/* Mobile menu button */}
               <button
                 className="md:hidden text-gray-300 hover:text-white"
                 onClick={() => setShowMobileMenu(!showMobileMenu)}
               >
-                {showMobileMenu ? <X size={24} /> : <Menu size={24} />}
+                {showMobileMenu ? <X size={24} className="text-red-500" /> : <Menu size={24} />}
               </button>
             </div>
           </div>
@@ -786,8 +810,19 @@ const ProfilePage = () => {
                 to="/#products"
                 className="block py-2 px-4 text-gray-300 hover:bg-gray-700"
               >
-                <Package size={16} className="inline mr-2" /> Products
+                <Package size={16} className="inline mr-2" /> Orders
               </Link>
+
+              <motion.button
+                whileTap={{ scale: 0.97 }}
+                className="hover:cursor-pointer flex items-center w-full p-3 rounded-lg text-red-400 hover:bg-red-500"
+                onClick={logout}
+              >
+                <span className="mr-1.5">
+                  <LogOut size={18} />
+                </span>
+                <span className="font-medium">Sign Out</span>
+              </motion.button>
 
             </motion.div>
           )}
@@ -820,11 +855,6 @@ const ProfilePage = () => {
                     id: "wishlist",
                     name: "Wishlist",
                     icon: <Heart size={18} />,
-                  },
-                  {
-                    id: "settings",
-                    name: "Settings",
-                    icon: <Settings size={18} />,
                   },
                 ].map((tab) => (
                   <motion.button
@@ -873,16 +903,6 @@ const ProfilePage = () => {
                   icon: <ShoppingBag size={16} />,
                 },
                 { id: "wishlist", name: "Wishlist", icon: <Heart size={16} /> },
-                {
-                  id: "payment",
-                  name: "Payment",
-                  icon: <CreditCard size={16} />,
-                },
-                {
-                  id: "settings",
-                  name: "Settings",
-                  icon: <Settings size={16} />,
-                },
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -921,36 +941,30 @@ const ProfilePage = () => {
               <h3 className="text-lg font-bold text-white mb-4">Quick Links</h3>
               <ul className="space-y-2 text-gray-400">
                 <li>
-                  <a
-                    href="#"
+                  <Link to={"/#contact"}
                     className="hover:text-indigo-400 transition-colors"
                   >
-                    About Us
-                  </a>
+                    Contact 📞
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="#"
+                  <Link
+                    to="/addtocart"
                     className="hover:text-indigo-400 transition-colors"
                   >
-                    Contact
-                  </a>
+                    Go to Cart 🍞
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="#"
+                  <Link
+                    to="/#products"
                     className="hover:text-indigo-400 transition-colors"
                   >
-                    FAQs
-                  </a>
+                    Go to Shop 🛍️
+                  </Link>
                 </li>
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-indigo-400 transition-colors"
-                  >
-                    Privacy Policy
-                  </a>
+                <li className="cursor-pointer">
+                  <span onClick={logout} className="text-red-500">SignOut</span>
                 </li>
               </ul>
             </div>
@@ -960,35 +974,15 @@ const ProfilePage = () => {
                 Connect With Us
               </h3>
               <div className="flex space-x-4">
-                <motion.a
-                  whileHover={{ y: -5 }}
-                  className="bg-gray-700 p-2 rounded-full text-gray-500 hover:bg-indigo-900 transition-colors"
-                  href="#"
-                >
-                  <Instagram size={20} />
-                </motion.a>
-
-                <motion.a
-                  whileHover={{ y: -5 }}
-                  className="bg-gray-700 p-2 rounded-full text-gray-500 hover:bg-indigo-900 transition-colors"
-                  href="#"
-                >
-                  <Facebook size={20} />
-                </motion.a>
-                <motion.a
-                  whileHover={{ y: -5 }}
-                  className="bg-gray-700 p-2 rounded-full text-gray-500 hover:bg-indigo-900 transition-colors"
-                  href="#"
-                >
-                  <Twitter size={20} />
-                </motion.a>
-                <motion.a
-                  whileHover={{ y: -5 }}
-                  className="bg-gray-700 p-2 rounded-full text-gray-500 hover:bg-indigo-900 transition-colors"
-                  href="#"
-                >
-                  <Linkedin size={20} />
-                </motion.a>
+                <a href="https://github.com/prasan-RKP" target="_blank" rel="noopener noreferrer" className="btn btn-circle btn-outline">
+                  <Github className="h-5 w-5 text-green-300" />
+                </a>
+                <a href="https://www.linkedin.com/in/prasan-kumar-05a623345?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank" rel="noopener noreferrer" className="btn btn-circle btn-outline">
+                  <FaLinkedin className="h-5 w-5 text-blue-600" />
+                </a>
+                <a href="https://prasan.onrender.com" target="_blank" rel="noopener noreferrer" className="btn btn-circle btn-outline">
+                  <Globe className="h-5 w-5 text-violet-400" />
+                </a>
               </div>
               <div className="mt-4">
                 <p className="text-gray-400 text-sm">
