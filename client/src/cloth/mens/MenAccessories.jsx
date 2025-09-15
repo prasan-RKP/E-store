@@ -37,7 +37,7 @@ const MenAccessories = () => {
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [priceRange, setPriceRange] = useState([0, 200]);
+  const [priceRange, setPriceRange] = useState([0, 2000]);
   const [selectedSizes, setSelectedSizes] = useState([]);
   const [selectedRating, setSelectedRating] = useState(0);
   const [selectedDiscounts, setSelectedDiscounts] = useState([]);
@@ -181,14 +181,10 @@ const MenAccessories = () => {
   };
 
   // Toggle size selection
-  const toggleSize = useCallback(
-    (size) => {
-      setSelectedSizes((prev) =>
-        prev.includes(size) ? prev.filter((s) => s !== size) : [...prev, size]
-      );
-    },
-    [setSelectedSizes]
-  );
+  const toggleSize = (size) => {
+    setSelectedSizes([size]);
+  };
+
 
   // Memoized toggleDiscount function
   const toggleDiscount = useCallback(
@@ -201,6 +197,16 @@ const MenAccessories = () => {
     },
     [setSelectedDiscounts]
   );
+
+  // REmove ALL Filter
+  const clearFilters = () => {
+    setActiveCategory("All");
+    setSearchQuery("");
+    setPriceRange([0, 2000]);
+    setSelectedSizes([]);
+    setSelectedRating(0);
+    setSelectedDiscounts([]);
+  };
 
   // Memoized filteredProducts computation
   const filteredProducts = useMemo(() => {
@@ -294,7 +300,7 @@ const MenAccessories = () => {
                   <div className="relative w-full">
                     <input
                       type="text"
-                      placeholder="Search for men's clothing..."
+                      placeholder="Search your accessories.."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="w-full bg-white bg-opacity-10 backdrop-blur-sm rounded-full pl-12 pr-4 py-2 text-black placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-primary"
@@ -342,7 +348,7 @@ const MenAccessories = () => {
                     placeholder="Search for clothing..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full bg-white bg-opacity-10 backdrop-blur-sm rounded-full pl-10 pr-4 py-2 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full bg-white bg-opacity-10 backdrop-blur-sm rounded-full pl-10 pr-4 py-2 text-black placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-primary"
                   />
                   <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-300" />
                 </div>
@@ -494,6 +500,13 @@ const MenAccessories = () => {
                       <Filter className="h-5 w-5 mr-2 text-primary" />
                       Categories
                     </h2>
+                    <button
+                      onClick={clearFilters}
+                      className="cursor-pointer flex items-center gap-2 px-4 py-2 mb-4 rounded-lg bg-red-400 hover:bg-red-600 text-white font-semibold shadow-md transition-all"
+                    >
+                      <X className="h-5 w-5 " />
+                      Clear Filters
+                    </button>
                     <ul className="space-y-2">
                       {categories.map((category) => (
                         <li key={category.id}>
@@ -526,13 +539,13 @@ const MenAccessories = () => {
                     </h2>
                     <div className="mb-4">
                       <div className="flex justify-between text-white text-sm mb-2">
-                        <span>${priceRange[0]}</span>
-                        <span>${priceRange[1]}</span>
+                        <span>₹{priceRange[0]}</span>
+                        <span>₹{priceRange[1]}</span>
                       </div>
                       <input
                         type="range"
                         min="0"
-                        max="200"
+                        max="2000"
                         value={priceRange[0]}
                         onChange={(e) =>
                           setPriceRange([
@@ -545,7 +558,7 @@ const MenAccessories = () => {
                       <input
                         type="range"
                         min="0"
-                        max="200"
+                        max="2000"
                         value={priceRange[1]}
                         onChange={(e) =>
                           setPriceRange([
@@ -573,7 +586,7 @@ const MenAccessories = () => {
                       <input
                         type="number"
                         min={priceRange[0]}
-                        max="200"
+                        max="2000"
                         value={priceRange[1]}
                         onChange={(e) =>
                           setPriceRange([
@@ -585,26 +598,6 @@ const MenAccessories = () => {
                       />
                     </div>
                   </div>
-
-                  {/* Size Filter */}
-                  {/* <div className="bg-[#302b4d] bg-opacity-5 backdrop-blur-sm rounded-2xl p-5 mb-6">
-                    <h2 className="text-xl font-bold text-white mb-4">Size</h2>
-                    <div className="flex flex-wrap gap-2">
-                      {sizeOptions.map((size) => (
-                        <button
-                          key={size}
-                          onClick={() => toggleSize(size)}
-                          className={`flex items-center justify-center w-12 h-12 rounded-lg text-black transition-colors ${
-                            selectedSizes.includes(size)
-                              ? "bg-primary"
-                              : "bg-white bg-opacity-10 hover:bg-white hover:bg-opacity-20"
-                          }`}
-                        >
-                          {size}
-                        </button>
-                      ))}
-                    </div>
-                  </div> */}
 
                   {/* Discount Filter */}
                   <div className="bg-[#302b4d] bg-opacity-5 backdrop-blur-sm rounded-2xl p-5 mb-6">
@@ -686,10 +679,11 @@ const MenAccessories = () => {
               <AnimatePresence>
                 {showMobileFilters && (
                   <motion.div
-                    className="fixed inset-0 bg-black bg-opacity-50 z-50 md:hidden"
+                    className="fixed inset-0 backdrop-blur bg-opacity-50 z-50 md:hidden"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
+                    onClick={() => setShowMobileFilters(false)}
                   >
                     <motion.div
                       className="absolute top-0 right-0 h-full w-4/5 max-w-sm overflow-y-auto"
@@ -698,6 +692,7 @@ const MenAccessories = () => {
                       animate={{ x: 0 }}
                       exit={{ x: "100%" }}
                       transition={{ type: "tween" }}
+                      onClick={(e) => e.stopPropagation()}
                     >
                       <div className="p-5">
                         <div className="flex justify-between items-center mb-6">
@@ -708,9 +703,18 @@ const MenAccessories = () => {
                             onClick={() => setShowMobileFilters(false)}
                             className="p-1 rounded-full hover:bg-white hover:bg-opacity-10"
                           >
-                            <X className="h-6 w-6 text-white" />
+                            <X className="h-6 w-6 text-red-500" />
                           </button>
                         </div>
+
+                        {/* Rating clear filter added */}
+                        <button
+                          onClick={clearFilters}
+                          className="cursor-pointer flex items-center gap-2 px-4 py-2 mb-4 rounded-lg bg-red-400 hover:bg-red-600 text-white font-semibold shadow-md transition-all"
+                        >
+                          <X className="h-5 w-5" />
+                          Clear Filters
+                        </button>
 
                         {/* Categories for Mobile */}
                         <div className="bg-[#4b447b] bg-opacity-5 backdrop-blur-sm rounded-2xl p-4 mb-6">
@@ -751,13 +755,13 @@ const MenAccessories = () => {
                           </h2>
                           <div className="mb-4">
                             <div className="flex justify-between text-white text-sm mb-2">
-                              <span>${priceRange[0]}</span>
-                              <span>${priceRange[1]}</span>
+                              <span>₹{priceRange[0]}</span>
+                              <span>₹{priceRange[1]}</span>
                             </div>
                             <input
                               type="range"
                               min="0"
-                              max="200"
+                              max="2000"
                               value={priceRange[0]}
                               onChange={(e) =>
                                 setPriceRange([
@@ -770,7 +774,7 @@ const MenAccessories = () => {
                             <input
                               type="range"
                               min="0"
-                              max="200"
+                              max="2000"
                               value={priceRange[1]}
                               onChange={(e) =>
                                 setPriceRange([
@@ -780,27 +784,6 @@ const MenAccessories = () => {
                               }
                               className="w-full accent-primary"
                             />
-                          </div>
-                        </div>
-
-                        {/* Size Filter for Mobile */}
-                        <div className="bg-[#4b447b] bg-opacity-5 backdrop-blur-sm rounded-2xl p-4 mb-6">
-                          <h2 className="text-lg font-bold text-white mb-3">
-                            Size
-                          </h2>
-                          <div className="flex flex-wrap gap-2">
-                            {sizeOptions.map((size) => (
-                              <button
-                                key={size}
-                                onClick={() => toggleSize(size)}
-                                className={`flex items-center justify-center w-12 h-12 rounded-lg text-gray-700 transition-colors ${selectedSizes.includes(size)
-                                  ? "bg-primary text-white"
-                                  : "bg-white bg-opacity-10 hover:bg-white hover:bg-opacity-20"
-                                  }`}
-                              >
-                                {size}
-                              </button>
-                            ))}
                           </div>
                         </div>
 
@@ -886,112 +869,130 @@ const MenAccessories = () => {
               {/* Product Grid */}
               <div className="flex-1">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredProducts.map((product) => (
+                  {filteredProducts.length === 0 ? (
                     <motion.div
-                      key={product?.uid}
-                      className="bg-gray-700 bg-opacity-5 backdrop-blur-sm rounded-2xl overflow-hidden group"
-                      whileHover={{ y: -5, transition: { duration: 0.2 } }}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5 }}
+                      className="col-span-full flex items-center justify-center py-20"
                     >
-                      <Link to={`/productshow/${product?._id}`}>
-                        <div className="relative">
-                          <img
-                            src={product?.img}
-                            alt={product?.name}
-                            className="w-full h-64 object-cover"
-                          />
-
-                          {product.discount > 0 && (
-                            <div className="absolute top-3 left-3 bg-primary text-white text-xs font-bold px-2 py-1 rounded-full">
-                              {product?.discount}% OFF
-                            </div>
-                          )}
-                          {product.new && (
-                            <div className="absolute top-3 right-3 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                              NEW
-                            </div>
-                          )}
-
-                          {/* Heart Icon Button */}
-                          <div className="absolute bottom-2 right-3 z-20">
-                            {isAddingToWishList === product?._id ? (
-                              <div className="w-9 h-9 rounded-full bg-gray-300 animate-pulse"></div>
-                            ) : (
-                              <button
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  handleWishlist(product);
-                                }}
-                                className="hover:cursor-pointer bg-gray-100 bg-opacity-50 hover:bg-opacity-80 p-2 rounded-full shadow-md transition-colors"
-                              >
-                                {wishlist[product._id] ? (
-                                  <FaHeart className="text-red-500 w-5 h-5" />
-                                ) : (
-                                  <FaRegHeart className="text-gray-400 w-5 h-5" />
-                                )}
-                              </button>
-                            )}
-                          </div>
-
-                          {/* HeartIcon button Ends here.. */}
-
-                          <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-60"></div>
-                          <div className="absolute bottom-0 left-0 right-0 p-4">
-                            <h3 className="text-lg font-bold text-white">
-                              {product.name}
-                            </h3>
-                            <div className="flex items-center mt-2">
-                              <div className="flex text-yellow-400 mr-1">
-                                {Array.from({ length: 5 }).map((_, index) => (
-                                  <Star
-                                    key={index}
-                                    className={`h-4 w-4 ${index < product.rating
-                                      ? "text-yellow-400"
-                                      : "text-gray-500"
-                                      }`}
-                                    fill={
-                                      index < product.rating
-                                        ? "#FACC15"
-                                        : "none"
-                                    }
-                                  />
-                                ))}
-                              </div>
-                              <span className="text-white text-sm">
-                                ({product.reviewCount})
-                              </span>
-                            </div>
-                            <div className="flex items-center justify-between mt-2">
-                              <span className="text-white text-lg font-bold">
-                                ₹{product.price.toFixed(2)}
-                              </span>
-                              {product.originalPrice && (
-                                <span className="text-gray-400 text-sm line-through">
-                                  ₹{product.originalPrice.toFixed(2)}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </Link>
-                      <div className="p-4">
-                        {/* Size dropdown for tasting.... */}
-
-                        {/* Size dropdown Ends here.... */}
-                        <button
-                          onClick={() => handleAddToCart(product._id)}
-                          className="w-full bg-[#4b447b] bg-opacity-10 hover:bg-primary text-white py-2 rounded-lg transition-colors"
-                        >
-                          {addingProductId === product._id ? (
-                            <span className="flex items-center justify-center">
-                              <Loader2 className="w-5 h-5 animate-spin" />
-                            </span>
-                          ) : (
-                            "Add to Cart"
-                          )}
-                        </button>
+                      <div className="w-[400px] md:w-[500px] max-w-lg bg-white/10 backdrop-blur-md rounded-2xl px-10 py-14 shadow-lg text-center">
+                        <h2 className="text-2xl md:text-3xl font-bold text-gray-200 mb-4">
+                          No Product Found '{searchQuery}'
+                        </h2>
+                        <p className="text-gray-400 text-sm md:text-base leading-relaxed">
+                          Try adjusting your search or filter to find what you’re looking for.
+                        </p>
                       </div>
                     </motion.div>
-                  ))}
+                  ) : (
+                    filteredProducts.map((product) => (
+                      <motion.div
+                        key={product?.uid}
+                        className="bg-gray-700 bg-opacity-5 backdrop-blur-sm rounded-2xl overflow-hidden group"
+                        whileHover={{ y: -5, transition: { duration: 0.2 } }}
+                      >
+                        <Link to={`/productshow/${product?._id}`}>
+                          <div className="relative">
+                            <img
+                              src={product?.img}
+                              alt={product?.name}
+                              className="w-full h-64 object-cover"
+                            />
+
+                            {product.discount > 0 && (
+                              <div className="absolute top-3 left-3 bg-primary text-white text-xs font-bold px-2 py-1 rounded-full">
+                                {product?.discount}% OFF
+                              </div>
+                            )}
+                            {product.new && (
+                              <div className="absolute top-3 right-3 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                                NEW
+                              </div>
+                            )}
+
+                            {/* Heart Icon Button */}
+                            <div className="absolute bottom-2 right-3 z-20">
+                              {isAddingToWishList === product?._id ? (
+                                <div className="w-9 h-9 rounded-full bg-gray-300 animate-pulse"></div>
+                              ) : (
+                                <button
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    handleWishlist(product);
+                                  }}
+                                  className="hover:cursor-pointer bg-gray-100 bg-opacity-50 hover:bg-opacity-80 p-2 rounded-full shadow-md transition-colors"
+                                >
+                                  {wishlist[product._id] ? (
+                                    <FaHeart className="text-red-500 w-5 h-5" />
+                                  ) : (
+                                    <FaRegHeart className="text-gray-400 w-5 h-5" />
+                                  )}
+                                </button>
+                              )}
+                            </div>
+
+                            {/* HeartIcon button Ends here.. */}
+
+                            <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-60"></div>
+                            <div className="absolute bottom-0 left-0 right-0 p-4">
+                              <h3 className="text-lg font-bold text-white">
+                                {product.name}
+                              </h3>
+                              <div className="flex items-center mt-2">
+                                <div className="flex text-yellow-400 mr-1">
+                                  {Array.from({ length: 5 }).map((_, index) => (
+                                    <Star
+                                      key={index}
+                                      className={`h-4 w-4 ${index < product.rating
+                                        ? "text-yellow-400"
+                                        : "text-gray-500"
+                                        }`}
+                                      fill={
+                                        index < product.rating
+                                          ? "#FACC15"
+                                          : "none"
+                                      }
+                                    />
+                                  ))}
+                                </div>
+                                <span className="text-white text-sm">
+                                  ({product.reviewCount})
+                                </span>
+                              </div>
+                              <div className="flex items-center justify-between mt-2">
+                                <span className="text-white text-lg font-bold">
+                                  ₹{product.price.toFixed(2)}
+                                </span>
+                                {product.originalPrice && (
+                                  <span className="text-gray-400 text-sm line-through">
+                                    ₹{product.originalPrice.toFixed(2)}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </Link>
+                        <div className="p-4">
+                          {/* Size dropdown for tasting.... */}
+
+                          {/* Size dropdown Ends here.... */}
+                          <button
+                            onClick={() => handleAddToCart(product._id)}
+                            className="w-full bg-[#4b447b] bg-opacity-10 hover:bg-primary text-white py-2 rounded-lg transition-colors"
+                          >
+                            {addingProductId === product._id ? (
+                              <span className="flex items-center justify-center">
+                                <Loader2 className="w-5 h-5 animate-spin" />
+                              </span>
+                            ) : (
+                              "Add to Cart"
+                            )}
+                          </button>
+                        </div>
+                      </motion.div>
+                    ))
+                  )}
                 </div>
               </div>
             </div>
@@ -1003,3 +1004,4 @@ const MenAccessories = () => {
 };
 
 export default MenAccessories;
+
