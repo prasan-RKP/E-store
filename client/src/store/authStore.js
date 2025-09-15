@@ -352,7 +352,7 @@ export const userAuthStore = create((set, get) => ({
     try {
       const res = await axiosInstance.post("/removeAllCartItem");
       set({ verifiedUser: res.data });
-      toast.success("All Items removed Successfully");
+      toast.success("Your Cart is Empty now 🫙");
     } catch (error) {
       if (error.response) {
         toast.error(error.response.data.message);
