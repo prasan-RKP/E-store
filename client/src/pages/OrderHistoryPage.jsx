@@ -18,7 +18,8 @@ import {
   Truck,
   ChevronRight,
   ChevronDown,
-  X
+  X,
+  User
 } from 'lucide-react';
 import { useOrderStore } from '../store/OrderStore.js';
 import OrderHistorySkeletonPage from '../skeletons/OrderHistorySkeleton';
@@ -254,6 +255,15 @@ const OrderHistoryPage = () => {
                       <span className="absolute -top-2 -right-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                         {cartLength}
                       </span>
+                    </div>
+                  </div>
+                </Link>
+
+{/* Profilwe navigation added */}
+                <Link to={"/profile"} className="w-full sm:w-auto">
+                  <div className="hover:cursor-pointer relative text-green-500 hover:text-green-700 transition-colors p-2 hover:bg-slate-700/50 rounded-lg w-full sm:w-auto flex justify-center sm:justify-start">
+                    <div className="relative">
+                      <User className="h-6 w-6" />
                     </div>
                   </div>
                 </Link>
