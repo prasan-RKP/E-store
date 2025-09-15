@@ -15,11 +15,14 @@ import {
   Loader,
   Loader2,
   ChevronDown,
+  Home,
 } from "lucide-react";
 import { FaShippingFast, FaLock } from "react-icons/fa";
 import { GoPackage } from "react-icons/go";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
 import "swiper/css";
+import "swiper/css/navigation";
 import "swiper/css/pagination";
 import confetti from "canvas-confetti";
 import { userAuthStore } from "../store/authStore.js";
@@ -292,6 +295,15 @@ const AddToCart = () => {
     setWishlistLoading(prev => ({ ...prev, [item.productId]: false }));
   }
 
+  // searchQuery
+  // Add state for search filter
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Filter cart items
+  const filteredCartItems = cartItems.filter(item =>
+    item?.product?.name?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <>
       {isShowingAddToCartItems ? (
@@ -321,6 +333,13 @@ const AddToCart = () => {
                 </div>
 
                 <div className="flex items-center space-x-4">
+
+                  <Link to={"/"}>
+                    <button className="relative text-violet-600 hover:cursor-pointer hover:text-blue-700">
+                      <Home />
+                    </button>
+                  </Link>
+
                   <Link to={"/wishlist"}>
                     <button className="relative hover:cursor-pointer">
                       <Heart className="h-6 w-6 text-gray-600 hover:text-red-500 transition-colors" />
@@ -343,12 +362,24 @@ const AddToCart = () => {
             </div>
           </motion.nav>
 
+          {/* SearchFilter added Here */}
+          <div className="px-5 sm:px-6 lg:px-8 py-3 bg-white shadow-sm sticky top-16 z-40 flex justify-center">
+            <input
+              type="text"
+              placeholder="Search in your cart..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full sm:w-3/4 lg:w-1/2 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm sm:text-black text-black"
+            />
+          </div>
+
+
           {/* Main Content */}
           <div className="max-w-7xl mx-auto px-1 sm:px-2 lg:px-4 py-6 sm:py-8">
-            <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+            <div className="flex flex-col gap-6 lg:gap-8 lg:flex-row">
               {/* Cart Items Section */}
               <motion.div
-                className="w-full lg:w-2/3"
+                className="w-full lg:w-2/3 order-2 lg:order-1"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5 }}
@@ -375,473 +406,141 @@ const AddToCart = () => {
                     </button>
                   </div>
 
-                  <AnimatePresence mode="wait">
-                    {cartItems.map((item, index) => (
-                      <motion.div
-                        key={item?.productId}
-                        layout
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ type: "spring", damping: 25 }}
-                        className="border-b border-gray-100 last:border-b-0"
-                      >
-                        <div className="p-3 sm:p-6">
-                          {/* Mobile Layout (<= 639px - Tailwind's default 'sm' breakpoint) */}
-                          <div className="block sm:hidden">
-                            {/* Product Name */}
-                            <h2 className="text-2xl font-bold text-slate-700 mb-2 text-center">
-                              {item?.product?.name}
-                            </h2>
+                  {/* Main carts will be show from here */}
+                  <div className="max-h-[500px] overflow-y-auto">
+                    <AnimatePresence mode="wait">
+                      {filteredCartItems.map((item, index) => (
+                        <motion.div
+                          key={item?.productId}
+                          layout
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ type: "spring", damping: 25 }}
+                          className="border-b border-gray-100 last:border-b-0"
+                        >
+                          <div className="p-3 sm:p-6">
+                            {/* Mobile Layout (<= 639px - Tailwind's default 'sm' breakpoint) */}
+                            <div className="block sm:hidden">
+                              {/* Product Name */}
+                              <h2 className="text-2xl font-bold text-slate-700 mb-2 text-center">
+                                {item?.product?.name}
+                              </h2>
 
-                            {/* Product Image - Full width on mobile */}
-                            <div className="mb-3 max-h-[400px] sm:max-h-none">
-                              <Link to={`/productshow/${item?.productId}`}>
-                                <motion.div
-                                  whileHover={{ scale: 1.05 }}
-                                  className="relative bg-gray-100 rounded-lg overflow-hidden w-full h-full max-h-[400px] sm:max-h-none"
-                                >
-                                  <img
-                                    src={item?.product?.img}
-                                    alt={item?.product?.name}
-                                    className="w-full h-full object-cover max-h-[400px] sm:max-h-none"
-                                  />
-                                </motion.div>
-                              </Link>
-                            </div>
-
-                            {/* Two Column Layout for Controls */}
-                            <div className="flex gap-2 mb-3">
-                              {/* Left Column - Size & Quantity */}
-                              <div className="flex-1 space-y-2">
-                                {/* Size Selector */}
-                                <div className="size-dropdown-container">
-                                  {item?.product?.sizes &&
-                                    item.product.sizes.length > 0 ? (
-                                    <div className="relative">
-                                      <button
-                                        onClick={() =>
-                                          toggleSizeDropdown(item?.productId)
-                                        }
-                                        className="w-full flex items-center justify-between border border-gray-300 rounded-md px-2 py-1 bg-white hover:bg-gray-50 text-xs"
-                                        disabled={isUpdatingProdSize}
-                                      >
-                                        {isAddingProdId === item?.productId ? (
-                                          <Loader2 className="h-3 w-3 animate-spin mx-auto" />
-                                        ) : (
-                                          <>
-                                            <span className="text-xs">
-                                              Size:{" "}
-                                              {selectedSizes[item?.productId] ||
-                                                "Select"}
-                                            </span>
-                                            <ChevronDown className="h-3 w-3" />
-                                          </>
-                                        )}
-                                      </button>
-
-                                      {openSizeDropdown === item?.productId && (
-                                        <div className="absolute z-50 top-full left-0 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-lg">
-                                          <div className="max-h-16 overflow-y-auto">
-                                            {item?.product?.sizes.map((size) => (
-                                              <button
-                                                key={size}
-                                                onClick={() =>
-                                                  handleSizeSelect(
-                                                    item?.productId,
-                                                    size
-                                                  )
-                                                }
-                                                className="block w-full text-left px-2 py-1 text-xs hover:bg-gray-100"
-                                                disabled={
-                                                  isAddingProdId ===
-                                                  item?.productId
-                                                }
-                                              >
-                                                {size}
-                                              </button>
-                                            ))}
-                                          </div>
-                                        </div>
-                                      )}
-                                    </div>
-                                  ) : (
-                                    <div className="px-2 py-1 border border-gray-300 rounded-md bg-white text-xs text-gray-700">
-                                      Size: Regular
-                                    </div>
-                                  )}
-                                </div>
-
-                                {/* Quantity Control */}
-                                <div className="flex items-center border border-gray-300 rounded-lg w-fit">
-                                  <button
-                                    onClick={() =>
-                                      handleQuantityDec(item?.productId)
-                                    }
-                                    className="px-2 py-1 text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                                    disabled={
-                                      loadQuantity === item?.productId ||
-                                      item.quantity <= 1
-                                    }
+                              {/* Product Image - Full width on mobile */}
+                              <div className="mb-3 max-h-[400px] sm:max-h-none">
+                                <Link to={`/productshow/${item?.productId}`}>
+                                  <motion.div
+                                    whileHover={{ scale: 1.05 }}
+                                    className="relative bg-gray-100 rounded-lg overflow-hidden w-full h-full max-h-[400px] sm:max-h-none"
                                   >
-                                    <Minus className="h-3 w-3" />
-                                  </button>
-                                  <span className="px-2 py-1 text-gray-800 font-medium text-xs min-w-[24px] text-center">
-                                    {loadQuantity === item?.productId ? (
-                                      <TbLoader2 className="h-3 w-3 animate-spin mx-auto" />
-                                    ) : (
-                                      item?.quantity
-                                    )}
-                                  </span>
-                                  <button
-                                    onClick={() =>
-                                      handleQuantityInc(item?.productId)
-                                    }
-                                    className="px-2 py-1 text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                                    disabled={loadQuantity === item?.productId}
-                                  >
-                                    <Plus className="h-3 w-3" />
-                                  </button>
-                                </div>
+                                    <img
+                                      src={item?.product?.img}
+                                      alt={item?.product?.name}
+                                      className="w-full h-full object-cover max-h-[400px] sm:max-h-none"
+                                    />
+                                  </motion.div>
+                                </Link>
                               </div>
 
-                              {/* Right Column - Buy Now & Price */}
-                              <div className="flex-1 space-y-2">
-                                {/* Buy Now Button */}
-                                <button
-                                  onClick={() => handleWishList(item)}
-                                  className="hover:cursor-pointer px-4 py-2 bg-gray-300 text-gray-600 rounded-lg hover:bg-gray-400 transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
-                                  disabled={wishlistLoading[item?.productId]} // Changed from wishlistId
-                                >
-                                  {wishlistLoading[item?.productId] ? ( // Changed from item?._id
-                                    <Loader2 className="h-5 w-5 animate-spin inline-block mr-2" />
-                                  ) : (
-                                    "Add to Wishlist ❤️"
-                                  )}
-                                </button>
+                              {/* Two Column Layout for Controls */}
+                              <div className="flex gap-2 mb-3">
+                                {/* Left Column - Size & Quantity */}
+                                <div className="flex-1 space-y-2">
+                                  {/* Size Selector */}
+                                  <div className="size-dropdown-container">
+                                    {item?.product?.sizes &&
+                                      item.product.sizes.length > 0 ? (
+                                      <div className="relative">
+                                        <button
+                                          onClick={() =>
+                                            toggleSizeDropdown(item?.productId)
+                                          }
+                                          className="w-full flex items-center justify-between border border-gray-300 rounded-md px-2 py-1 bg-white hover:bg-gray-50 text-xs"
+                                          disabled={isUpdatingProdSize}
+                                        >
+                                          {isAddingProdId === item?.productId ? (
+                                            <Loader2 className="h-3 w-3 animate-spin mx-auto" />
+                                          ) : (
+                                            <>
+                                              <span className="text-xs">
+                                                Size:{" "}
+                                                {selectedSizes[item?.productId] ||
+                                                  "Select"}
+                                              </span>
+                                              <ChevronDown className="h-3 w-3" />
+                                            </>
+                                          )}
+                                        </button>
 
-
-                                {/* Product Price */}
-                                <div className="text-center">
-                                  <span className="text-sm font-bold text-gray-800">
-                                    ₹
-                                    {(
-                                      item?.product?.price * item?.quantity
-                                    ).toFixed(2)}
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Remove Button - Full width at bottom */}
-                            <button
-                              onClick={() => removeItem(item?.productId)}
-                              className="w-full text-white bg-red-600  hover:text-red-700 flex items-center justify-center cursor-pointer text-xs py-2 disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
-                              disabled={storeProdId === item?.productId}
-                            >
-                              {storeProdId === item?.productId ? (
-                                <Loader2 className="w-3 h-3 animate-spin mr-1" />
-                              ) : (
-                                <>
-                                  <Trash2 className="h-3 w-3 mr-1" />
-                                  <span>Remove</span>
-                                </>
-                              )}
-                            </button>
-                          </div>
-
-                          {/* Tablet/Small Laptop Layout (640px to 767px) - Adjusted for better image display */}
-                          <div className="hidden sm:flex md:hidden items-center">
-                            {/* Product Image */}
-                            <div className="flex-shrink-0 mr-4 w-24 h-auto max-h-20 sm:max-h-24">
-                              <Link to={`/productshow/${item?.productId}`}>
-                                <motion.div
-                                  whileHover={{ scale: 1.05 }}
-                                  className="relative bg-gray-100 rounded-xl overflow-hidden w-full h-full"
-                                >
-                                  <img
-                                    src={item?.product?.img}
-                                    alt={item?.product?.name}
-                                    className="w-full h-auto max-h-20 sm:max-h-24 object-cover"
-                                  />
-                                </motion.div>
-                              </Link>
-                            </div>
-
-                            {/* Product Details and Controls */}
-                            <div className="flex-grow flex flex-col justify-between">
-                              <div className="flex justify-between items-start mb-2">
-                                <h3 className="text-base font-medium text-gray-800 leading-tight">
-                                  {item?.product?.name}
-                                </h3>
-                                <div className="text-base font-bold text-gray-800 ml-4">
-                                  ₹
-                                  {(
-                                    item?.product?.price * item?.quantity
-                                  ).toFixed(2)}
-                                </div>
-                              </div>
-
-                              <div className="flex items-center justify-between flex-wrap gap-y-2">
-                                {" "}
-                                {/* Added flex-wrap for better layout on smaller screens */}
-                                {/* Size Selector */}
-                                <div className="relative mr-4 size-dropdown-container  text-black">
-                                  {item?.product?.sizes &&
-                                    item.product.sizes.length > 0 ? (
-                                    <>
-                                      <button
-                                        onClick={() =>
-                                          toggleSizeDropdown(item?.productId)
-                                        }
-                                        className="flex items-center border border-black rounded-md px-2 py-1  hover:bg-gray-50 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                                        disabled={isUpdatingProdSize}
-                                      >
-                                        {isAddingProdId === item?.productId ? (
-                                          <Loader2 className="h-4 w-4 animate-spin mx-auto" />
-                                        ) : (
-                                          <>
-                                            <span className="text-black">
-                                              Size:{" "}
-                                              {selectedSizes[item?.productId] ||
-                                                "Select"}
-                                            </span>
-                                            <ChevronDown className="h-3 w-3 ml-1" />
-                                          </>
-                                        )}
-                                      </button>
-
-                                      {openSizeDropdown === item?.productId && (
-                                        <div className="absolute z-50 top-full left-0 mt-1 w-32 border text-black  rounded-md shadow-lg ">
-                                          <div className="max-h-20 overflow-y-auto text-black">
-                                            {item.product.sizes.map((size) => (
-                                              <button
-                                                key={size}
-                                                onClick={() =>
-                                                  handleSizeSelect(
-                                                    item?.productId,
-                                                    size
-                                                  )
-                                                }
-                                                className="block w-full text-left px-3 py-1 text-sm  text-black"
-                                                disabled={
-                                                  isAddingProdId ===
-                                                  item?.productId
-                                                }
-                                              >
-                                                {size}
-                                              </button>
-                                            ))}
-                                          </div>
-                                        </div>
-                                      )}
-                                    </>
-                                  ) : (
-                                    <div className="px-2 py-1 border  rounded-md  text-sm text-black">
-                                      Size: Regular
-                                    </div>
-                                  )}
-                                </div>
-                                {/* Quantity Control */}
-                                <div className="flex items-center border border-gray-300 rounded-lg">
-                                  <button
-                                    onClick={() =>
-                                      handleQuantityDec(item?.productId)
-                                    }
-                                    className="px-2 py-1 text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                                    disabled={
-                                      loadQuantity === item?.productId ||
-                                      item.quantity <= 1
-                                    }
-                                  >
-                                    <Minus className="h-3 w-3" />
-                                  </button>
-                                  <span className="px-2 py-1 text-gray-800 font-medium text-sm min-w-[28px] text-center">
-                                    {loadQuantity === item?.productId ? (
-                                      <TbLoader2 className="h-4 w-4 animate-spin mx-auto" />
-                                    ) : (
-                                      item?.quantity
-                                    )}
-                                  </span>
-                                  <button
-                                    onClick={() =>
-                                      handleQuantityInc(item?.productId)
-                                    }
-                                    className="px-2 py-1 text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                                    disabled={loadQuantity === item?.productId}
-                                  >
-                                    <Plus className="h-3 w-3" />
-                                  </button>
-                                </div>
-                                {/* Buy Now & Remove */}
-                                <div className="flex items-center space-x-2 sm:ml-4">
-                                  {" "}
-                                  {/* Removed ml-4 to allow flex-wrap to handle spacing */}
-                                  <button
-                                    onClick={() => toast.info('Feature Coming Soon 🔜 ...')}
-                                    className="px-3 py-1 buy-btn bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed "
-                                    disabled={isChecking}
-                                  >
-                                    {isChecking ? (
-                                      <Loader2 className="h-4 w-4 animate-spin inline-block" />
-                                    ) : (
-                                      "Buy Now"
-                                    )}
-                                  </button>
-                                  <button
-                                    onClick={() => removeItem(item?.productId)}
-                                    className="text-red-500 hover:text-red-700 flex items-center cursor-pointer text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                                    disabled={storeProdId === item?.productId}
-                                  >
-                                    {storeProdId === item?.productId ? (
-                                      <Loader2 className="w-4 h-4 animate-spin" />
-                                    ) : (
-                                      <Trash2 className="h-4 w-4" />
-                                    )}
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Desktop Layout (>= 768px) */}
-                          <div className="hidden md:flex">
-                            {/* Product Image */}
-                            <div className="flex-shrink-0 mr-6 mb-4 sm:mb-0">
-                              <Link to={`/productshow/${item?.productId}`}>
-                                <motion.div
-                                  whileHover={{ scale: 1.05 }}
-                                  className="relative bg-gray-100 rounded-xl overflow-hidden w-24 h-24"
-                                >
-                                  <img
-                                    src={item?.product?.img}
-                                    alt={item?.product?.name}
-                                    className="w-full h-full object-cover"
-                                  />
-                                </motion.div>
-                              </Link>
-                            </div>
-
-                            {/* Product Details */}
-                            <div className="flex-grow">
-                              <div className="flex flex-col sm:flex-row justify-between">
-                                <div className="text-left">
-                                  <h3 className="text-lg font-medium text-gray-800 mb-1">
-                                    {item?.product?.name}
-                                  </h3>
-                                  <div className="flex text-sm text-gray-500 mb-3 relative z-10">
-                                    {/* Size Selector */}
-                                    <div className="relative mr-4 size-dropdown-container">
-                                      {item?.product?.sizes &&
-                                        item.product.sizes.length > 0 ? (
-                                        <>
-                                          {/* Dropdown Button */}
-                                          <button
-                                            onClick={() =>
-                                              toggleSizeDropdown(
-                                                item?.productId
-                                              )
-                                            }
-                                            className="flex items-center border border-gray-300 rounded-md px-2 py-1 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                                            disabled={isUpdatingProdSize}
-                                          >
-                                            {isAddingProdId ===
-                                              item?.productId ? (
-                                              <Loader2 className="h-5 w-5 animate-spin mx-auto" />
-                                            ) : (
-                                              <>
-                                                <span>
-                                                  Size:{" "}
-                                                  {selectedSizes[
-                                                    item?.productId
-                                                  ] || "Select"}
-                                                </span>
-                                                <ChevronDown className="h-4 w-4 ml-1" />
-                                              </>
-                                            )}
-                                          </button>
-
-                                          {/* Dropdown List */}
-                                          {openSizeDropdown ===
-                                            item?.productId && (
-                                              <div className="absolute z-50 top-full left-0 mt-1 w-40 bg-white border border-gray-200 rounded-md shadow-lg">
-                                                <div
-                                                  className="max-h-24 overflow-y-auto"
-                                                  style={{
-                                                    scrollbarWidth: "thin",
-                                                    scrollbarColor:
-                                                      "#CBD5E0 #F9FAFB",
-                                                  }}
-                                                >
-                                                  {item.product.sizes.map(
-                                                    (size) => (
-                                                      <button
-                                                        key={size}
-                                                        onClick={() =>
-                                                          handleSizeSelect(
-                                                            item?.productId,
-                                                            size
-                                                          )
-                                                        }
-                                                        className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
-                                                        disabled={
-                                                          isAddingProdId ===
-                                                          item?.productId
-                                                        }
-                                                      >
-                                                        {size}
-                                                      </button>
+                                        {openSizeDropdown === item?.productId && (
+                                          <div className="absolute z-50 top-full left-0 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-lg">
+                                            <div className="max-h-16 overflow-y-auto">
+                                              {item?.product?.sizes.map((size) => (
+                                                <button
+                                                  key={size}
+                                                  onClick={() =>
+                                                    handleSizeSelect(
+                                                      item?.productId,
+                                                      size
                                                     )
-                                                  )}
-                                                </div>
-                                              </div>
-                                            )}
-                                        </>
-                                      ) : (
-                                        <div className="px-2 py-1 border border-gray-300 rounded-md bg-white text-gray-700">
-                                          Size: Regular
-                                        </div>
-                                      )}
-                                    </div>
+                                                  }
+                                                  className="block w-full text-left px-2 py-1 text-xs hover:bg-gray-100"
+                                                  disabled={
+                                                    isAddingProdId ===
+                                                    item?.productId
+                                                  }
+                                                >
+                                                  {size}
+                                                </button>
+                                              ))}
+                                            </div>
+                                          </div>
+                                        )}
+                                      </div>
+                                    ) : (
+                                      <div className="px-2 py-1 border border-gray-300 rounded-md bg-white text-xs text-gray-700">
+                                        Size: Regular
+                                      </div>
+                                    )}
                                   </div>
-                                </div>
-                                <div className="text-lg font-bold text-gray-800 text-right">
-                                  ₹
-                                  {(
-                                    item?.product?.price * item?.quantity
-                                  ).toFixed(2)}
-                                </div>
-                              </div>
 
-                              {/* Quantity Control, Buy Now and Remove */}
-                              <div className="flex flex-col sm:flex-row items-center justify-between mt-4">
-                                <div className="flex items-center space-x-3 mb-3 sm:mb-0">
                                   {/* Quantity Control */}
-                                  <div className="flex items-center border border-gray-300 rounded-lg">
+                                  <div className="flex items-center border border-gray-300 rounded-lg w-fit">
                                     <button
-                                      onClick={() => handleQuantityDec(item?.productId)}
-                                      className="px-3 py-2 text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                                      disabled={loadQuantity === item?.productId || item.quantity <= 1}
+                                      onClick={() =>
+                                        handleQuantityDec(item?.productId)
+                                      }
+                                      className="px-2 py-1 text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                      disabled={
+                                        loadQuantity === item?.productId ||
+                                        item.quantity <= 1
+                                      }
                                     >
-                                      <Minus className="h-4 w-4" />
+                                      <Minus className="h-3 w-3" />
                                     </button>
-                                    <span className="px-4 py-2 text-gray-800 font-medium">
+                                    <span className="px-2 py-1 text-gray-800 font-medium text-xs min-w-[24px] text-center">
                                       {loadQuantity === item?.productId ? (
-                                        <TbLoader2 className="h-5 w-5 animate-spin" />
+                                        <TbLoader2 className="h-3 w-3 animate-spin mx-auto" />
                                       ) : (
                                         item?.quantity
                                       )}
                                     </span>
                                     <button
-                                      onClick={() => handleQuantityInc(item?.productId)}
-                                      className="px-3 py-2 text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                      onClick={() =>
+                                        handleQuantityInc(item?.productId)
+                                      }
+                                      className="px-2 py-1 text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                                       disabled={loadQuantity === item?.productId}
                                     >
-                                      <Plus className="h-4 w-4" />
+                                      <Plus className="h-3 w-3" />
                                     </button>
                                   </div>
+                                </div>
 
-                                  {/* Move to Wishlist Button */}
+                                {/* Right Column - Buy Now & Price */}
+                                <div className="flex-1 space-y-2">
+                                  {/* Buy Now Button */}
                                   <button
                                     onClick={() => handleWishList(item)}
                                     className="hover:cursor-pointer px-4 py-2 bg-gray-300 text-gray-600 rounded-lg hover:bg-gray-400 transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
@@ -853,34 +552,379 @@ const AddToCart = () => {
                                       "Add to Wishlist ❤️"
                                     )}
                                   </button>
-                                </div>
 
-                                {/* Remove Button */}
-                                <button
-                                  onClick={() => removeItem(item?.productId)}
-                                  className="text-red-500 hover:text-red-700 flex items-center cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                                  disabled={storeProdId === item?.productId}
-                                >
-                                  {storeProdId === item?.productId ? (
-                                    <span className="flex items-center justify-center">
-                                      <Loader2 className="w-5 h-5 animate-spin mr-1" /> Removing...
+
+                                  {/* Product Price */}
+                                  <div className="text-center">
+                                    <span className="text-sm font-bold text-gray-800">
+                                      ₹
+                                      {(
+                                        item?.product?.price * item?.quantity
+                                      ).toFixed(2)}
                                     </span>
-                                  ) : (
-                                    <>
-                                      <Trash2 className="h-4 w-4 mr-1" />
-                                      <span>Remove</span>
-                                    </>
-                                  )}
-                                </button>
+                                  </div>
+                                </div>
                               </div>
 
+                              {/* Remove Button - Full width at bottom */}
+                              <button
+                                onClick={() => removeItem(item?.productId)}
+                                className="w-full text-white bg-red-600  hover:text-red-700 flex items-center justify-center cursor-pointer text-xs py-2 disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
+                                disabled={storeProdId === item?.productId}
+                              >
+                                {storeProdId === item?.productId ? (
+                                  <Loader2 className="w-3 h-3 animate-spin mr-1" />
+                                ) : (
+                                  <>
+                                    <Trash2 className="h-3 w-3 mr-1" />
+                                    <span>Remove</span>
+                                  </>
+                                )}
+                              </button>
+                            </div>
+
+                            {/* Tablet/Small Laptop Layout (640px to 767px) - Adjusted for better image display */}
+                            <div className="hidden sm:flex md:hidden items-center">
+                              {/* Product Image */}
+                              <div className="flex-shrink-0 mr-4 w-24 h-auto max-h-20 sm:max-h-24">
+                                <Link to={`/productshow/${item?.productId}`}>
+                                  <motion.div
+                                    whileHover={{ scale: 1.05 }}
+                                    className="relative bg-gray-100 rounded-xl overflow-hidden w-full h-full"
+                                  >
+                                    <img
+                                      src={item?.product?.img}
+                                      alt={item?.product?.name}
+                                      className="w-full h-auto max-h-20 sm:max-h-24 object-cover"
+                                    />
+                                  </motion.div>
+                                </Link>
+                              </div>
+
+                              {/* Product Details and Controls */}
+                              <div className="flex-grow flex flex-col justify-between">
+                                <div className="flex justify-between items-start mb-2">
+                                  <h3 className="text-base font-medium text-gray-800 leading-tight">
+                                    {item?.product?.name}
+                                  </h3>
+                                  <div className="text-base font-bold text-gray-800 ml-4">
+                                    ₹
+                                    {(
+                                      item?.product?.price * item?.quantity
+                                    ).toFixed(2)}
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center justify-between flex-wrap gap-y-2">
+                                  {" "}
+                                  {/* Added flex-wrap for better layout on smaller screens */}
+                                  {/* Size Selector */}
+                                  <div className="relative mr-4 size-dropdown-container  text-black">
+                                    {item?.product?.sizes &&
+                                      item.product.sizes.length > 0 ? (
+                                      <>
+                                        <button
+                                          onClick={() =>
+                                            toggleSizeDropdown(item?.productId)
+                                          }
+                                          className="flex items-center border border-black rounded-md px-2 py-1  hover:bg-gray-50 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                          disabled={isUpdatingProdSize}
+                                        >
+                                          {isAddingProdId === item?.productId ? (
+                                            <Loader2 className="h-4 w-4 animate-spin mx-auto" />
+                                          ) : (
+                                            <>
+                                              <span className="text-black">
+                                                Size:{" "}
+                                                {selectedSizes[item?.productId] ||
+                                                  "Select"}
+                                              </span>
+                                              <ChevronDown className="h-3 w-3 ml-1" />
+                                            </>
+                                          )}
+                                        </button>
+
+                                        {openSizeDropdown === item?.productId && (
+                                          <div className="absolute z-50 top-full left-0 mt-1 w-32 border text-black  rounded-md shadow-lg ">
+                                            <div className="max-h-20 overflow-y-auto text-black">
+                                              {item.product.sizes.map((size) => (
+                                                <button
+                                                  key={size}
+                                                  onClick={() =>
+                                                    handleSizeSelect(
+                                                      item?.productId,
+                                                      size
+                                                    )
+                                                  }
+                                                  className="block w-full text-left px-3 py-1 text-sm  text-black"
+                                                  disabled={
+                                                    isAddingProdId ===
+                                                    item?.productId
+                                                  }
+                                                >
+                                                  {size}
+                                                </button>
+                                              ))}
+                                            </div>
+                                          </div>
+                                        )}
+                                      </>
+                                    ) : (
+                                      <div className="px-2 py-1 border  rounded-md  text-sm text-black">
+                                        Size: Regular
+                                      </div>
+                                    )}
+                                  </div>
+                                  {/* Quantity Control */}
+                                  <div className="flex items-center border border-gray-300 rounded-lg">
+                                    <button
+                                      onClick={() =>
+                                        handleQuantityDec(item?.productId)
+                                      }
+                                      className="px-2 py-1 text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                      disabled={
+                                        loadQuantity === item?.productId ||
+                                        item.quantity <= 1
+                                      }
+                                    >
+                                      <Minus className="h-3 w-3" />
+                                    </button>
+                                    <span className="px-2 py-1 text-gray-800 font-medium text-sm min-w-[28px] text-center">
+                                      {loadQuantity === item?.productId ? (
+                                        <TbLoader2 className="h-4 w-4 animate-spin mx-auto" />
+                                      ) : (
+                                        item?.quantity
+                                      )}
+                                    </span>
+                                    <button
+                                      onClick={() =>
+                                        handleQuantityInc(item?.productId)
+                                      }
+                                      className="px-2 py-1 text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                      disabled={loadQuantity === item?.productId}
+                                    >
+                                      <Plus className="h-3 w-3" />
+                                    </button>
+                                  </div>
+                                  {/* Buy Now & Remove */}
+                                  <div className="flex items-center space-x-2 sm:ml-4">
+                                    {" "}
+                                    {/* Removed ml-4 to allow flex-wrap to handle spacing */}
+                                    <button
+                                      onClick={() => handleWishList(item)}
+                                      className="px-3 py-1 buy-btn bg-gray-400 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed "
+                                      disabled={wishlistLoading[item?.productId]}
+                                    >
+                                      {wishlistLoading[item?.productId] ? ( // Changed from item?._id
+                                        <Loader2 className="h-5 w-5 animate-spin inline-block mr-2" />
+                                      ) : (
+                                        " + Wishlist ❤️"
+                                      )}
+                                    </button>
+                                    <button
+                                      onClick={() => removeItem(item?.productId)}
+                                      className="text-red-500 hover:text-red-700 flex items-center cursor-pointer text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                      disabled={storeProdId === item?.productId}
+                                    >
+                                      {storeProdId === item?.productId ? (
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                      ) : (
+                                        <Trash2 className="h-4 w-4" />
+                                      )}
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Desktop Layout (>= 768px) */}
+                            <div className="hidden md:flex">
+                              {/* Product Image */}
+                              <div className="flex-shrink-0 mr-6 mb-4 sm:mb-0">
+                                <Link to={`/productshow/${item?.productId}`}>
+                                  <motion.div
+                                    whileHover={{ scale: 1.05 }}
+                                    className="relative bg-gray-100 rounded-xl overflow-hidden w-24 h-24"
+                                  >
+                                    <img
+                                      src={item?.product?.img}
+                                      alt={item?.product?.name}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  </motion.div>
+                                </Link>
+                              </div>
+
+                              {/* Product Details */}
+                              <div className="flex-grow">
+                                <div className="flex flex-col sm:flex-row justify-between">
+                                  <div className="text-left">
+                                    <h3 className="text-lg font-medium text-gray-800 mb-1">
+                                      {item?.product?.name}
+                                    </h3>
+                                    <div className="flex text-sm text-gray-500 mb-3 relative z-10">
+                                      {/* Size Selector */}
+                                      <div className="relative mr-4 size-dropdown-container">
+                                        {item?.product?.sizes &&
+                                          item.product.sizes.length > 0 ? (
+                                          <>
+                                            {/* Dropdown Button */}
+                                            <button
+                                              onClick={() =>
+                                                toggleSizeDropdown(
+                                                  item?.productId
+                                                )
+                                              }
+                                              className="flex items-center border border-gray-300 rounded-md px-2 py-1 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                              disabled={isUpdatingProdSize}
+                                            >
+                                              {isAddingProdId ===
+                                                item?.productId ? (
+                                                <Loader2 className="h-5 w-5 animate-spin mx-auto" />
+                                              ) : (
+                                                <>
+                                                  <span>
+                                                    Size:{" "}
+                                                    {selectedSizes[
+                                                      item?.productId
+                                                    ] || "Select"}
+                                                  </span>
+                                                  <ChevronDown className="h-4 w-4 ml-1" />
+                                                </>
+                                              )}
+                                            </button>
+
+                                            {/* Dropdown List */}
+                                            {openSizeDropdown ===
+                                              item?.productId && (
+                                                <div className="absolute z-50 top-full left-0 mt-1 w-40 bg-white border border-gray-200 rounded-md shadow-lg">
+                                                  <div
+                                                    className="max-h-24 overflow-y-auto"
+                                                    style={{
+                                                      scrollbarWidth: "thin",
+                                                      scrollbarColor:
+                                                        "#CBD5E0 #F9FAFB",
+                                                    }}
+                                                  >
+                                                    {item.product.sizes.map(
+                                                      (size) => (
+                                                        <button
+                                                          key={size}
+                                                          onClick={() =>
+                                                            handleSizeSelect(
+                                                              item?.productId,
+                                                              size
+                                                            )
+                                                          }
+                                                          className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                                                          disabled={
+                                                            isAddingProdId ===
+                                                            item?.productId
+                                                          }
+                                                        >
+                                                          {size}
+                                                        </button>
+                                                      )
+                                                    )}
+                                                  </div>
+                                                </div>
+                                              )}
+                                          </>
+                                        ) : (
+                                          <div className="px-2 py-1 border border-gray-300 rounded-md bg-white text-gray-700">
+                                            Size: Regular
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="text-lg font-bold text-gray-800 text-right">
+                                    ₹
+                                    {(
+                                      item?.product?.price * item?.quantity
+                                    ).toFixed(2)}
+                                  </div>
+                                </div>
+
+                                {/* Quantity Control, Buy Now and Remove */}
+                                <div className="flex flex-col sm:flex-row items-center justify-between mt-4">
+                                  <div className="flex items-center space-x-3 mb-3 sm:mb-0">
+                                    {/* Quantity Control */}
+                                    <div className="flex items-center border border-gray-300 rounded-lg">
+                                      <button
+                                        onClick={() => handleQuantityDec(item?.productId)}
+                                        className="px-3 py-2 text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                        disabled={loadQuantity === item?.productId || item.quantity <= 1}
+                                      >
+                                        <Minus className="h-4 w-4" />
+                                      </button>
+                                      <span className="px-4 py-2 text-gray-800 font-medium">
+                                        {loadQuantity === item?.productId ? (
+                                          <TbLoader2 className="h-5 w-5 animate-spin" />
+                                        ) : (
+                                          item?.quantity
+                                        )}
+                                      </span>
+                                      <button
+                                        onClick={() => handleQuantityInc(item?.productId)}
+                                        className="px-3 py-2 text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                        disabled={loadQuantity === item?.productId}
+                                      >
+                                        <Plus className="h-4 w-4" />
+                                      </button>
+                                    </div>
+
+                                    {/* Move to Wishlist Button */}
+                                    <button
+                                      onClick={() => handleWishList(item)}
+                                      className="hover:cursor-pointer px-4 py-2 bg-gray-300 text-gray-600 rounded-lg hover:bg-gray-400 transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+                                      disabled={wishlistLoading[item?.productId]} // Changed from wishlistId
+                                    >
+                                      {wishlistLoading[item?.productId] ? ( // Changed from item?._id
+                                        <Loader2 className="h-5 w-5 animate-spin inline-block mr-2" />
+                                      ) : (
+                                        "Add to Wishlist ❤️"
+                                      )}
+                                    </button>
+                                  </div>
+
+                                  {/* Remove Button */}
+                                  <button
+                                    onClick={() => removeItem(item?.productId)}
+                                    className="text-red-500 hover:text-red-700 flex items-center cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                    disabled={storeProdId === item?.productId}
+                                  >
+                                    {storeProdId === item?.productId ? (
+                                      <span className="flex items-center justify-center">
+                                        <Loader2 className="w-5 h-5 animate-spin mr-1" /> Removing...
+                                      </span>
+                                    ) : (
+                                      <>
+                                        <Trash2 className="h-4 w-4 mr-1" />
+                                        <span>Remove</span>
+                                      </>
+                                    )}
+                                  </button>
+                                </div>
+
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </AnimatePresence>
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
 
+                    {/* added  */}
+                    {filteredCartItems.length === 0 && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="p-6 text-center text-gray-500 text-xl"
+                      >
+                        No products found '{searchQuery}' ☹️
+                      </motion.div>
+                    )}
+                  </div>
                   {cartItems.length === 0 && (
                     <motion.div
                       initial={{ opacity: 0 }}
@@ -936,6 +980,7 @@ const AddToCart = () => {
                     </div>
                     <Swiper
                       ref={swiperRef}
+                      modules={[Navigation]}
                       slidesPerView={1.2}
                       spaceBetween={12}
                       breakpoints={{
@@ -954,19 +999,19 @@ const AddToCart = () => {
                             className="bg-white rounded-xl shadow-md overflow-hidden h-full flex flex-col"
 
                           >
-                            <Link to={`/productshow/${product.id}`}>
-                              <div className="aspect-square relative">
-                                <img
-                                  src={product.image}
-                                  alt={product.name}
-                                  className="absolute h-full w-full object-cover"
-                                />
-                              </div>
-                            </Link>
+                            {/* <Link to={`/productshow/${product.id}`}> */}
+                            <div className="aspect-square relative">
+                              <img
+                                src={product?.image}
+                                alt={product.name}
+                                className="absolute h-full w-full object-cover"
+                              />
+                            </div>
+                            {/* </Link> */}
                             <div className="p-3 flex-grow flex flex-col justify-between">
                               <div>
                                 <h3 className="text-base font-medium text-gray-800 mb-1">
-                                  {product.name}
+                                  {product?.name}
                                 </h3>
                                 <p className="text-sm text-gray-600">
                                   ₹{product.price.toFixed(2)}
@@ -991,12 +1036,12 @@ const AddToCart = () => {
 
               {/* Order Summary Section */}
               <motion.div
-                className="w-full lg:w-1/3"
+                className="w-full lg:w-1/3 order-1 lg:order-2"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
-                <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 sticky top-20">
+                <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 static lg:sticky lg:top-20">
                   <h2 className="text-lg sm:text-xl font-bold text-gray-800 mb-4 sm:mb-6">
                     Order Summary
                   </h2>
@@ -1020,9 +1065,7 @@ const AddToCart = () => {
                     <span>Order Total:</span>
                     <span>₹{total.toFixed(2)}</span>
                   </div>
-                  {/* <Link to={"/checkout"}> */}
                   <button
-                    // onClick={handleCheckout}
                     onClick={handleProceed}
                     className="w-full h hover:cursor-pointer bg-green-600 text-white py-3 mt-6 rounded-lg flex items-center justify-center hover:bg-green-700 transition-colors font-semibold shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={isChecking || cartItems.length === 0}
@@ -1037,14 +1080,14 @@ const AddToCart = () => {
                   {/* </Link> */}
 
                   <div className="mt-6 space-y-3 text-sm text-gray-500">
-                    <div className="flex items-center">
+                    {/* <div className="flex items-center">
                       <FaShippingFast className="h-5 w-5 mr-2 text-blue-500" />
                       <span>Free shipping on orders over ₹1000.00</span>
-                    </div>
-                    <div className="flex items-center">
+                    </div> */}
+                    {/* <div className="flex items-center">
                       <FaLock className="h-5 w-5 mr-2 text-green-500" />
                       <span>Secure checkout powered by Stripe</span>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </motion.div>
