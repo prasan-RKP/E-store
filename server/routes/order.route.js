@@ -4,9 +4,10 @@ import { protectedRoute } from "../src/middleware/middleware.js";
 
 const router = express.Router();
 
-router.get("/fetchOrder", async (req, res) => {
+router.get("/fetchOrder", protectedRoute, async (req, res) => {
   try {
     const orders = await Order.find();
+    const userId = req.user?.id;
 
     // TO tackle some error
     if (!orders) {
@@ -25,6 +26,8 @@ router.get("/fetchOrder", async (req, res) => {
       customerEmail: order.customerEmail,
       customerPhoneNo: order.customerPhoneNo,
       zipcode: order.zipCode,
+      // Adding code from here
+      userId: order.user._id,
       items: order.items.map((item) => ({
         pid: item.uid, // help to get acces from where the product Came(mean from which schema "Men", "Women", "Accessory", "Footwears")
         id: item._id,
@@ -34,10 +37,11 @@ router.get("/fetchOrder", async (req, res) => {
         image: item.prodImage,
         size: item.prodSize,
         status: item.prodStatus,
+        orderDate: new Date(order.createdAt).toISOString().split("T")[0],
       })),
     }));
 
-    return res.status(200).json({ orders: transformedOrders });
+    return res.status(200).json({ orders: transformedOrders, myId:userId });
   } catch (error) {
     console.log("Error in Fetching orders", error);
     return res.status(500).json({ message: "Internal Server Error" });
@@ -88,7 +92,7 @@ router.put("/cancelOrder", protectedRoute, async (req, res) => {
       })),
     };
 
-    return res.status(200).json({ order: transformedOrder });
+    return res.status(200).json({ order: transformedOrder});
   } catch (error) {
     console.error("Cancel Order Error:", error);
     return res.status(500).json({ message: "Internal Server Error" });
