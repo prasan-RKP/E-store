@@ -55,6 +55,12 @@ const HomePageShop = () => {
     }
   }, [location]);
 
+   useEffect(() => {
+    if (location.hash === "#contact" && contactRef.current) {
+      contactRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [location]);
+
 
 
   useEffect(() => {
@@ -135,7 +141,7 @@ const HomePageShop = () => {
       join: "/men-clothes"
     },
     {
-      name: "Designer Jeans", price: "$89.99", image: "/feature/wm1.jpg",
+      name: "Designer Jeans", price: "₹89.99", image: "/feature/wm1.jpg",
       join: "/women-clothes"
     },
     {
@@ -655,17 +661,17 @@ const HomePageShop = () => {
 
                       {/* Call to action */}
                       <div className="card-actions">
-                        
+                        <Link to={`${product.join}`}>
                         <button className="btn btn-outline btn-primary btn-sm btn-block group-hover:btn-primary group-hover:text-white transition-all duration-200">
-                          <Link to={`${product.join}`}>
+                          
                           <span className="flex items-center gap-2">
                             View Details
                             <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                             </svg>
                           </span>
-                          </Link>
                         </button>
+                        </Link>
                       </div>
                     </div>
                   </div>
