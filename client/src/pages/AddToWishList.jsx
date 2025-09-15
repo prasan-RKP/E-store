@@ -215,7 +215,9 @@ const WishlistComponent = () => {
           <motion.nav
             initial={{ opacity: 0, y: -30 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white/5 backdrop-blur-xl border-b border-white/10 sticky top-0 z-50 shadow-2xl"
+            className="fixed top-0 left-0 right-0 z-50 w-full 
+             bg-[#302b4d]/70 backdrop-blur-xl border-b border-white/10 shadow-lg"
+            style={{ WebkitBackdropFilter: "blur(12px)", backdropFilter: "blur(12px)" }}
           >
             <div className="container mx-auto px-4 lg:px-6">
               <div className="flex justify-between items-center h-20">
@@ -246,7 +248,7 @@ const WishlistComponent = () => {
                       placeholder="Search your wishlist..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full pl-12 pr-4 py-3 bg-white/10 border border-white/20 rounded-2xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-400/50 transition-all duration-300 backdrop-blur-lg"
+                      className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-2xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-400/50 transition-all duration-300 backdrop-blur-lg"
                     />
                   </div>
                 </motion.div>
@@ -368,21 +370,21 @@ const WishlistComponent = () => {
                     >
                       Home
                     </Link>
-                     <Link
+                    <Link
                       whileHover={{ x: 5 }}
                       to={"/profile"}
                       className="block text-gray-300 hover:text-purple-400 transition py-2"
                     >
                       Profile 👤
                     </Link>
-                    <Link 
+                    <Link
                       whileHover={{ x: 5 }}
                       to={"/#products"}
                       className="block text-gray-300 hover:text-purple-400 transition py-2"
                     >
                       Shop 🛍️
                     </Link>
-                    <Link 
+                    <Link
                       whileHover={{ x: 5 }}
                       to={"/showorder"}
                       className="block text-gray-300 hover:text-purple-400 transition py-2"
@@ -415,8 +417,8 @@ const WishlistComponent = () => {
               transition={{ delay: 0.2 }}
               className="text-center mb-16"
             >
-              <motion.h1
-                className="text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-purple-300 mb-4"
+              <motion.h2
+                className="text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-purple-300 mt-7 mb-4"
                 animate={{
                   backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
                 }}
@@ -427,7 +429,7 @@ const WishlistComponent = () => {
                 }}
               >
                 Explore WishList
-              </motion.h1>
+              </motion.h2>
               <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -495,8 +497,8 @@ const WishlistComponent = () => {
                 {filteredWishItems.length > 0 ? (
                   <div
                     className={`grid gap-8 ${viewMode === 'grid'
-                        ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4'
-                        : 'grid-cols-1 max-w-4xl mx-auto'
+                      ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4'
+                      : 'grid-cols-1 max-w-4xl mx-auto'
                       }`}
                   >
                     {filteredWishItems.map((item, index) => (
