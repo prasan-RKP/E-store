@@ -64,7 +64,7 @@ const FootWear = () => {
   );
 
   // Size options
-  const sizeOptions = useMemo(() => ["6", "7", "8", "9", "10", "11", "12"], []);
+  const sizeOptions = useMemo(() => ["7", "8", "9", "10", "11"], []);
 
   // Discount options
   const discountOptions = useMemo(
@@ -181,17 +181,6 @@ const FootWear = () => {
     return () => clearInterval(interval);
   }, [heroSlides.length]);
 
-  // Toggle Gender selection
-  const toggleGender = useCallback(
-    (gen) => {
-      if (selectGender === gen) {
-        setSelectedGender(""); // optional: deselect on second click
-      } else {
-        setSelectedGender(gen); // replace with new selection
-      }
-    },
-    [selectGender]
-  );
 
   // All backend (main main) fucntionality starts here
 
@@ -205,7 +194,7 @@ const FootWear = () => {
       [productId]: { id: productId, size: size },
     }));
     setDropdownOpen(null);
-    
+
   };
 
   // feature:- addTocart()
@@ -248,16 +237,9 @@ const FootWear = () => {
   };
 
   // Toggle size selection
-  const toggleSize = useCallback(
-    (size) => {
-      if (selectedSizes.includes(size)) {
-        setSelectedSizes(selectedSizes.filter((s) => s !== size));
-      } else {
-        setSelectedSizes([...selectedSizes, size]);
-      }
-    },
-    [selectedSizes]
-  );
+  const toggleSize = (size) => {
+    setSelectedSizes([size]);
+  };
 
   // Toggle discount selection
   const toggleDiscount = useCallback(
@@ -270,6 +252,16 @@ const FootWear = () => {
     },
     [selectedDiscounts]
   );
+
+  // REmove ALL Filter
+  const clearFilters = () => {
+    setActiveCategory("all");
+    setSearchQuery("");
+    setPriceRange([0, 3000]);
+    setSelectedSizes([]);
+    setSelectedRating(0);
+    setSelectedDiscounts([]);
+  };
 
   // Filter products based on all criteria
   const filteredProducts = useMemo(() => {
@@ -366,7 +358,7 @@ const FootWear = () => {
                 {/* Company Logo */}
                 <div className="flex-shrink-0">
                   <h1 className="text-white text-2xl font-bold">
-                    MODERN<span className="text-primary">MEN</span>
+                    LU<span className="text-primary">XE</span>
                   </h1>
                 </div>
 
@@ -489,8 +481,8 @@ const FootWear = () => {
                     key={index}
                     onClick={() => setCurrentSlide(index)}
                     className={`w-2 h-2 rounded-full transition-all ${index === currentSlide
-                        ? "w-8 bg-primary"
-                        : "bg-white bg-opacity-50 hover:bg-opacity-75"
+                      ? "w-8 bg-primary"
+                      : "bg-white bg-opacity-50 hover:bg-opacity-75"
                       }`}
                   />
                 ))}
@@ -504,52 +496,6 @@ const FootWear = () => {
             </div>
           </div>
 
-          {/* Outfit Combinations Section */}
-          {/* <div className="max-w-7xl mx-auto px-4 py-6">
-            <h2 className="text-2xl font-bold text-white mb-6">
-              Trending Combinations
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {outfitCombinations.map((outfit) => (
-                <motion.div
-                  key={outfit.id}
-                  className="bg-[#4b447b] bg-opacity-5 backdrop-blur-sm rounded-2xl overflow-hidden group"
-                  whileHover={{ y: -5, transition: { duration: 0.2 } }}
-                  onClick={()=> toast.info('Feature Coming Soon 🔜 ...')}
-                >
-                  <div className="relative">
-                    <img
-                      src={outfit.image}
-                      alt={outfit.name}
-                      className="w-full h-60 object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-60"></div>
-                    <div className="absolute bottom-0 left-0 right-0 p-4">
-                      <h3 className="text-lg font-bold text-white">
-                        {outfit.name}
-                      </h3>
-                    </div>
-                  </div>
-                  <div className="p-4">
-                    <ul className="space-y-1">
-                      {outfit.items.map((item, index) => (
-                        <li
-                          key={index}
-                          className="text-gray-300 text-sm flex items-center"
-                        >
-                          <span className="w-1 h-1 bg-primary rounded-full mr-2"></span>
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                    <button className="w-full mt-4 bg-black bg-opacity-10 hover:bg-primary text-white py-2 rounded-lg transition-colors">
-                      Shop This Look
-                    </button>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div> */}
 
           {/* Main Content */}
           <div className="max-w-7xl mx-auto px-4 py-6">
@@ -582,21 +528,28 @@ const FootWear = () => {
                       <Filter className="h-5 w-5 mr-2 text-primary" />
                       Categories
                     </h2>
+                    <button
+                      onClick={clearFilters}
+                      className="cursor-pointer flex items-center gap-2 px-4 py-2 mb-4 rounded-lg bg-red-400 hover:bg-red-600 text-white font-semibold shadow-md transition-all"
+                    >
+                      <X className="h-5 w-5 " />
+                      Clear Filters
+                    </button>
                     <ul className="space-y-2">
                       {categories.map((category) => (
                         <li key={category.id}>
                           <button
                             onClick={() => setActiveCategory(category.name)}
                             className={`w-full flex justify-between items-center py-2.5 px-4 rounded-xl transition-all ${activeCategory === category.name
-                                ? "bg-primary text-white font-medium"
-                                : "text-white hover:bg-gray-700 hover:bg-opacity-10"
+                              ? "bg-primary text-white font-medium"
+                              : "text-white hover:bg-gray-700 hover:bg-opacity-10"
                               }`}
                           >
                             <span>{category.name}</span>
                             <span
                               className={`text-sm px-2 py-0.5 rounded-full ${activeCategory === category.name
-                                  ? "bg-white bg-opacity-20"
-                                  : "bg-white bg-opacity-10"
+                                ? "bg-white bg-opacity-20"
+                                : "bg-white bg-opacity-10"
                                 }`}
                             >
                               {category.count}
@@ -614,13 +567,13 @@ const FootWear = () => {
                     </h2>
                     <div className="mb-4">
                       <div className="flex justify-between text-white text-sm mb-2">
-                        <span>${priceRange[0]}</span>
-                        <span>${priceRange[1]}</span>
+                        <span>₹{priceRange[0]}</span>
+                        <span>₹{priceRange[1]}</span>
                       </div>
                       <input
                         type="range"
                         min="0"
-                        max="200"
+                        max="3000"
                         value={priceRange[0]}
                         onChange={(e) =>
                           setPriceRange([
@@ -633,7 +586,7 @@ const FootWear = () => {
                       <input
                         type="range"
                         min="0"
-                        max="200"
+                        max="3000"
                         value={priceRange[1]}
                         onChange={(e) =>
                           setPriceRange([
@@ -661,7 +614,7 @@ const FootWear = () => {
                       <input
                         type="number"
                         min={priceRange[0]}
-                        max="200"
+                        max="3000"
                         value={priceRange[1]}
                         onChange={(e) =>
                           setPriceRange([
@@ -683,8 +636,8 @@ const FootWear = () => {
                           key={size}
                           onClick={() => toggleSize(size)}
                           className={`flex items-center justify-center w-12 h-12 rounded-lg text-black transition-colors ${selectedSizes.includes(size)
-                              ? "bg-primary"
-                              : "bg-white bg-opacity-10 hover:bg-white hover:bg-opacity-20"
+                            ? "bg-primary"
+                            : "bg-white bg-opacity-10 hover:bg-white hover:bg-opacity-20"
                             }`}
                         >
                           {size}
@@ -746,8 +699,8 @@ const FootWear = () => {
                               <Star
                                 key={index}
                                 className={`h-4 w-4 ${index < rating
-                                    ? "text-yellow-400"
-                                    : "text-gray-500"
+                                  ? "text-yellow-400"
+                                  : "text-gray-500"
                                   }`}
                                 fill={index < rating ? "#FACC15" : "none"}
                               />
@@ -773,10 +726,11 @@ const FootWear = () => {
               <AnimatePresence>
                 {showMobileFilters && (
                   <motion.div
-                    className="fixed inset-0 bg-black bg-opacity-50 z-50 md:hidden"
+                    className="fixed inset-0 backdrop-blur bg-opacity-50 z-50 md:hidden"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
+                    onClick={() => setShowMobileFilters(false)}
                   >
                     <motion.div
                       className="absolute top-0 right-0 h-full w-4/5 max-w-sm overflow-y-auto"
@@ -785,6 +739,7 @@ const FootWear = () => {
                       animate={{ x: 0 }}
                       exit={{ x: "100%" }}
                       transition={{ type: "tween" }}
+                      onClick={(e) => e.stopPropagation()}
                     >
                       <div className="p-5">
                         <div className="flex justify-between items-center mb-6">
@@ -799,6 +754,14 @@ const FootWear = () => {
                           </button>
                         </div>
 
+                        <button
+                          onClick={clearFilters}
+                          className="cursor-pointer flex items-center gap-2 px-4 py-2 mb-4 rounded-lg bg-red-400 hover:bg-red-600 text-white font-semibold shadow-md transition-all"
+                        >
+                          <X className="h-5 w-5 " />
+                          Clear Filters
+                        </button>
+
                         {/* Categories for Mobile */}
                         <div className="bg-[#4b447b] bg-opacity-5 backdrop-blur-sm rounded-2xl p-4 mb-6">
                           <h2 className="text-lg font-bold text-white mb-3">
@@ -812,15 +775,15 @@ const FootWear = () => {
                                     setActiveCategory(category.name);
                                   }}
                                   className={`w-full flex justify-between items-center py-2 px-3 rounded-xl transition-all ${activeCategory === category.name
-                                      ? "bg-primary text-white font-medium"
-                                      : "text-white hover:bg-white hover:bg-opacity-10"
+                                    ? "bg-primary text-white font-medium"
+                                    : "text-white hover:bg-white hover:bg-opacity-10"
                                     }`}
                                 >
                                   <span>{category.name}</span>
                                   <span
                                     className={`text-sm px-2 py-0.5 rounded-full ${activeCategory === category.name
-                                        ? "bg-white bg-opacity-20"
-                                        : "bg-white bg-opacity-10"
+                                      ? "bg-white bg-opacity-20"
+                                      : "bg-white bg-opacity-10"
                                       }`}
                                   >
                                     {category.count}
@@ -838,13 +801,13 @@ const FootWear = () => {
                           </h2>
                           <div className="mb-4">
                             <div className="flex justify-between text-white text-sm mb-2">
-                              <span>${priceRange[0]}</span>
-                              <span>${priceRange[1]}</span>
+                              <span>₹{priceRange[0]}</span>
+                              <span>₹{priceRange[1]}</span>
                             </div>
                             <input
                               type="range"
                               min="0"
-                              max="200"
+                              max="3000"
                               value={priceRange[0]}
                               onChange={(e) =>
                                 setPriceRange([
@@ -857,7 +820,7 @@ const FootWear = () => {
                             <input
                               type="range"
                               min="0"
-                              max="200"
+                              max="3000"
                               value={priceRange[1]}
                               onChange={(e) =>
                                 setPriceRange([
@@ -881,8 +844,8 @@ const FootWear = () => {
                                 key={size}
                                 onClick={() => toggleSize(size)}
                                 className={`flex items-center justify-center w-12 h-12 rounded-lg text-white transition-colors ${selectedSizes.includes(size)
-                                    ? "bg-primary text-white"
-                                    : "bg-gray-500 bg-opacity-10 hover:bg-white hover:bg-opacity-20"
+                                  ? "bg-primary text-white"
+                                  : "bg-gray-500 bg-opacity-10 hover:bg-white hover:bg-opacity-20"
                                   }`}
                               >
                                 {size}
@@ -944,8 +907,8 @@ const FootWear = () => {
                                     <Star
                                       key={index}
                                       className={`h-4 w-4 ${index < rating
-                                          ? "text-yellow-400"
-                                          : "text-gray-500"
+                                        ? "text-yellow-400"
+                                        : "text-gray-500"
                                         }`}
                                       fill={index < rating ? "#FACC15" : "none"}
                                     />
@@ -973,147 +936,165 @@ const FootWear = () => {
               {/* Product Grid */}
               <div className="flex-1">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredProducts.map((product) => (
+                  {filteredProducts.length === 0 ? (
                     <motion.div
-                      key={product?.uid}
-                      className="bg-gray-700 bg-opacity-5 backdrop-blur-sm rounded-2xl overflow-hidden group"
-                      whileHover={{ y: -5, transition: { duration: 0.2 } }}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5 }}
+                      className="col-span-full flex items-center justify-center py-20"
                     >
-                      <div className="relative">
-                        <Link to={`/productshow/${product?._id}`}>
-                          <img
-                            src={product?.img}
-                            alt={product?.name}
-                            className="w-full h-[350px] object-cover"
-                          />
-                          {product.discount > 0 && (
-                            <div className="absolute top-3 left-3 bg-primary text-white text-xs font-bold px-2 py-1 rounded-full">
-                              {product.discount}% OFF
-                            </div>
-                          )}
-                          {product.new && (
-                            <div className="absolute top-3 right-3 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                              NEW
-                            </div>
-                          )}
-
-                          {/* Heart Icon Button */}
-                          <div className="absolute bottom-2 right-3 z-20">
-                            <button
-                              onClick={(e) => {
-                                e.preventDefault();
-                                handleWishlist(product);
-                              }}
-                              className="hover:cursor-pointer bg-gray-100 bg-opacity-50 hover:bg-opacity-80 p-2 rounded-full shadow-md transition-colors"
-                            >
-                              {wishlist[product._id] ? (
-                                <FaHeart className="text-red-500 w-5 h-5" />
-                              ) : (
-                                <FaRegHeart className="text-gray-400 w-5 h-5" />
-                              )}
-                            </button>
-                          </div>
-
-                          {/* HeartIcon button Ends here.. */}
-
-                          <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-60"></div>
-                          <div className="absolute bottom-0 left-0 right-0 p-4">
-                            <h3 className="text-lg font-bold text-white">
-                              {product.name}
-                            </h3>
-                            <div className="flex items-center mt-2">
-                              <div className="flex text-yellow-400 mr-1">
-                                {Array.from({ length: 5 }).map((_, index) => (
-                                  <Star
-                                    key={index}
-                                    className={`h-4 w-4 ${index < product.rating
-                                        ? "text-yellow-400"
-                                        : "text-gray-600"
-                                      }`}
-                                    fill={
-                                      index < product.rating
-                                        ? "#FACC15"
-                                        : "none"
-                                    }
-                                  />
-                                ))}
-                              </div>
-                              <span className="text-white text-sm">
-                                ({product.reviewCount})
-                              </span>
-                            </div>
-                            <div className="flex items-center justify-between mt-2">
-                              <span className="text-white text-lg font-bold">
-                                ₹{product.price.toFixed(2)}
-                              </span>
-                              {product.originalPrice && (
-                                <span className="text-gray-400 text-sm line-through">
-                                  ${product.originalPrice.toFixed(2)}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </Link>
-                      </div>
-                      <div className="p-4">
-                        {/* Size dropdown Starts here */}
-                        <div className="relative mb-4">
-                          <button
-                            onClick={() => {
-                              toggleDropdown(product?._id);
-                            }}
-                            className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 flex items-center justify-between hover:bg-gray-100 hover:cursor-pointer"
-                          >
-                            <span>
-                              Size:{" "}
-                              {selectedSize[product?._id]?.size || "Select"}
-                            </span>
-                            {dropdownOpen === product?._id ? (
-                              <ChevronDown className="h-4 w-4" />
-                            ) : (
-                              <ChevronUp className="h-4 w-4" />
-                            )}
-                          </button>
-
-                          {/* Dropdown opens UPWARD now */}
-                          {dropdownOpen === product?._id && (
-                            <div className="absolute bottom-full mb-2 bg-slate-900 border text-white border-gray-300 rounded-md shadow-lg w-full max-h-48 overflow-y-auto z-10">
-                              {product?.sizes.map((size) => (
-                                <button
-                                  key={size}
-                                  onClick={() =>
-                                    handleSizeSelect(product?._id, size)
-                                  }
-                                  className="block w-full text-left px-4 py-2 text-sm hover:bg-slate-500 hover:text-white"
-                                >
-                                  {size}
-                                </button>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                        {/* Size dropdown Ends here */}
-
-                        <button
-                          className="hover:cursor-pointer w-full bg-[#4b447b] bg-opacity-10 hover:bg-primary text-white py-2 rounded-lg transition-colors"
-                          onClick={() =>
-                            handleAddtoCart(
-                              product?._id,
-                              selectedSize[product?._id]?.size
-                            )
-                          }
-                        >
-                          {isAddingToCart === product?._id ? (
-                            <span className="flex items-center justify-center">
-                              <RiLoader4Line className="w-6 h-6 animate-spin" />
-                            </span>
-                          ) : (
-                            "Add to Cart"
-                          )}
-                        </button>
+                      <div className="w-[400px] md:w-[500px] max-w-lg bg-white/10 backdrop-blur-md rounded-2xl px-10 py-14 shadow-lg text-center">
+                        <h2 className="text-2xl md:text-3xl font-bold text-gray-200 mb-4">
+                          No Product Found '{searchQuery}'
+                        </h2>
+                        <p className="text-gray-400 text-sm md:text-base leading-relaxed">
+                          Try adjusting your search or filter to find what you’re looking for.
+                        </p>
                       </div>
                     </motion.div>
-                  ))}
+                  ) : (
+                    filteredProducts.map((product) => (
+                      <motion.div
+                        key={product?.uid}
+                        className="bg-gray-700 bg-opacity-5 backdrop-blur-sm rounded-2xl overflow-hidden group"
+                        whileHover={{ y: -5, transition: { duration: 0.2 } }}
+                      >
+                        <div className="relative">
+                          <Link to={`/productshow/${product?._id}`}>
+                            <img
+                              src={product?.img}
+                              alt={product?.name}
+                              className="w-full h-[350px] object-cover"
+                            />
+                            {product.discount > 0 && (
+                              <div className="absolute top-3 left-3 bg-primary text-white text-xs font-bold px-2 py-1 rounded-full">
+                                {product.discount}% OFF
+                              </div>
+                            )}
+                            {product.new && (
+                              <div className="absolute top-3 right-3 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                                NEW
+                              </div>
+                            )}
+
+                            {/* Heart Icon Button */}
+                            <div className="absolute bottom-2 right-3 z-20">
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  handleWishlist(product);
+                                }}
+                                className="hover:cursor-pointer bg-gray-100 bg-opacity-50 hover:bg-opacity-80 p-2 rounded-full shadow-md transition-colors"
+                              >
+                                {wishlist[product._id] ? (
+                                  <FaHeart className="text-red-500 w-5 h-5" />
+                                ) : (
+                                  <FaRegHeart className="text-gray-400 w-5 h-5" />
+                                )}
+                              </button>
+                            </div>
+
+                            {/* HeartIcon button Ends here.. */}
+
+                            <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-60"></div>
+                            <div className="absolute bottom-0 left-0 right-0 p-4">
+                              <h3 className="text-lg font-bold text-white">
+                                {product.name}
+                              </h3>
+                              <div className="flex items-center mt-2">
+                                <div className="flex text-yellow-400 mr-1">
+                                  {Array.from({ length: 5 }).map((_, index) => (
+                                    <Star
+                                      key={index}
+                                      className={`h-4 w-4 ${index < product.rating
+                                        ? "text-yellow-400"
+                                        : "text-gray-600"
+                                        }`}
+                                      fill={
+                                        index < product.rating
+                                          ? "#FACC15"
+                                          : "none"
+                                      }
+                                    />
+                                  ))}
+                                </div>
+                                <span className="text-white text-sm">
+                                  ({product.reviewCount})
+                                </span>
+                              </div>
+                              <div className="flex items-center justify-between mt-2">
+                                <span className="text-white text-lg font-bold">
+                                  ₹{product.price.toFixed(2)}
+                                </span>
+                                {product.originalPrice && (
+                                  <span className="text-gray-400 text-sm line-through">
+                                    ${product.originalPrice.toFixed(2)}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </Link>
+                        </div>
+                        <div className="p-4">
+                          {/* Size dropdown Starts here */}
+                          <div className="relative mb-4">
+                            <button
+                              onClick={() => {
+                                toggleDropdown(product?._id);
+                              }}
+                              className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 flex items-center justify-between hover:bg-gray-100 hover:cursor-pointer"
+                            >
+                              <span>
+                                Size:{" "}
+                                {selectedSize[product?._id]?.size || "Select"}
+                              </span>
+                              {dropdownOpen === product?._id ? (
+                                <ChevronDown className="h-4 w-4" />
+                              ) : (
+                                <ChevronUp className="h-4 w-4" />
+                              )}
+                            </button>
+
+                            {/* Dropdown opens UPWARD now */}
+                            {dropdownOpen === product?._id && (
+                              <div className="absolute bottom-full mb-2 bg-slate-900 border text-white border-gray-300 rounded-md shadow-lg w-full max-h-48 overflow-y-auto z-10">
+                                {product?.sizes.map((size) => (
+                                  <button
+                                    key={size}
+                                    onClick={() =>
+                                      handleSizeSelect(product?._id, size)
+                                    }
+                                    className="block w-full text-left px-4 py-2 text-sm hover:bg-slate-500 hover:text-white"
+                                  >
+                                    {size}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                          {/* Size dropdown Ends here */}
+
+                          <button
+                            className="hover:cursor-pointer w-full bg-[#4b447b] bg-opacity-10 hover:bg-primary text-white py-2 rounded-lg transition-colors"
+                            onClick={() =>
+                              handleAddtoCart(
+                                product?._id,
+                                selectedSize[product?._id]?.size
+                              )
+                            }
+                          >
+                            {isAddingToCart === product?._id ? (
+                              <span className="flex items-center justify-center">
+                                <RiLoader4Line className="w-6 h-6 animate-spin" />
+                              </span>
+                            ) : (
+                              "Add to Cart"
+                            )}
+                          </button>
+                        </div>
+                      </motion.div>
+                    ))
+                  )}
                 </div>
               </div>
             </div>
