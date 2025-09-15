@@ -5,7 +5,7 @@ import { GrGoogle } from "react-icons/gr";
 import { FaGithub } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { userAuthStore } from "../store/authStore.js";
-import {toast} from "sonner"
+import { toast } from "sonner"
 import "../stylesheets/custom.css"
 
 const Login = () => {
@@ -123,7 +123,7 @@ const Login = () => {
                     className="input input-bordered w-full hover:shadow-md transition-shadow"
                     value={formData.email}
                     onChange={handleChange}
-                    
+
                   />
                 </div>
               </div>
@@ -140,13 +140,13 @@ const Login = () => {
                     className="input input-bordered w-full hover:shadow-md transition-shadow"
                     value={formData.password}
                     onChange={handleChange}
-                    
+
                   />
                 </div>
                 <div className="flex justify-center mt-3">
                   <a
-                    href="#"
                     className="label-text-alt link link-hover text-primary"
+                    onClick={() => toast.info("Feature Coming Soon 🔜 ...")}
                   >
                     Forgot password?
                   </a>
@@ -177,17 +177,19 @@ const Login = () => {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 className="btn btn-outline gap-2"
+                onClick={() => toast.info("Feature Coming Soon 🔜 ...")}
               >
                 <GrGoogle size={20} />
-                Continue with GrGoogle
+                Continue with Google
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 className="btn btn-outline gap-2"
+                onClick={() => toast.info("Feature Coming Soon 🔜 ...")}
               >
                 <FaGithub size={20} />
-                Continue with FaGithub
+                Continue with Github
               </motion.button>
             </div>
 
