@@ -120,19 +120,14 @@ router.post("/logout", async (req, res) => {
   }
 });
 
+// re-structure the logic
 router.put("/saveChange", protectedRoute, async (req, res) => {
   const { username, email, address, contact } = req.body;
 
   try {
-    // Find the user by email
-    const loggingInUser = await User.findOne({ email });
-    if (!loggingInUser) {
-      return res.status(400).json({ message: "Invalid User" });
-    }
-
-    // Update user info
+    // Use the ID from the verified token
     const updatedUser = await User.findByIdAndUpdate(
-      loggingInUser._id,
+      req.user._id,
       {
         $set: {
           username,
@@ -141,8 +136,12 @@ router.put("/saveChange", protectedRoute, async (req, res) => {
           contact,
         },
       },
-      { new: true } // ✅ Correctly placed outside $set
+      { new: true } // return updated doc
     );
+
+    if (!updatedUser) {
+      return res.status(400).json({ message: "User not found" });
+    }
 
     res.status(200).json(updatedUser);
   } catch (error) {
