@@ -185,8 +185,7 @@ const App = () => {
           }
         />
       </Routes>
-      <Toaster position="top-left" />
-      {/*  */}
+      <Toaster position="top-right" />
     </div>
   );
 };
