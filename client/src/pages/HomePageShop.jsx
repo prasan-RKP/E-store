@@ -134,27 +134,27 @@ const HomePageShop = () => {
 
   const featuredProducts = [
     {
-      name: "Premium Cotton T-Shirt",
-      price: "₹29.99",
-      image: "/feature/shirt1.jpg",
+      name: "Classic Denim jacket",
+      price: "₹129.99",
+      image: "https://res.cloudinary.com/dlkmhoueb/image/upload/v1745044225/ecom_store/menCloth/ad8pj9s8iizirjpx2p9v.jpg",
       discount: "20%",
       join: "/men-clothes"
     },
     {
-      name: "Designer Jeans", price: "₹89.99", image: "/feature/wm1.jpg",
+      name: "Black Designer Jeans", price: "₹89.99", image: "https://res.cloudinary.com/dlkmhoueb/image/upload/v1745211908/ecom_store/womenCloth/vtfyxf6beww6xjpfxe6n.jpg",
       join: "/women-clothes"
     },
     {
-      name: "Leather Crossbody Bag",
+      name: "Off-White Black Mask",
       price: "₹119.99",
-      image: "/feature/gucci1.jpg",
+      image: "https://res.cloudinary.com/dlkmhoueb/image/upload/v1744872119/ecom_store/accessories/fmz7f9bfqkmkaczbzp7p.jpg",
       label: "NEW",
       join: "/accessories"
     },
     {
-      name: "Classic Sneakers",
+      name: "Gym Hike/Casual Shoe",
       price: "₹69.99",
-      image: "/feature/shoe.jpg",
+      image: "https://res.cloudinary.com/dlkmhoueb/image/upload/v1745644562/ecom_store/footwear/e6otgthvbzlfl6cgmgxc.jpg",
       join: "/footwears"
     },
   ];
