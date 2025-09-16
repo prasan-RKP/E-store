@@ -34,6 +34,7 @@ import {
   Loader2,
   Globe,
   HeartCrack,
+  Mail,
 } from "lucide-react";
 import { userAuthStore } from "../store/authStore.js";
 import { GoPackage } from "react-icons/go";
@@ -119,7 +120,7 @@ const ProfilePage = () => {
   }, [verifiedUser?.wishlist])
 
 
-  console.log("allItems Orgords", orgOrders)
+  //console.log("allItems Orgords", orgOrders)
 
 
   const [profileInfo, setProfileInfo] = useState({
@@ -296,7 +297,7 @@ const ProfilePage = () => {
     //toast.success("Product moved to Cart ✅");
   };
 
-  console.log("verif", verifiedUser);
+  //console.log("verif", verifiedUser);
 
   //status Styles for coloring 
   const getStatusStyles = (status) => {
@@ -324,7 +325,7 @@ const ProfilePage = () => {
             <label className="text-sm text-gray-300">Name</label>
             <input
               type="text"
-              value={profileInfo.username}
+              value={profileInfo?.username}
               onChange={(e) =>
                 setProfileInfo({ ...profileInfo, username: e.target.value })
               }
@@ -336,7 +337,7 @@ const ProfilePage = () => {
             <label className="text-sm text-gray-300">Email</label>
             <input
               type="email"
-              value={profileInfo.email}
+              value={profileInfo?.email}
               onChange={(e) =>
                 setProfileInfo({ ...profileInfo, email: e.target.value })
               }
@@ -349,7 +350,7 @@ const ProfilePage = () => {
             <label className="text-sm text-gray-300">Contact</label>
             <input
               type="tel"
-              value={profileInfo.contact}
+              value={profileInfo?.contact}
               onChange={(e) =>
                 setProfileInfo({ ...profileInfo, contact: e.target.value })
               }
@@ -374,7 +375,7 @@ const ProfilePage = () => {
             <button
               type="button"
               onClick={() => setIsEditing(false)}
-              className="btn btn-outline btn-sm text-gray-300"
+              className="btn btn-sm text-gray-300 bg-red-500"
             >
               Cancel
             </button>
@@ -404,7 +405,7 @@ const ProfilePage = () => {
           <div className="relative w-28 h-28">
             <img
               src={
-                verifiedUser.profilePic ||
+                verifiedUser?.profilePic ||
                 "https://img.freepik.com/premium-psd/contact-icon-illustration-isolated_23-2151903357.jpg?ga=GA1.1.609031703.1716957572&semt=ais_hybrid&w=740"
               }
               alt="Profile"
@@ -417,24 +418,25 @@ const ProfilePage = () => {
 
           <div className="flex-1">
             <h2 className="text-2xl font-bold text-white">
-              {verifiedUser.username || "john Doe"}
+              {verifiedUser?.username || "john Doe"}
             </h2>
-            <p className="text-gray-400">
-              {verifiedUser.email || "morgan@example.com"}
-            </p>
+            <div className="flex items-center gap-2 mt-1 text-gray-400 text-sm">
+              <Mail size={14} />
+              <span>{verifiedUser?.email || "morgan@example.com"}</span>
+            </div>
             <div className="flex items-center gap-2 mt-1 text-gray-400 text-sm">
               <Phone size={14} />
-              <span>{verifiedUser.contact || "+91 998*******"}</span>
+              <span>{verifiedUser?.contact || "+91 998*******"}</span>
             </div>
             <div className="flex items-center gap-2 mt-1 text-gray-400 text-sm">
               <MapPin size={14} />
               <span>
-                {verifiedUser.address || "Google, AB-21, sec-unknown"}
+                {verifiedUser?.address || "Google, AB-21, sec-unknown"}
               </span>
             </div>
             <p className="text-gray-400 text-sm mt-1">
-              👤 Member since{" "}
-              {new Date(verifiedUser.createdAt).toLocaleString("default", {
+              👤 Joined On{" "}
+              {new Date(verifiedUser?.createdAt).toLocaleString("default", {
                 month: "long",
                 year: "numeric",
               })}
