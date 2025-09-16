@@ -385,6 +385,14 @@ const AddToCart = () => {
                 transition={{ duration: 0.5 }}
               >
                 <div className="bg-white rounded-2xl shadow-lg overflow-auto">
+
+                  {/* CartItems heading to show On mobile */}
+                  <div className="block lg:hidden mt-6 mb-6 text-center">
+                    <h2 className="text-xl font-bold text-gray-800 border-t border-gray-200 pt-4">
+                      Your Cart Items 🛒 
+                    </h2>
+                  </div>
+
                   <div className="p-4 sm:p-6 border-b border-gray-200 flex items-center justify-between">
                     <h2 className="text-lg sm:text-xl font-bold text-gray-800">
                       Shopping Cart ({cartItems.length} items)
@@ -1089,6 +1097,7 @@ const AddToCart = () => {
                       <span>Secure checkout powered by Stripe</span>
                     </div> */}
                   </div>
+
                 </div>
               </motion.div>
             </div>
@@ -1100,3 +1109,5 @@ const AddToCart = () => {
 };
 
 export default AddToCart;
+
+{/* <div class="mt-6 space-y-3 text-sm text-gray-500"></div> */ }
