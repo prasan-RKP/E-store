@@ -30,6 +30,7 @@ import { toast } from "sonner";
 import { FaArrowAltCircleLeft, FaBackward } from "react-icons/fa";
 import { HiHome } from "react-icons/hi";
 import { MdHighlight } from "react-icons/md";
+import { Link } from "react-router-dom";
 
 const OrderSummary = ({
   subtotal,
@@ -510,24 +511,22 @@ const SimplifiedCheckout = () => {
                 <span>4.9/5 Rating</span>
               </div>
               {/* NavItems added here */}
-              <button
-                onClick={toggleTheme}
+              <Link to={"/addtocart"}
                 className={`p-3 rounded-xl transition-all duration-200 ${isDark
                   ? "bg-gray-800 hover:bg-gray-700 text-green-400"
                   : "bg-gray-100 hover:bg-gray-200 text-gray-600"
                   } transform hover:scale-105 active:scale-95`}
               >
                 <FaArrowAltCircleLeft className="text-lg" />
-              </button>
-              <button
-                onClick={toggleTheme}
+              </Link>
+              <Link to={"/"}
                 className={`p-3 rounded-xl transition-all duration-200 ${isDark
                   ? "bg-gray-800 hover:bg-gray-700 text-violet-500"
                   : "bg-gray-100 hover:bg-gray-200 text-gray-600"
                   } transform hover:scale-105 active:scale-95`}
               >
                 <HiHome className="text-lg" />
-              </button>
+              </Link>
               <button
                 onClick={toggleTheme}
                 className={`p-3 rounded-xl transition-all duration-200 ${isDark
