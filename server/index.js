@@ -10,7 +10,7 @@ import mongoose from "mongoose";
 dotenv.config();
 //MONGO_URI="mongodb+srv://Prasan12:PlafhhELkA2ZPeOy@devtest.33xkmhn.mongodb.net/EcomDB?retryWrites=true&w=majority&appName=DevTest"
 
-const PORT = process.env.PORT || 3002; // Fallback to 5000 if PORT isn't set in .env
+const PORT = process.env.PORT || 3002; // Fallback to 3002 if PORT isn't set in .env
 
 const app = express();
 
@@ -25,7 +25,7 @@ app.use(
   })
 );
 
-const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/EcomDB";
+const MONGO_URI = process.env.MONGO_URI;
 
 // MongoDB Connection
 mongoose

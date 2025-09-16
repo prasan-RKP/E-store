@@ -23,7 +23,7 @@ export const createToken = (userId, res) => {
       secure: process.env.NODE_ENV !== "development", // Only send cookie over HTTPS in production
     });
 
-    // For mobile testing...
+  //  // For mobile testing...
     // res.cookie("jwt", token, {
     //   maxAge: 7 * 24 * 60 * 60 * 1000,
     //   httpOnly: true,
