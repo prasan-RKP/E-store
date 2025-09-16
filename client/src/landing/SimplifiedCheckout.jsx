@@ -27,10 +27,15 @@ import { TbLoader3 } from "react-icons/tb";
 import SuccessModal from "./segement/SuccessModal.jsx";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from "sonner";
+import { FaArrowAltCircleLeft, FaBackward } from "react-icons/fa";
+import { HiHome } from "react-icons/hi";
+import { MdHighlight } from "react-icons/md";
 
 const OrderSummary = ({
   subtotal,
   shipping,
+  shippingAmount,
+  handlingFee,
   tax,
   discount,
   total,
@@ -66,8 +71,12 @@ const OrderSummary = ({
             <span className="font-semibold">₹{subtotal.toFixed(2)}</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-gray-600 dark:text-gray-400">Shipping</span>
-            <span className="font-semibold">₹{shipping.toFixed(2)}</span>
+            <span className="text-gray-600 dark:text-gray-400">Handling Fee</span>
+            <span className="font-semibold">₹{handlingFee.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-gray-600 dark:text-gray-400">Shipping Fee</span>
+            <span className="font-semibold">{shippingAmount === 0 ? "Free" : `₹${shippingAmount.toFixed(2)}`}</span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-gray-600 dark:text-gray-400">Tax</span>
@@ -308,6 +317,8 @@ const SimplifiedCheckout = () => {
   const tax = subtotal * 0.015;
   const discount = promoCode === "SAVE10" ? subtotal * 0.1 : 0;
   const total = Number(subtotal + shipping + tax - discount);
+  const handlingCharge = total > 1000 ? 6 : 10;
+  const shippingCharge  = total > 1000 ? 0 : 7.99;
 
   const now = new Date();
   const year = now.getFullYear();                        // 2025
@@ -490,7 +501,6 @@ const SimplifiedCheckout = () => {
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                   Luxe
                 </h1>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Premium Shopping</p>
               </div>
             </motion.div>
 
@@ -499,6 +509,25 @@ const SimplifiedCheckout = () => {
                 <FiStar className="text-yellow-400" />
                 <span>4.9/5 Rating</span>
               </div>
+              {/* NavItems added here */}
+              <button
+                onClick={toggleTheme}
+                className={`p-3 rounded-xl transition-all duration-200 ${isDark
+                  ? "bg-gray-800 hover:bg-gray-700 text-green-400"
+                  : "bg-gray-100 hover:bg-gray-200 text-gray-600"
+                  } transform hover:scale-105 active:scale-95`}
+              >
+                <FaArrowAltCircleLeft className="text-lg" />
+              </button>
+              <button
+                onClick={toggleTheme}
+                className={`p-3 rounded-xl transition-all duration-200 ${isDark
+                  ? "bg-gray-800 hover:bg-gray-700 text-violet-500"
+                  : "bg-gray-100 hover:bg-gray-200 text-gray-600"
+                  } transform hover:scale-105 active:scale-95`}
+              >
+                <HiHome className="text-lg" />
+              </button>
               <button
                 onClick={toggleTheme}
                 className={`p-3 rounded-xl transition-all duration-200 ${isDark
@@ -506,8 +535,9 @@ const SimplifiedCheckout = () => {
                   : "bg-gray-100 hover:bg-gray-200 text-gray-600"
                   } transform hover:scale-105 active:scale-95`}
               >
-                {isDark ? <FiSun className="text-lg" /> : <FiMoon className="text-lg" />}
+                {isDark ? <MdHighlight className="text-lg" /> : <FiMoon className="text-lg" />}
               </button>
+              
             </div>
           </div>
         </div>
@@ -755,6 +785,8 @@ const SimplifiedCheckout = () => {
               <OrderSummary
                 subtotal={subtotal}
                 shipping={shipping}
+                handlingFee={handlingCharge}
+                shippingAmount={shippingCharge}
                 tax={tax}
                 discount={discount}
                 total={total}
