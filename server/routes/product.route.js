@@ -9,7 +9,6 @@ const router  = express.Router();
 
 router.get("/fetchAccess", async(req,res)=> {
 
-    //console.log("hitting accessory section");
     try {
         const prods = await Accessory.find();
         if(!prods) {return res.status(400).json({message: "Sorry it's Unable Fetch Now..."})};
@@ -21,7 +20,6 @@ router.get("/fetchAccess", async(req,res)=> {
 })
 
 router.get("/fetchManCloth", async(req, res)=> {
-    //console.log("Hitting mens section ");
     try {
         const prods = await Men.find();
         if(!prods) {return res.status(400).json({message: "Unable to Fetch Men's section"})};
@@ -34,7 +32,6 @@ router.get("/fetchManCloth", async(req, res)=> {
 });
 
 router.get("/fetchWomenCloth", async(req, res)=> {
-    //console.log("Hitting WomenClothing");
     try {
         const prods = await Women.find();
         if(!prods) return res.status(400).json({message: "Unable to get WomenSection"});
@@ -47,11 +44,9 @@ router.get("/fetchWomenCloth", async(req, res)=> {
 
 
 router.get("/fetchFootwear", async(req, res)=> {
-    //console.log("Hitting the Footwear section");
     try {
         const prods = await Footwear.find();
         if(!prods) return res.status(400).json({message: "Unable to Get Footwear section"});
-        //console.log('prods', prods);
         return res.status(200).json(prods);
         
     } catch (error) {

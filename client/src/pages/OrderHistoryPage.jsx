@@ -95,14 +95,14 @@ const OrderHistoryPage = () => {
   }, [orders]);
 
   //console.log("The updated orderLength", orderItemLength);
-  console.log("All flattened order items:", allOrderItems);
+  //console.log("All flattened order items:", allOrderItems);
 
   //feature:-  It will count the totalOrders (now counting individual items)
   useEffect(() => {
     setLength(allOrderItems.length);
   }, [allOrderItems]);
 
-  console.log("The order items length", length);
+ // console.log("The order items length", length);
 
   // feature:2 -> getStatusIcon()
   const getStatusIcon = (status) => {
@@ -223,7 +223,7 @@ const OrderHistoryPage = () => {
     return matchesSearch && matchesStatus;
   });
 
-  console.log("my filteredOrderItems are", filteredOrderItems);
+  //console.log("my filteredOrderItems are", filteredOrderItems);
 
   // Show loading skeleton while fetching
   if (isFetchingOrder) {

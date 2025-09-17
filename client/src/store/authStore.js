@@ -33,7 +33,6 @@ export const userAuthStore = create((set, get) => ({
   setCartTotal: (total) => set({ cartTotal: total }),
 
   checkAuthVerify: async () => {
-    //console.log("frontend value",get().verifiedUser );
     try {
       const res = await axiosInstance.get("/check");
       set({ verifiedUser: res.data });
@@ -85,7 +84,6 @@ export const userAuthStore = create((set, get) => ({
   },
 
   logout: async () => {
-    //console.log("logout called frontend 1")
     try {
       await axiosInstance.post("/logout");
       set({ authUser: null }); // Clear authUser and onlineUsers
@@ -121,14 +119,12 @@ export const userAuthStore = create((set, get) => ({
   },
 
   addCart: async (data) => {
-    // console.log(`my productId ${data.pid} myProductSize ${data.size} from authstore`);
     set({ isAddingToCart: true });
     try {
       const res = await axiosInstance.post("/addCartData", data);
       set({ verifiedUser: res.data });
       toast.success("Item added to cart ✅");
     } catch (error) {
-      //{error.response ? toast.error(error.response.data.message) : console.log("Something error occured")}
       if (error.response) {
         toast.error(error.response.data.message);
       } else {

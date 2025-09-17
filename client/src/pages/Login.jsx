@@ -18,7 +18,6 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    //console.log("Login attempt:", formData);
     if (validForm() === true) {
       logIn(formData);
     }

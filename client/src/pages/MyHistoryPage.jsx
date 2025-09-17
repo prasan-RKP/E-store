@@ -166,7 +166,7 @@ const OrderHistoryPage = () => {
     return matchesSearch && matchesStatus;
   });
 
-  console.log("Filtered Orders:", filteredOrders);
+
 
   // feature: remove the 'cancelOrder' from the 'processing & Shipping stage and store into the 'cancel' segment.
   // old code (The error was:- I checked your code and identified the cause of the duplicate "Cancelled" section issue:)
@@ -294,7 +294,6 @@ const OrderHistoryPage = () => {
     setOrders(order);
   })
 
-  console.log("The orders", orders);
 
 
 

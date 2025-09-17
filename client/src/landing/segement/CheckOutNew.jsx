@@ -58,7 +58,7 @@ const mockStore = {
   isSavingShippingAddress2: false,
   verifiedUser: mockUser,
   isCheckingOut: false,
-  checkout: () => console.log("Checkout called")
+  checkout: () =>alert("ChekOut called") //console.log("Checkout called")
 };
 
 // Success Modal Component

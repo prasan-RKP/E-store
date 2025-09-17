@@ -89,7 +89,7 @@ const MyCheckOut = () => {
 
   ///set the total price
   //let myCartTotal = userAuthStore((state)=> state.cartTotal)
-  console.log("The total cartPrice", myCartTotal);
+
   useEffect(() => {
     setTotalPrice(myCartTotal);
   }, [myCartTotal]);
@@ -138,7 +138,6 @@ const MyCheckOut = () => {
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    //console.log("Form submitted with data:", formData);
     nextStep();
   };
 
@@ -165,7 +164,6 @@ const MyCheckOut = () => {
     visible: { opacity: 1, x: 0, transition: { duration: 0.4 } },
   };
 
-  console.log("myFormData", formData);
 
   return (
     <>

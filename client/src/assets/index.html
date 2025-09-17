@@ -292,26 +292,26 @@
 
       //Q.16) find occurance of a character in a string // pending
 
-      let arr = [1, 2, 4, 2, 5, 6, 7, 8, 5];
-      let store = {};
-      let duplicate = null;
+      // let arr = [1, 2, 4, 2, 5, 6, 7, 8, 5];
+      // let store = {};
+      // let duplicate = null;
 
-      function duplicateOccur(arr) {
-        let temp
-        for (let i = 0; i < arr.length; i++) {
-           temp = arr[i];
+      // function duplicateOccur(arr) {
+      //   let temp
+      //   for (let i = 0; i < arr.length; i++) {
+      //      temp = arr[i];
 
-          store[temp] = (store[temp] || 0) + 1;
+      //     store[temp] = (store[temp] || 0) + 1;
 
-          if(store[temp] > 1){
-            duplicate = temp;
-          }
-        }
+      //     if(store[temp] > 1){
+      //       duplicate = temp;
+      //     }
+      //   }
 
-        return duplicate ? {duplicate: duplicate, occurance: store[duplicate]} : "No DUplicate Found"
-      }
+      //   return duplicate ? {duplicate: duplicate, occurance: store[duplicate]} : "No DUplicate Found"
+      // }
 
-      console.log(duplicateOccur(arr));
+      //console.log(duplicateOccur(arr));
     </script>
   </body>
 </html>

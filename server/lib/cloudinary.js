@@ -38,7 +38,6 @@ const uploadImages = async () => {
         folder: 'ecom_store/slider', // Cloudinary folder
       });
 
-      //console.log(`✅ Uploaded: ${file}`);
       uploadedData.push({ name: file, url: result.secure_url });
     } catch (err) {
       console.error(`❌ Failed to upload ${file}:`, err.message || err);
@@ -50,7 +49,6 @@ const uploadImages = async () => {
   const jsFileContent = `export const manImages = ${JSON.stringify(uploadedData, null, 2)};`;
   const outputPath = path.resolve(process.cwd(), 'assets/slider.js');
   fs.writeFileSync(outputPath, jsFileContent);
-  //console.log(`🎉 All done! Data saved to ${outputPath}`);
   
 };
 

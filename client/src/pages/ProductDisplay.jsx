@@ -138,7 +138,7 @@ const ProductDisplay = () => {
     setIsAddingProdId(id);
     await addCart({ productId: id, size: size });
     setIsAddingProdId(null);
-    console.log(`prodId from ProdDisplay:${id} & prodSize:${size}`);
+   // console.log(`prodId from ProdDisplay:${id} & prodSize:${size}`);
   };
 
   // Upload review functionality
@@ -249,7 +249,7 @@ const ProductDisplay = () => {
   };
 
 
-  console.log("AuthProdDetails", authProdDetail);
+  //console.log("AuthProdDetails", authProdDetail);
 
   // AddToWishList ❤️
   const handleAddToWishList = async (productId) => {
@@ -541,7 +541,6 @@ const ProductDisplay = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-          // onClick={()=> console.log(authProdDetail?.product?._id)}
           >
             ₹{authProdDetail?.product?.price}
           </motion.div>
@@ -551,7 +550,6 @@ const ProductDisplay = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
-            onClick={() => console.log(verifiedUser)}
           >
             {authProdDetail?.product?.desc}
           </motion.div>

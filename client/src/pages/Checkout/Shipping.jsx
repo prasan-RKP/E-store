@@ -23,7 +23,6 @@ const Shipping = ({nextStep, isDark}) => {
   // handle form submit
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    //console.log("Form submitted with data:", formData);
     nextStep();
   };
 

@@ -65,7 +65,6 @@ const ProfilePage = () => {
 
   const MotionLink = motion(Link);
 
-  // console.log('verifedUser', verifiedUser);
 
   const naviagte = useNavigate();
   const [allOrderItems, setAllOrderItems] = useState([]);
@@ -84,8 +83,6 @@ const ProfilePage = () => {
   const [orgOrders, setOrgOrders] = useState([]);
   const [wishLength, setWishLength] = useState('');
 
-
-  // console.log("VerifiedUser", verifiedUser)
 
   useEffect(() => {
     setCartCount(verifiedUser?.cart?.length);
@@ -119,8 +116,6 @@ const ProfilePage = () => {
     setWishLength(verifiedUser?.wishlist?.length);
   }, [verifiedUser?.wishlist])
 
-
-  //console.log("allItems Orgords", orgOrders)
 
 
   const [profileInfo, setProfileInfo] = useState({
@@ -277,7 +272,7 @@ const ProfilePage = () => {
       setWishItems(verifiedUser?.wishlist);
     }
   }, [verifiedUser?.wishlist]);
-  //console.log("WishItems", verifiedUser);
+
   // WishlIst Items from backend
 
 
@@ -290,14 +285,11 @@ const ProfilePage = () => {
 
   // Moving the productTo Cart
   const handleMoveToCart = async (id, size) => {
-    //console.log(`Getting the prodId:${id}, size:${size}`);
     setCartId(id);
     await moveToAddCart({ productId: id, size });
     setCartId(null);
     //toast.success("Product moved to Cart ✅");
   };
-
-  //console.log("verif", verifiedUser);
 
   //status Styles for coloring 
   const getStatusStyles = (status) => {

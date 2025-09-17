@@ -65,7 +65,6 @@ const App = () => {
     return <LuxeLoader />;
   }
 
-  //console.log("verify",verifiedUser);
 
   return (
     <div>

@@ -35,7 +35,7 @@ mongoose
 
     // Start the server after DB connection is successful
     app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
+      console.log(`Server is running`);
     });
   })
   .catch((err) => {

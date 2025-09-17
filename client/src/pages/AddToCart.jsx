@@ -78,7 +78,6 @@ const AddToCart = () => {
     setLength(orderItemLength || 0);
   }, [orderItemLength])
 
-  console.log("The orders length is", order)
 
   // Calculate total amount
   const subtotal = cartItems?.reduce(
@@ -90,7 +89,6 @@ const AddToCart = () => {
   const total = subtotal + shipping + tax;
 
 
-  console.log("CartItems", cartItems);
 
   // Check if device is mobile (keeping this for general mobile-specific logic if needed elsewhere)
   useEffect(() => {
@@ -289,7 +287,6 @@ const AddToCart = () => {
   // handleWishListItem
 
   const handleWishList = async (item) => {
-    console.log("Item ID", item);
     setWishlistLoading(prev => ({ ...prev, [item.productId]: true }));
     await fetchWishListProd({ pid: item.productId });
     setWishlistLoading(prev => ({ ...prev, [item.productId]: false }));

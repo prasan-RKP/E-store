@@ -112,7 +112,6 @@ const HomePageShop = () => {
     },
   ];
 
-  //console.log(heroSlides);
 
   // Auto slide functionality
 

@@ -178,7 +178,6 @@ const Checkout = () => {
   // Function to handle form submission
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    //console.log("Form submitted with data:", formData);
     nextStep();
   };
 

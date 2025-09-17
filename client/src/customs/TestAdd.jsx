@@ -361,7 +361,7 @@ const TestAdd = () => {
       ...prev,
       [product._id]: !prev[product._id],
     }));
-    console.log("The Footwear Size is", product?.size);
+    //console.log("The Footwear Size is", product?.size);
     // giving the value to backend
     setIsAddingToWishList(product._id);
     await fetchWishListProd({ pid: product._id });

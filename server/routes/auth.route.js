@@ -21,7 +21,6 @@ router.get("/check", protectedRoute, async (req, res) => {
 });
 
 router.post("/signup", async (req, res) => {
-  //console.log("Hey signup listening....");
 
   const {
     username,
@@ -33,8 +32,6 @@ router.post("/signup", async (req, res) => {
     profilePic = "",
   } = req.body;
 
-  //console.log(`username ${username}, email ${email}, contact ${contact}, password ${password}`);
-
   try {
     if (!username || !email || !contact || !password)
       return res.status(400).json({ message: "Please fill all credentials" });
@@ -44,7 +41,7 @@ router.post("/signup", async (req, res) => {
       return res.status(400).json({ message: "User already registered" });
 
     const hashPassword = await bcryptjs.hash(password, 10);
-    //console.log("Password hashed");
+  
 
     const newUser = new User({
       username,
@@ -59,7 +56,7 @@ router.post("/signup", async (req, res) => {
     createToken(newUser._id, res); // Ensure this function works properly
 
     await newUser.save();
-    //console.log("User saved successfully");
+
 
     return res.status(201).json({
       _id: newUser._id,
@@ -155,7 +152,6 @@ router.post("/addCartData", protectedRoute, async (req, res) => {
   const userId = req.user?.id;
   const { productId, size } = req.body;
 
-  //console.log(`UserId:${userId}, ProductId:${productId}, Size: ${size}`);
 
   try {
     const user = await User.findById(userId);
@@ -234,8 +230,7 @@ router.get("/showAddToCart", protectedRoute, async (req, res) => {
       })
     );
 
-    //console.log("Showing all addTOCart value", user);
-    //console.log("Fetching the bacjend showAddToCart");
+    
     res.status(200).json({ ...user.toObject(), cart: populatedCart });
   } catch (error) {
     console.log("Error in ShowAddToCart", error);
@@ -314,7 +309,7 @@ router.post("/decQuantity", protectedRoute, async (req, res) => {
     if (cartItem.quantity > 1) {
       cartItem.quantity -= 1;
     } else if (cartItem.quantity <= 1) {
-      //console.log('0 item hitted');
+      
       return res
         .status(400)
         .json({ message: "Product quantity cannot be less than 1" });
@@ -587,7 +582,7 @@ router.post("/postReview", protectedRoute, async (req, res) => {
 router.get("/fetchReview/:pid", protectedRoute, async (req, res) => {
   const { pid } = req.params;
 
-  //console.log("Pid", pid);
+  
 
   try {
     if (!pid) {
@@ -611,7 +606,6 @@ router.post("/addWishlistProd", protectedRoute, async (req, res) => {
   const { pid, size } = req.body;
   const productId = pid;
 
-  //  console.log("ProductId", pid);
 
   try {
     if (!productId) {
@@ -631,7 +625,6 @@ router.post("/addWishlistProd", protectedRoute, async (req, res) => {
     else if (await Footwear.findById(productId)) itemModel = "Footwear";
     else return res.status(400).json({ message: "Product not found" });
 
-    //console.log(`DEBUG Statement ItemModel:${itemModel} & size:${size}`);
 
     // Set default size if needed
     let finalSize = size;
@@ -663,7 +656,6 @@ router.post("/addWishlistProd", protectedRoute, async (req, res) => {
     user.wishlist.push(newWishlistItem);
     await user.save();
 
-    // console.log("DEBUg-2", user.wishlist);
     res.status(200).json(user);
   } catch (error) {
     console.error("Add to wishlist error:", error);
@@ -674,7 +666,6 @@ router.post("/addWishlistProd", protectedRoute, async (req, res) => {
 router.get("/showWishlist", protectedRoute, async (req, res) => {
   const userId = req.user?.id;
 
-  // console.log("API called by profile")
   try {
     const user = await User.findById(userId);
     if (!user) return res.status(500).json({ message: "User not Registered" });
@@ -898,7 +889,6 @@ router.post("/moveToCart", protectedRoute, async (req, res) => {
 // Remove all cart items
 router.post("/removeAllCartItem", protectedRoute, async (req, res) => {
   const userId = req.user?.id;
-  //console.log("calling the backend");
   try {
     const user = await User.findById(userId);
     if (!user) return res.status(400).json({ message: "User not Registered" });
@@ -910,8 +900,6 @@ router.post("/removeAllCartItem", protectedRoute, async (req, res) => {
     await user.save();
 
     // todo populate functionality will do it later
-
-    console.log("All cart items removed for user:", userId);
     res.status(200).json({
       message: "All cart items removed successfully",
       ...user.toObject(),
@@ -1204,8 +1192,6 @@ router.get("/checkout", protectedRoute, async (req, res) => {
       })
     );
 
-    //console.log("Showing all addTOCart value", user);
-    //console.log("Fetching the bacjend showAddToCart");
     res.status(200).json({ ...user.toObject(), cart: populatedCart });
   } catch (error) {
     console.log("Error in ShowAddToCart", error);

@@ -253,7 +253,6 @@ const SimplifiedCheckout = () => {
     fetchCart();
   }, [verifiedUser?.cart]);
 
-  console.log("The cartBackup is here", cartBackup);
 
 
   // BackUp useEffect
@@ -265,7 +264,7 @@ const SimplifiedCheckout = () => {
 
 
 
-  console.log("CartItems from parent", verifiedUser);
+  //console.log("CartItems from parent", verifiedUser);
 
   //console.log("Verified User from Parent:", verifiedUser);
 
@@ -298,7 +297,7 @@ const SimplifiedCheckout = () => {
     paymentMethod: "",
   });
 
-  console.log("FormData from Parent", formData);
+  //console.log("FormData from Parent", formData);
 
   const [shippingMethod, setShippingMethod] = useState("standard");
   const [promoCode, setPromoCode] = useState("");
@@ -349,7 +348,7 @@ const SimplifiedCheckout = () => {
   };
 
   const applyPromoCode = () => {
-    console.log("Applying promo code:", promoCode);
+    //console.log("Applying promo code:", promoCode);
   };
 
   const nextStep = () => {
@@ -425,7 +424,7 @@ const SimplifiedCheckout = () => {
   };
 
 
-  console.log("Checking the verofiedUser whole data", verifiedUser?.cart);
+  //console.log("Checking the verofiedUser whole data", verifiedUser?.cart);
 
   const handleSubmit = async () => {
     // STEP 1️⃣: Prepare data for BACKEND API

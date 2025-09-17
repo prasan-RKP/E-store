@@ -552,7 +552,7 @@ const SimplifiedCheckout = () => {
     };
 
     const applyPromoCode = () => {
-        console.log("Applying promo code:", promoCode);
+        //console.log("Applying promo code:", promoCode);
     };
 
     const nextStep = () => {
@@ -574,13 +574,13 @@ const SimplifiedCheckout = () => {
     };
 
     const navigateToHome = () => {
-        console.log("Navigating to home...");
+        //console.log("Navigating to home...");
         // Add your home navigation logic here
         setShowSuccessModal(false);
     };
 
     const navigateToOrders = () => {
-        console.log("Navigating to orders...");
+       // console.log("Navigating to orders...");
         // Add your orders navigation logic here
         setShowSuccessModal(false);
     };
@@ -593,7 +593,7 @@ const SimplifiedCheckout = () => {
             total,
         };
 
-        console.log("Order data:", orderData);
+       // console.log("Order data:", orderData);
 
         try {
             // Show success modal instead of alert
