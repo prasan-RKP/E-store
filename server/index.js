@@ -23,7 +23,7 @@ app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "http://localhost:5173", // update with your client URL when deploying
+    origin: "https://pkart-s4i4.onrender.com", // update with your client URL when deploying
     // origin: "http://192.168.29.238:5173", // for mobile testing
     credentials: true,
   })
