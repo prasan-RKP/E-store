@@ -24,6 +24,8 @@ import SimplifiedCheckout from "./landing/SimplifiedCheckout";
 import OrderHistoryPage from "./pages/OrderHistoryPage";
 import ProductDisplaySkeleton from "./skeletons/ProductDisplaySkeleton";
 import OrderListLoader from "./skeletons/OrderListSkeleton";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 const App = () => {
   const { verifiedUser, isCheckingVerified, checkAuthVerify } = userAuthStore();
@@ -49,6 +51,10 @@ const App = () => {
         <Route path="/land" element={<ModernEcommerceLanding />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/ord" element={<ProductDisplaySkeleton />} />
+
+        {/* Adding two fileds for 'forgot-password' feature */}
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* Order history */}
         <Route
