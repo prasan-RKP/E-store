@@ -143,12 +143,12 @@ const Login = () => {
                   />
                 </div>
                 <div className="flex justify-center mt-3">
-                  <a
+                  <Link 
+                  to={"/forgot-password"}
                     className="label-text-alt link link-hover text-primary"
-                    onClick={() => toast.info("Feature Coming Soon 🔜 ...")}
                   >
                     Forgot password?
-                  </a>
+                  </Link>
                 </div>
               </div>
 
