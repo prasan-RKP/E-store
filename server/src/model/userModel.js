@@ -171,6 +171,10 @@ const userSchema = new mongoose.Schema({
     },
   ],
 
+  // Adding two filed for 'forgot-password' feature
+    resetToken: { type: String, default: "" },
+    resetTokenExpiry: { type: Date, default: null },
+
   createdAt: {
     type: Date,
     default: Date.now,
