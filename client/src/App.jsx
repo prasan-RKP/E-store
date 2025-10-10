@@ -54,8 +54,7 @@ const App = () => {
 
         {/* Adding two fileds for 'forgot-password' feature */}
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
         {/* Order history */}
         <Route
           path="/showorder"
