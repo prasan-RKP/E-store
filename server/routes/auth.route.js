@@ -9,6 +9,7 @@ import Accessory from "../src/model/accessoryModel.js";
 import Footwear from "../src/model/FootwearModel.js";
 import Review from "../src/model/review.js";
 import Order from "../src/model/OrderPlace.js";
+import jwt from "jsonwebtoken";
 
 const router = express.Router();
 
@@ -21,7 +22,6 @@ router.get("/check", protectedRoute, async (req, res) => {
 });
 
 router.post("/signup", async (req, res) => {
-
   const {
     username,
     email,
@@ -41,7 +41,6 @@ router.post("/signup", async (req, res) => {
       return res.status(400).json({ message: "User already registered" });
 
     const hashPassword = await bcryptjs.hash(password, 10);
-  
 
     const newUser = new User({
       username,
@@ -56,7 +55,6 @@ router.post("/signup", async (req, res) => {
     createToken(newUser._id, res); // Ensure this function works properly
 
     await newUser.save();
-
 
     return res.status(201).json({
       _id: newUser._id,
@@ -152,7 +150,6 @@ router.post("/addCartData", protectedRoute, async (req, res) => {
   const userId = req.user?.id;
   const { productId, size } = req.body;
 
-
   try {
     const user = await User.findById(userId);
     if (!user) return res.status(400).json({ message: "User not Registered" });
@@ -179,9 +176,7 @@ router.post("/addCartData", protectedRoute, async (req, res) => {
 
     if (existingIndex !== -1) {
       //  user.cart[existingIndex].quantity += 1;
-      return res
-        .status(400)
-        .json({ message: "Product already in Cart 🛍️" });
+      return res.status(400).json({ message: "Product already in Cart 🛍️" });
     } else {
       user.cart.push({
         productId,
@@ -230,7 +225,6 @@ router.get("/showAddToCart", protectedRoute, async (req, res) => {
       })
     );
 
-    
     res.status(200).json({ ...user.toObject(), cart: populatedCart });
   } catch (error) {
     console.log("Error in ShowAddToCart", error);
@@ -309,7 +303,6 @@ router.post("/decQuantity", protectedRoute, async (req, res) => {
     if (cartItem.quantity > 1) {
       cartItem.quantity -= 1;
     } else if (cartItem.quantity <= 1) {
-      
       return res
         .status(400)
         .json({ message: "Product quantity cannot be less than 1" });
@@ -455,18 +448,16 @@ router.get("/prodDisplay/:pid", protectedRoute, async (req, res) => {
     // 👉 At the end, attach wishlist also
     const wishlistItems = user.wishlist || [];
 
-    return res.status(200).json({ 
-      product, 
-      cartDetail: matchedCartItem, 
-      wishlist: wishlistItems 
+    return res.status(200).json({
+      product,
+      cartDetail: matchedCartItem,
+      wishlist: wishlistItems,
     });
   } catch (error) {
     console.error("Error fetching product:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 });
-
-
 
 router.post("/updateSize", protectedRoute, async (req, res) => {
   const userId = req.user?.id;
@@ -567,10 +558,9 @@ router.post("/postReview", protectedRoute, async (req, res) => {
     });
 
     if (!userWithReviews) {
-      
       return res.status(404).json({ message: "User not found" });
     }
-    
+
     return res.status(200).json({ review: userWithReviews.reviews });
   } catch (error) {
     console.error("Error posting review:", error);
@@ -581,8 +571,6 @@ router.post("/postReview", protectedRoute, async (req, res) => {
 // Checking the Item is presentIn
 router.get("/fetchReview/:pid", protectedRoute, async (req, res) => {
   const { pid } = req.params;
-
-  
 
   try {
     if (!pid) {
@@ -606,7 +594,6 @@ router.post("/addWishlistProd", protectedRoute, async (req, res) => {
   const { pid, size } = req.body;
   const productId = pid;
 
-
   try {
     if (!productId) {
       return res.status(400).json({ message: "Product not found" });
@@ -624,7 +611,6 @@ router.post("/addWishlistProd", protectedRoute, async (req, res) => {
     else if (await Accessory.findById(productId)) itemModel = "Accessory";
     else if (await Footwear.findById(productId)) itemModel = "Footwear";
     else return res.status(400).json({ message: "Product not found" });
-
 
     // Set default size if needed
     let finalSize = size;
@@ -1216,7 +1202,6 @@ router.post("/placeOrder", protectedRoute, async (req, res) => {
     carts,
   } = req.body;
 
-
   try {
     // Check if user exists
     const user = await User.findById(userId);
@@ -1241,7 +1226,6 @@ router.post("/placeOrder", protectedRoute, async (req, res) => {
 
     // Transform cart items to match your schema
     const items = carts.map((cartItem) => ({
-
       uid: cartItem.product?._id || null,
       prodName: cartItem.product?.name || "Unnamed Product",
       prodPrice: cartItem.product?.price || 0,
@@ -1285,7 +1269,110 @@ router.post("/placeOrder", protectedRoute, async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 });
-router.get("/call", (req, res)  => {
+
+//--------- added new routes-------
+router.post("/forgot-password", async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res
+        .status(404)
+        .json({ msg: "Invalid email address or user not registered." });
+    }
+
+    // create a Token, Which will valid for 10min
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "10min",
+    });
+
+    user.resetToken = token;
+    user.resetTokenExpiry = new Date(Date.now() + 10 * 60 * 1000);
+    await user.save();
+
+    const resetLink = `http://localhost:5173/reset-password/${token}`;
+
+    console.log("Reset link:", resetLink);
+    console.log("Token expiry:", user.resetTokenExpiry);
+
+    return res.json({
+      msg: "Password reset link generated",
+      resetLink,
+      token,
+    });
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    return res
+      .status(500)
+      .json({ msg: "Error occurred in '/forgot-password'" });
+  }
+});
+
+router.post("/reset-password/:token", async (req, res) => {
+  const { token } = req.params;
+  const { newPassword } = req.body;
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("decoded Id", decoded.id);
+
+    //Find user
+    const user = await User.findById(decoded.id);
+    console.log("User found:", !!user);
+
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+
+    console.log("Stored token:", user.resetToken);
+    console.log("Token match:", user.resetToken === token);
+    console.log("Token expiry:", user.resetTokenExpiry);
+    console.log("Current time:", new Date());
+    console.log("Is expired:", user.resetTokenExpiry < new Date());
+
+    // Check if token matches
+    if (user.resetToken !== token) {
+      return res.status(400).json({ msg: "Invalid reset token" });
+    }
+
+    // Check if token has expired
+    if (!user.resetTokenExpiry || user.resetTokenExpiry < new Date()) {
+      return res
+        .status(400)
+        .json({ msg: "Token has expired. Please request a new reset link." });
+    }
+
+    const hashed = await bcryptjs.hash(newPassword, 10);
+    user.password = hashed;
+    user.resetToken = undefined;
+    user.resetTokenExpiry = undefined;
+    await user.save();
+
+    // Explicit success response
+    return res.status(200).json({ 
+      msg: "Password reset successfully",
+      success: true 
+    });
+
+  } catch (error) {
+    console.error("Reset password error:", error);
+    console.error("Error name:", error.name);
+    console.error("Error message:", error.message);
+
+    if (error.name === "JsonWebTokenError") {
+      return res.status(400).json({ msg: "Invalid token format" });
+    }
+    if (error.name === "TokenExpiredError") {
+      return res.status(400).json({ msg: "JWT token has expired" });
+    }
+    return res
+      .status(500)
+      .json({ msg: "Internal Server Error", error: error.message });
+  }
+});
+
+router.get("/call", (req, res) => {
   res.send("Succesfully checked, testing route !");
 });
 export default router;
