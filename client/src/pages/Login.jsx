@@ -153,13 +153,15 @@ const Login = () => {
               </div>
 
               <motion.button
+              disabled={isLoggingIn}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="btn btn-primary w-full mt-6 flex items-center justify-center gap-2"
-                type="submit"
+                className="btn btn-primary w-full mt-6 flex items-center justify-center gap-2 disabled:cursor-not-allowed"
+                type="submit"  
               >
                 {isLoggingIn ? (
-                  <Loader2 className="animate-spin h-5 w-5" />
+                  // <Loader2 className="animate-spin h-5 w-5" />
+                  "Processing ..."
                 ) : (
                   <>
                     <LogIn size={20} />
