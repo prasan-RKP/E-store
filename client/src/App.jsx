@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "sonner";
 
@@ -26,19 +26,52 @@ import ProductDisplaySkeleton from "./skeletons/ProductDisplaySkeleton";
 import OrderListLoader from "./skeletons/OrderListSkeleton";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import RenderWakeLoader from "./landing/RenderWakeLoader";
 
 const App = () => {
   const { verifiedUser, isCheckingVerified, checkAuthVerify } = userAuthStore();
 
-  useEffect(() => {
-    checkAuthVerify();
-  }, [checkAuthVerify]);
+  // 🧠 Backend readiness state
+  const [isBackendReady, setIsBackendReady] = useState(false);
 
-  // Loader setup during authentication check
+  // 🔄 Check if Render backend is ready
+  useEffect(() => {
+    const checkBackend = async () => {
+      try {
+        // ⚙️ Change this to your deployed backend base URL
+        const res = await fetch("https://your-backend-url.onrender.com/ping");
+        if (res.ok) {
+          setIsBackendReady(true);
+        } else {
+          throw new Error("Backend not ready");
+        }
+      } catch (err) {
+        console.log("Render service still waking up...");
+        setTimeout(checkBackend, 3000); // retry every 3 seconds
+      }
+    };
+
+    checkBackend();
+  }, []);
+
+  // ✅ Once backend is ready, verify authentication
+  useEffect(() => {
+    if (isBackendReady) {
+      checkAuthVerify();
+    }
+  }, [isBackendReady, checkAuthVerify]);
+
+  // 🌀 Loader when Render backend is waking up
+  if (!isBackendReady) {
+    return <RenderWakeLoader />;
+  }
+
+  // 🔐 Loader during authentication check
   if (!verifiedUser && isCheckingVerified) {
     return <LuxeLoader />;
   }
 
+  // ✅ Main App after backend & auth are ready
   return (
     <div>
       <Routes>
@@ -52,18 +85,15 @@ const App = () => {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/ord" element={<ProductDisplaySkeleton />} />
 
-        {/* Adding two fileds for 'forgot-password' feature */}
+        {/* Forgot Password */}
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
+
         {/* Order history */}
         <Route
           path="/showorder"
           element={
-            verifiedUser ? (
-              <OrderHistoryPage />
-            ) : (
-              <Navigate to={"/login"} replace />
-            )
+            verifiedUser ? <OrderHistoryPage /> : <Navigate to={"/login"} replace />
           }
         />
 
@@ -85,11 +115,7 @@ const App = () => {
         <Route
           path="/checkout"
           element={
-            verifiedUser ? (
-              <SimplifiedCheckout />
-            ) : (
-              <Navigate to={"/login"} replace />
-            )
+            verifiedUser ? <SimplifiedCheckout /> : <Navigate to={"/login"} replace />
           }
         />
 
@@ -111,11 +137,7 @@ const App = () => {
         <Route
           path="/productshow/:id"
           element={
-            verifiedUser ? (
-              <ProductDisplay />
-            ) : (
-              <Navigate to={"/login"} replace />
-            )
+            verifiedUser ? <ProductDisplay /> : <Navigate to={"/login"} replace />
           }
         />
 
