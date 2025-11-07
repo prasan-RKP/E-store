@@ -39,7 +39,7 @@ const App = () => {
     const checkBackend = async () => {
       try {
         // ⚙️ Change this to your deployed backend base URL
-        const res = await fetch("https://your-backend-url.onrender.com/ping");
+        const res = await fetch("https://pkart-s4i4.onrender.com/ping");
         if (res.ok) {
           setIsBackendReady(true);
         } else {
