@@ -168,7 +168,7 @@ const RenderWakeLoader = () => {
             POWERED BY
           </p>
           <p className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent mt-1 tracking-tight">
-            CAS Technologies
+            Prasan RKP
           </p>
         </div>
       </div>
