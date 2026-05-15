@@ -6,17 +6,22 @@ const router = express.Router();
 
 router.get("/fetchOrder", protectedRoute, async (req, res) => {
   try {
-    const orders = await Order.find();
     const userId = req.user?.id;
 
-    // TO tackle some error
-    if (!orders) {
-      return res.status(404).json({ message: "No Orders Found.." });
+    const orders = await Order.find({
+      user: userId,
+    });
+
+    if (!orders || orders.length === 0) {
+      return res.status(404).json({
+        message: "No Orders Found..",
+      });
     }
 
     const transformedOrders = orders.map((order) => ({
       id: order._id.toString(),
       date: new Date(order.createdAt).toISOString().split("T")[0],
+
       total: order.totalAmount,
       orderNumber: order.orderNumber,
       shippingAddress: order.shippingAddress,
@@ -26,10 +31,11 @@ router.get("/fetchOrder", protectedRoute, async (req, res) => {
       customerEmail: order.customerEmail,
       customerPhoneNo: order.customerPhoneNo,
       zipcode: order.zipCode,
-      // Adding code from here
-      userId: order.user._id,
+
+      userId: order.user,
+
       items: order.items.map((item) => ({
-        pid: item.uid, // help to get acces from where the product Came(mean from which schema "Men", "Women", "Accessory", "Footwears")
+        pid: item.uid,
         id: item._id,
         name: item.prodName,
         price: item.prodPrice,
@@ -41,10 +47,16 @@ router.get("/fetchOrder", protectedRoute, async (req, res) => {
       })),
     }));
 
-    return res.status(200).json({ orders: transformedOrders, myId:userId });
+    return res.status(200).json({
+      orders: transformedOrders,
+      myId: userId,
+    });
   } catch (error) {
     console.log("Error in Fetching orders", error);
-    return res.status(500).json({ message: "Internal Server Error" });
+
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
   }
 });
 
@@ -92,7 +104,7 @@ router.put("/cancelOrder", protectedRoute, async (req, res) => {
       })),
     };
 
-    return res.status(200).json({ order: transformedOrder});
+    return res.status(200).json({ order: transformedOrder });
   } catch (error) {
     console.error("Cancel Order Error:", error);
     return res.status(500).json({ message: "Internal Server Error" });
