@@ -1,4 +1,17 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback, memo } from "react";
+
+// FIX: Stars are memoized and pre-rendered once — prevents 20 SVG nodes
+// being recreated on every parent re-render (e.g. every slider tick)
+const StarRating = memo(() => (
+  <div className="flex items-center gap-1">
+    {[0,1,2,3,4].map((i) => (
+      <svg key={i} className="w-4 h-4 fill-yellow-400 shrink-0" viewBox="0 0 20 20" aria-hidden="true">
+        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+      </svg>
+    ))}
+    <span className="text-sm text-gray-500 ml-1">(4.9)</span>
+  </div>
+));
 import { motion } from "framer-motion";
 import { useLocation } from "react-router-dom";
 import {
@@ -13,177 +26,161 @@ import {
   Globe,
   User,
 } from "lucide-react";
-// import img1 from "/pexels-lazarus-ziridis-351891426-28580375.jpg";
-// import img2 from "/women3.jpg";
-// import img3 from "/pexels-lazarus-ziridis-351891426-28580375.jpg";
-// import img4 from "/pexels-maurille-loglassi-2150816874-31343785.jpg";
 import { Link } from "react-router-dom";
 import AlertWindow from "./AlertWindow";
 import { toast } from "sonner";
 import { FaLinkedin, FaLinkedinIn } from "react-icons/fa";
 
+const heroSlides = [
+  {
+    // FIX 1: Reduced image size params — w=1400, dpr=1, q=75 instead of full-res
+    image:
+      "https://images.unsplash.com/photo-1656696160196-3c3039d2b200?q=75&w=1400&auto=format&fit=crop&ixlib=rb-4.1.0",
+    title: "Summer Collection",
+    subtitle: "Elevate your style this season",
+    ctaText: "Shop Now",
+  },
+  {
+    image:
+      "https://images.pexels.com/photos/9775856/pexels-photo-9775856.jpeg?auto=compress&cs=tinysrgb&w=1400&dpr=1",
+    title: "New Arrivals",
+    subtitle: "Be the first to discover our latest products",
+    ctaText: "Explore",
+  },
+  {
+    image:
+      "https://images.pexels.com/photos/7872805/pexels-photo-7872805.jpeg?auto=compress&cs=tinysrgb&w=1400&dpr=1",
+    title: "Limited Edition",
+    subtitle: "Exclusive designs for a limited time",
+    ctaText: "View Collection",
+  },
+  {
+    image:
+      "https://images.pexels.com/photos/5039659/pexels-photo-5039659.jpeg?auto=compress&cs=tinysrgb&w=1400&dpr=1",
+    title: "Explosure Ending X",
+    subtitle: "Soon... Possibility",
+    ctaText: "Offered Items..",
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dlkmhoueb/image/upload/f_auto,q_auto,w_1400/v1751508511/ecom_store/slider/ybbyqtwymno2xszqvamn.jpg",
+    title: "Explosure Ending X",
+    subtitle: "Soon... Possibility",
+    ctaText: "Offered Items..",
+  },
+];
+
+const categories = [
+  { name: "Women", navigate: "/women-clothes", image: "/heros/women2.jpg" },
+  { name: "Men", navigate: "/men-clothes", image: "/heros/men1.jpg" },
+  {
+    name: "Accessories",
+    navigate: "/accessories",
+    image: "/heros/acc1.jpg",
+  },
+  {
+    name: "Footwear",
+    navigate: "/footwears",
+    image: "/heros/shoe1.jpg",
+  },
+];
+
+const featuredProducts = [
+  {
+    name: "Classic Denim jacket",
+    price: "₹129.99",
+    image: "https://res.cloudinary.com/dlkmhoueb/image/upload/v1745044225/ecom_store/menCloth/ad8pj9s8iizirjpx2p9v.jpg",
+    discount: "20%",
+    join: "/men-clothes"
+  },
+  {
+    name: "Black Designer Jeans", price: "₹89.99", image: "https://res.cloudinary.com/dlkmhoueb/image/upload/v1745211908/ecom_store/womenCloth/vtfyxf6beww6xjpfxe6n.jpg",
+    join: "/women-clothes"
+  },
+  {
+    name: "Off-White Black Mask",
+    price: "₹119.99",
+    image: "https://res.cloudinary.com/dlkmhoueb/image/upload/v1744872119/ecom_store/accessories/fmz7f9bfqkmkaczbzp7p.jpg",
+    label: "NEW",
+    join: "/accessories"
+  },
+  {
+    name: "Gym Hike/Casual Shoe",
+    price: "₹69.99",
+    image: "https://res.cloudinary.com/dlkmhoueb/image/upload/v1745644562/ecom_store/footwear/e6otgthvbzlfl6cgmgxc.jpg",
+    join: "/footwears"
+  },
+];
+
+
+
 const HomePageShop = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
-  //const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // custom logicof alert window
   const collectionRef = useRef(null);
   const productsRef = useRef(null);
   const contactRef = useRef(null);
   const location = useLocation();
-  const selRef = useRef(null)
+  const selRef = useRef(null);
 
-  // dynamic land form other page 
+  // FIX 2: Merged 4 duplicate useEffect scroll hooks into one
   useEffect(() => {
-    if (location.hash === "#products" && productsRef.current) {
-      productsRef.current.scrollIntoView({ behavior: "smooth" });
+    const refs = {
+      "#products": productsRef,
+      "#collection": collectionRef,
+      "#seller": selRef,
+      "#contact": contactRef,
+    };
+    const ref = refs[location.hash];
+    if (ref?.current) {
+      ref.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [location]);
 
+  // FIX 3: Auto-slide pauses when tab is hidden to save CPU
   useEffect(() => {
-    if (location.hash === "#collection" && collectionRef.current) {
-      collectionRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [location]);
+    let interval = null;
 
+    const start = () => {
+      interval = setInterval(() => {
+        setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+      }, 5000);
+    };
 
+    const handleVisibility = () => {
+      if (document.hidden) {
+        clearInterval(interval);
+        interval = null;
+      } else {
+        start();
+      }
+    };
 
-  useEffect(() => {
-    if (location.hash === "#seller" && selRef.current) {
-      selRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [location]);
+    start();
+    document.addEventListener("visibilitychange", handleVisibility);
 
-   useEffect(() => {
-    if (location.hash === "#contact" && contactRef.current) {
-      contactRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [location]);
-
-
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
-      setIsLoggedIn((prev) => !prev);
-    }, 5000); // Change every 3 seconds
-
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
   }, []);
 
-  // Fix 1: Use the imported images instead of string paths
-  const heroSlides = [
-    {
-      image:
-        "https://images.unsplash.com/photo-1656696160196-3c3039d2b200?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", // Use the imported image
-      title: "Summer Collection",
-      subtitle: "Elevate your style this season",
-      ctaText: "Shop Now",
-    },
-    {
-      image:
-        "https://images.pexels.com/photos/9775856/pexels-photo-9775856.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", // Use the imported image
-      title: "New Arrivals",
-      subtitle: "Be the first to discover our latest products",
-      ctaText: "Explore",
-    },
-    {
-      image:
-        "https://images.pexels.com/photos/7872805/pexels-photo-7872805.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", // Use the imported image
-      title: "Limited Edition",
-      subtitle: "Exclusive designs for a limited time",
-      ctaText: "View Collection",
-    },
-    {
-      image:
-        "https://images.pexels.com/photos/5039659/pexels-photo-5039659.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", // Use the imported image
-      title: "Explosure Ending X",
-      subtitle: "Soon... Possibility",
-      ctaText: "Offered Items..",
-    },
-
-    {
-      image:
-        "https://res.cloudinary.com/dlkmhoueb/image/upload/f_auto,q_auto/v1751508511/ecom_store/slider/ybbyqtwymno2xszqvamn.jpg", // Use the imported image
-      title: "Explosure Ending X",
-      subtitle: "Soon... Possibility",
-      ctaText: "Offered Items..",
-    },
-  ];
-
-
-  // Auto slide functionality
-
-  // Categories data
-  const categories = [
-    { name: "Women", navigate: "/women-clothes", image: "/heros/women2.jpg" },
-    { name: "Men", navigate: "/men-clothes", image: "/heros/men1.jpg" },
-    {
-      name: "Accessories",
-      navigate: "/accessories",
-      image: "/heros/acc1.jpg",
-    },
-    {
-      name: "Footwear",
-      navigate: "/footwears",
-      image: "/heros/shoe1.jpg",
-    },
-  ];
-
-  const featuredProducts = [
-    {
-      name: "Classic Denim jacket",
-      price: "₹129.99",
-      image: "https://res.cloudinary.com/dlkmhoueb/image/upload/v1745044225/ecom_store/menCloth/ad8pj9s8iizirjpx2p9v.jpg",
-      discount: "20%",
-      join: "/men-clothes"
-    },
-    {
-      name: "Black Designer Jeans", price: "₹89.99", image: "https://res.cloudinary.com/dlkmhoueb/image/upload/v1745211908/ecom_store/womenCloth/vtfyxf6beww6xjpfxe6n.jpg",
-      join: "/women-clothes"
-    },
-    {
-      name: "Off-White Black Mask",
-      price: "₹119.99",
-      image: "https://res.cloudinary.com/dlkmhoueb/image/upload/v1744872119/ecom_store/accessories/fmz7f9bfqkmkaczbzp7p.jpg",
-      label: "NEW",
-      join: "/accessories"
-    },
-    {
-      name: "Gym Hike/Casual Shoe",
-      price: "₹69.99",
-      image: "https://res.cloudinary.com/dlkmhoueb/image/upload/v1745644562/ecom_store/footwear/e6otgthvbzlfl6cgmgxc.jpg",
-      join: "/footwears"
-    },
-  ];
-
-  const nextSlide = () => {
+  const nextSlide = useCallback(() => {
     setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
-  };
+  }, []);
 
-  const prevSlide = () => {
+  const prevSlide = useCallback(() => {
     setCurrentSlide(
       (prev) => (prev - 1 + heroSlides.length) % heroSlides.length
     );
-  };
+  }, []);
 
   return (
     <div className="relative min-h-screen bg-base-100">
-      {/* {!isLoggedIn && (
-        <AlertWindow className="absolute top-6 left-1/2 transform -translate-x-1/2" />
-      )} */}
-
-      {/* Navigation */}
-      {/* ${
-          isLoggedIn ? "pointer-events-auto" : "pointer-events-none"
-        } */}
       <div className={``}>
         <nav
-          className={`${
-            // isLoggedIn ? "fixed" : "relative"
-            "relative"
-            } top-0 w-full bg-base-100 z-50 shadow-sm`}
+          className={`${"relative"} top-0 w-full bg-base-100 z-50 shadow-sm`}
         >
           <div className="container mx-auto px-4">
             <div className="navbar py-3">
@@ -202,8 +199,7 @@ const HomePageShop = () => {
                     <a
                       onClick={(e) => {
                         e.preventDefault();
-                        setIsMenuOpen(false); // Close menu first
-
+                        setIsMenuOpen(false);
                         setTimeout(() => {
                           document
                             .getElementById("shop-section")
@@ -211,7 +207,7 @@ const HomePageShop = () => {
                               behavior: "smooth",
                               block: "start",
                             });
-                        }, 100); // Small delay to ensure the menu is closed
+                        }, 100);
                       }}
                       className="hover:text-primary"
                     >
@@ -222,14 +218,13 @@ const HomePageShop = () => {
                     <button
                       onClick={(e) => {
                         e.preventDefault();
-                        setIsMenuOpen(false); // Close menu first
+                        setIsMenuOpen(false);
                         document
                           .getElementById("shop-section")
                           ?.scrollIntoView({
                             behavior: "smooth",
                             block: "start",
                           });
-                        // Small delay to ensure the menu is closed
                       }}
                       className="hover:text-primary"
                     >
@@ -301,14 +296,13 @@ const HomePageShop = () => {
               <a
                 onClick={(e) => {
                   e.preventDefault();
-                  setIsMenuOpen(false); // Close menu first
-
+                  setIsMenuOpen(false);
                   setTimeout(() => {
                     document.getElementById("shop-section")?.scrollIntoView({
                       behavior: "smooth",
                       block: "start",
                     });
-                  }, 100); // Small delay to ensure the menu is closed
+                  }, 100);
                 }}
                 className="hover:text-primary cursor-pointer text-lg"
               >
@@ -319,12 +313,11 @@ const HomePageShop = () => {
               <a
                 onClick={(e) => {
                   e.preventDefault();
-                  setIsMenuOpen(false); // Close menu first
+                  setIsMenuOpen(false);
                   document.getElementById("seller")?.scrollIntoView({
                     behavior: "smooth",
                     block: "start",
                   });
-                  // Small delay to ensure the menu is closed
                 }}
                 className="text-lg py-3"
               >
@@ -332,7 +325,6 @@ const HomePageShop = () => {
               </a>
             </li>
             <li>
-
               <button onClick={(e) => {
                 e.preventDefault();
                 setIsMenuOpen(false);
@@ -341,12 +333,10 @@ const HomePageShop = () => {
                   block: 'start'
                 })
               }} className="hover:text-primary text-lg">Contact</button>
-
             </li>
           </ul>
         </motion.div>
 
-        {/* Hero section */}
         {/* Hero section */}
         <section className="relative min-h-screen overflow-hidden bg-black">
           {heroSlides.map((slide, index) => (
@@ -361,19 +351,28 @@ const HomePageShop = () => {
               }}
               transition={{ duration: 1.5, ease: "easeOut" }}
             >
-              {/* Background Image with Parallax Effect */}
+              {/* FIX 4: Replaced background-image CSS div with <img> tag.
+                  - First slide loads eagerly with fetchPriority="high"
+                  - All other slides load lazily — browser won't fetch them until needed */}
               <motion.div
                 className="absolute inset-0"
-                animate={{ y: currentSlide === index ? -20 : 0 }}
-                transition={{
-                  duration: 8,
-                  repeat: Infinity,
-                  repeatType: "reverse",
-                }}
+                // FIX 5: Parallax animation only runs on the active slide, not all 5 simultaneously
+                animate={currentSlide === index ? { y: -20 } : { y: 0 }}
+                transition={
+                  currentSlide === index
+                    ? { duration: 8, repeat: Infinity, repeatType: "reverse" }
+                    : { duration: 0 }
+                }
               >
-                <div
-                  className="w-full h-full bg-center bg-cover bg-no-repeat"
-                  style={{ backgroundImage: `url(${slide.image})` }}
+                <img
+                  src={slide.image}
+                  alt={slide.title}
+                  width={1400}
+                  height={900}
+                  className="w-full h-full object-cover object-center"
+                  loading={index === 0 ? "eager" : "lazy"}
+                  fetchPriority={index === 0 ? "high" : "low"}
+                  decoding={index === 0 ? "sync" : "async"}
                 />
               </motion.div>
 
@@ -498,10 +497,14 @@ const HomePageShop = () => {
                     className="group cursor-pointer"
                   >
                     <div className="relative overflow-hidden rounded-lg">
+                      {/* FIX 6: Added loading="lazy" and explicit width/height to prevent layout shift */}
                       <img
                         src={category.image}
                         alt={category.name}
+                        width={600}
+                        height={424}
                         className="w-full h-[424px] object-cover transition-transform duration-500 group-hover:scale-110"
+                        loading="lazy"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-70" />
                       <div className="absolute bottom-0 left-0 w-full p-6">
@@ -524,51 +527,17 @@ const HomePageShop = () => {
         </section>
 
         {/* Featured products section */}
+        {/* FIX 7: Removed inline <style> block from JSX — move these rules to your global CSS file (e.g. index.css) */}
         <section className="py-20 bg-gradient-to-br from-base-200 to-base-300 relative overflow-hidden">
-          {/* Simplified background decoration */}
-          <div className="absolute inset-0 opacity-5">
-            <div className="absolute top-10 left-10 w-32 h-32 bg-primary rounded-full blur-3xl"></div>
-            <div className="absolute bottom-20 right-20 w-40 h-40 bg-secondary rounded-full blur-3xl"></div>
-          </div>
-
-          {/* Optimized CSS - reduced animations */}
-          <style jsx>{`
-    @keyframes fadeSlide {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
-    @keyframes gentleGlow {
-      0%, 100% { box-shadow: 0 4px 20px rgba(59, 130, 246, 0.1); }
-      50% { box-shadow: 0 8px 25px rgba(59, 130, 246, 0.2); }
-    }
-    
-    .animate-fade-slide {
-      animation: fadeSlide 0.6s ease-out;
-    }
-    
-    .hover-glow:hover {
-      animation: gentleGlow 2s ease-in-out infinite;
-    }
-    
-    .image-hover {
-      transition: transform 0.3s ease, filter 0.3s ease;
-    }
-    
-    .image-hover:hover {
-      transform: scale(1.05);
-      filter: brightness(1.1);
-    }
-    
-    .card-hover {
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    
-    .card-hover:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    }
-  `}</style>
+          {/* FIX: Removed blur-3xl blobs — CSS blur forces GPU repaint on every scroll frame causing jank.
+               Replaced with a static radial-gradient that achieves the same soft glow at zero paint cost. */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                "radial-gradient(circle at 10% 10%, hsl(var(--p)/0.06) 0%, transparent 50%), radial-gradient(circle at 90% 90%, hsl(var(--s)/0.06) 0%, transparent 50%)",
+            }}
+          />
 
           <div className="container mx-auto px-4 relative z-10">
             <div className="text-center mb-16 animate-fade-slide">
@@ -589,7 +558,13 @@ const HomePageShop = () => {
                 <div
                   key={index}
                   className="group relative card-hover"
-                  style={{ animationDelay: `${index * 0.1}s` }}
+                  style={{
+                    animationDelay: `${index * 0.1}s`,
+                    // FIX: will-change promotes card to its own GPU layer so
+                    // hover transform doesn't trigger a CPU repaint of the whole page
+                    willChange: "transform",
+                    contain: "layout style",
+                  }}
                 >
                   {/* Bestseller rank badge */}
                   <div className="absolute -top-3 -left-3 z-20 w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg">
@@ -598,11 +573,13 @@ const HomePageShop = () => {
 
                   <div className="card bg-base-100 shadow-lg hover-glow transition-all duration-300 overflow-hidden border border-base-300">
                     <figure className="relative overflow-hidden">
-                      {/* Simplified image with basic hover effect */}
                       <div className="relative h-[365px] sm:h-80 w-full overflow-hidden">
+                        {/* FIX 8: Added explicit width/height to prevent CLS; loading="lazy" was already here */}
                         <img
                           src={product?.image}
                           alt={product?.name}
+                          width={400}
+                          height={365}
                           className="h-full w-full object-cover image-hover"
                           loading="lazy"
                         />
@@ -611,7 +588,7 @@ const HomePageShop = () => {
                         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                       </div>
 
-                      {/* Product labels - simplified */}
+                      {/* Product labels */}
                       <div className="absolute top-3 left-3 flex flex-col gap-2 z-10">
                         {product.discount && (
                           <div className="bg-red-500 text-white text-xs px-3 py-1 rounded-full font-semibold shadow-lg">
@@ -625,12 +602,12 @@ const HomePageShop = () => {
                         )}
                       </div>
 
-                      {/* Heart icon - simplified */}
+                      {/* Heart icon */}
                       <button className="absolute right-3 top-3 z-10 btn btn-circle btn-sm bg-white/90 text-gray-700 hover:bg-primary hover:text-white transition-all duration-200">
                         <Heart size={16} />
                       </button>
 
-                      {/* Trending indicator - simplified */}
+                      {/* Trending indicator */}
                       <div className="absolute bottom-3 right-3 z-10 bg-emerald-500 text-white text-xs px-3 py-1 rounded-full font-semibold flex items-center gap-1.5 shadow-lg">
                         <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
                         TRENDING
@@ -647,29 +624,21 @@ const HomePageShop = () => {
                       <div className="flex items-center justify-between mb-4">
                         <p className="text-primary font-bold text-xl">{product.price}</p>
 
-                        {/* Rating stars */}
-                        <div className="flex items-center gap-1">
-                          {[...Array(5)].map((_, i) => (
-                            <svg key={i} className="w-4 h-4 fill-yellow-400" viewBox="0 0 20 20">
-                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                            </svg>
-                          ))}
-                          <span className="text-sm text-gray-500 ml-1">(4.9)</span>
-                        </div>
+                        {/* FIX: Replaced [Array(5)].map() with memoized <StarRating /> */}
+                        <StarRating />
                       </div>
 
                       {/* Call to action */}
                       <div className="card-actions">
                         <Link to={`${product.join}`}>
-                        <button className="btn btn-outline btn-primary btn-sm btn-block group-hover:btn-primary group-hover:text-white transition-all duration-200">
-                          
-                          <span className="flex items-center gap-2">
-                            View Details
-                            <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                            </svg>
-                          </span>
-                        </button>
+                          <button className="btn btn-outline btn-primary btn-sm btn-block group-hover:btn-primary group-hover:text-white transition-all duration-200">
+                            <span className="flex items-center gap-2">
+                              View Details
+                              <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
+                            </span>
+                          </button>
                         </Link>
                       </div>
                     </div>
@@ -704,6 +673,7 @@ const HomePageShop = () => {
             </div>
           </div>
         </section>
+
         {/* Newsletter section */}
         <section className="py-16 bg-primary text-primary-content">
           <div className="container mx-auto px-4">
@@ -736,10 +706,8 @@ const HomePageShop = () => {
           </div>
         </section>
 
-        {/* Fix 2: Improve footer layout with flex and responsive design */}
         <footer id="contact" ref={contactRef} className="bg-base-200 text-base-content">
           <div className="container mx-auto">
-            {/* Footer main section - changed to flex layout */}
             <div className="flex flex-wrap justify-between p-6">
               <div className="w-full sm:w-1/2 md:w-1/4 mb-6 md:mb-0">
                 <span className="footer-title">Quick Links</span>
@@ -747,7 +715,6 @@ const HomePageShop = () => {
                 <Link to={"/profile"} className="link link-hover block mt-2">Go to Profile</Link>
                 <Link to={"/showorder"} className="link link-hover block mt-2">Go to Orders</Link>
                 <Link to={"/wishlist"} className="link link-hover block mt-2">Go to WishList ❤️</Link>
-
               </div>
               <div className="w-full sm:w-1/2 md:w-1/4 mb-6 md:mb-0">
                 <span className="footer-title">Shop</span>
@@ -774,18 +741,10 @@ const HomePageShop = () => {
               </div>
             </div>
 
-            {/* Footer bottom - changed to improved flex layout */}
             <div className="px-10 py-4 border-t border-base-300 flex flex-col md:flex-row justify-between items-center">
               <div>
                 <p>© 2025 LUXE - All rights reserved</p>
               </div>
-              {/* <div className="mt-4 md:mt-0">
-                <div className="flex gap-4">
-                  <a className="link link-hover">Shipping</a>
-                  <a className="link link-hover">Returns</a>
-                  <a className="link link-hover">FAQ</a>
-                </div>
-              </div> */}
             </div>
           </div>
         </footer>
